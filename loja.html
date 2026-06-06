@@ -149,6 +149,7 @@
       font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
       animation: fadeUp 0.5s 0.22s ease both;
       flex-shrink: 0;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
     .status-open  { background: rgba(26,122,64,0.18);  color: #4ADE80; border: 1px solid rgba(74,222,128,0.25); }
     .status-closed{ background: rgba(192,57,43,0.18);  color: #F87171; border: 1px solid rgba(248,113,113,0.25); }
@@ -531,7 +532,6 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav>
   <a class="nav-logo" href="index.html">Centro Comercial <span class="accent">Massaka</span></a>
   <a class="nav-back" href="index.html#lojas">
@@ -539,10 +539,8 @@
   </a>
 </nav>
 
-<!-- MAIN CONTENT (populated by JS) -->
 <div id="pageContent"></div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lightbox-close" onclick="closeLightbox()">×</button>
   <img id="lightboxImg" src="" alt="Galeria" />
@@ -559,7 +557,6 @@ const STORES = {
     emoji: '🍽️',
     floor: 'Piso 0',
     location: 'Loja 01',
-    status: 'open',
     phone: '+258 21 000 001',
     email: 'lounge@massaka.co.mz',
     heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&q=85',
@@ -587,7 +584,6 @@ const STORES = {
     emoji: '🥂',
     floor: 'Piso 0',
     location: 'Loja 03',
-    status: 'open',
     phone: '+258 21 000 002',
     email: 'bottlestore@massaka.co.mz',
     heroImg: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=1400&q=85',
@@ -615,7 +611,6 @@ const STORES = {
     emoji: '🥩',
     floor: 'Piso 0',
     location: 'Loja 02',
-    status: 'open',
     phone: '+258 21 000 003',
     email: 'talho@massaka.co.mz',
     heroImg: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=85',
@@ -642,7 +637,6 @@ const STORES = {
     emoji: '💇',
     floor: 'Piso 0',
     location: 'Loja 07',
-    status: 'open',
     phone: '+258 21 000 004',
     email: 'nefithys@massaka.co.mz',
     heroImg: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1400&q=85',
@@ -670,7 +664,6 @@ const STORES = {
     emoji: '🏋️',
     floor: 'Piso 0',
     location: 'Loja 40',
-    status: 'open',
     phone: '+258 21 000 005',
     email: 'cfgym@massaka.co.mz',
     heroImg: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=85',
@@ -699,8 +692,56 @@ const todayDayName = (() => {
   const d = new Date().getDay();
   if (d === 0) return 'Domingo';
   if (d === 6) return 'Sábado';
-  return 'Segunda';
+  return 'Segunda'; // Matches "Segunda - Sexta" and "Segunda - Sábado" logic visually
 })();
+
+/* ══════════════════════════════════════
+   STATUS VERIFICATION LOGIC (REAL-TIME)
+══════════════════════════════════════ */
+function getStoreStatus(store) {
+  const dayIndex = new Date().getDay(); // 0 = Dom, 1 = Seg ... 6 = Sab
+  let todayTime = 'Fechado';
+
+  // Find the right schedule line for today
+  for (const s of store.schedule) {
+    const dayText = s.day.toLowerCase();
+    if (dayText.includes('domingo') && dayIndex === 0) todayTime = s.time;
+    else if (dayText === 'sábado' && dayIndex === 6) todayTime = s.time;
+    else if (dayText.includes('segunda') && dayText.includes('sexta') && dayIndex >= 1 && dayIndex <= 5) todayTime = s.time;
+    else if (dayText.includes('segunda') && dayText.includes('sábado') && dayIndex >= 1 && dayIndex <= 6) todayTime = s.time;
+  }
+
+  // If closed today entirely
+  if (todayTime.toLowerCase() === 'fechado') return false;
+
+  // Split time string (e.g., "09:00 - 20:00" or "09:00 – 20:00")
+  const parts = todayTime.split(/[-–]/).map(s => s.trim());
+  if (parts.length !== 2) return false;
+
+  const [openH, openM] = parts[0].split(':').map(Number);
+  const [closeH, closeM] = parts[1].split(':').map(Number);
+
+  const now = new Date();
+  const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+  
+  const openTotalMinutes = openH * 60 + openM;
+  let closeTotalMinutes = closeH * 60 + closeM;
+
+  // Handle stores closing past midnight
+  if (closeTotalMinutes <= openTotalMinutes) {
+    closeTotalMinutes += 24 * 60;
+  }
+
+  let adjustedCurrent = currentTotalMinutes;
+  // If we are past midnight but before closing time of the previous day
+  if (currentTotalMinutes < openTotalMinutes && closeTotalMinutes > 24 * 60) {
+    adjustedCurrent += 24 * 60;
+  }
+
+  // Return true if current time is within boundaries
+  return adjustedCurrent >= openTotalMinutes && adjustedCurrent < closeTotalMinutes;
+}
+
 
 /* ══════════════════════════════════════
    RENDER PAGE
@@ -727,6 +768,11 @@ function render() {
   }
 
   document.title = `${store.name} – Centro Comercial Massaka`;
+
+  /* Calculate dynamic Open/Closed status */
+  const isOpen = getStoreStatus(store);
+  const statusClass = isOpen ? 'status-open' : 'status-closed';
+  const statusText  = isOpen ? 'Aberto agora' : 'Fechado';
 
   /* Related stores (exclude current) */
   const related = Object.entries(STORES)
@@ -779,11 +825,7 @@ function render() {
   /* Description with line breaks */
   const descHtml = store.description.split('\n\n').map(p => `<p style="margin-bottom:1rem;">${p}</p>`).join('');
 
-  const statusClass = store.status === 'open' ? 'status-open' : 'status-closed';
-  const statusText  = store.status === 'open' ? 'Aberto agora' : 'Fechado';
-
   container.innerHTML = `
-    <!-- HERO BANNER -->
     <div class="store-hero">
       <img class="store-hero-img" id="heroImg" src="${store.heroImg}" alt="${store.name}" />
       <div class="store-hero-overlay"></div>
@@ -797,14 +839,13 @@ function render() {
             <span>Centro Comercial Massaka</span>
           </div>
         </div>
-        <div class="store-status-pill ${statusClass}">
+        <div class="store-status-pill ${statusClass}" id="dynamicStatusPill">
           <span class="status-dot"></span>
-          ${statusText}
+          <span id="dynamicStatusText">${statusText}</span>
         </div>
       </div>
     </div>
 
-    <!-- BREADCRUMB -->
     <div class="breadcrumb">
       <a href="index.html">Início</a>
       <span class="breadcrumb-sep">›</span>
@@ -813,25 +854,20 @@ function render() {
       <span class="breadcrumb-current">${store.name}</span>
     </div>
 
-    <!-- LAYOUT -->
     <div class="store-layout">
 
-      <!-- LEFT: MAIN CONTENT -->
       <div class="store-main">
 
-        <!-- About -->
         <div class="store-about">
           <p class="content-label">Sobre a Loja</p>
           <div class="store-desc">${descHtml}</div>
         </div>
 
-        <!-- Gallery -->
         <div class="store-gallery">
           <p class="content-label">Galeria</p>
           <div class="gallery-grid">${galleryItems}</div>
         </div>
 
-        <!-- Highlights -->
         <div class="store-highlights">
           <p class="content-label">Destaques</p>
           <ul class="highlights-list">${highlightItems}</ul>
@@ -839,7 +875,6 @@ function render() {
 
       </div>
 
-      <!-- RIGHT: SIDEBAR -->
       <aside class="store-sidebar">
         <div class="sidebar-card">
           <div class="sidebar-card-header">
@@ -895,7 +930,6 @@ function render() {
 
     </div>
 
-    <!-- RELATED STORES -->
     <section class="related-section">
       <div class="related-header">
         <span class="related-tag">✦ Outras Lojas</span>
@@ -904,7 +938,6 @@ function render() {
       <div class="related-grid">${relatedCards}</div>
     </section>
 
-    <!-- FOOTER -->
     <footer>
       <ul class="footer-links">
         <li><a href="index.html">Início</a></li>
@@ -927,6 +960,33 @@ function render() {
     heroImg.addEventListener('load', () => heroImg.classList.add('loaded'));
   }
 }
+
+/* ══════════════════════════════════════
+   UPDATE STATUS EVERY MINUTE
+══════════════════════════════════════ */
+setInterval(() => {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'), 10);
+  const store = STORES[id];
+  
+  if(store) {
+    const isOpen = getStoreStatus(store);
+    const pill = document.getElementById('dynamicStatusPill');
+    const text = document.getElementById('dynamicStatusText');
+    
+    if (pill && text) {
+      if (isOpen) {
+        pill.classList.remove('status-closed');
+        pill.classList.add('status-open');
+        text.textContent = 'Aberto agora';
+      } else {
+        pill.classList.remove('status-open');
+        pill.classList.add('status-closed');
+        text.textContent = 'Fechado';
+      }
+    }
+  }
+}, 60000); // 60000 ms = 1 minute
 
 /* ══════════════════════════════════════
    LIGHTBOX
