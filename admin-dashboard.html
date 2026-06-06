@@ -408,7 +408,100 @@
     .log-alvo { color: var(--gold); }
     .log-time { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
 
-    /* ── EMPTY STATE ── */
+    /* ── IMPORT CARD ── */
+    .import-card {
+      background: linear-gradient(135deg, var(--dark3) 0%, rgba(200,150,12,0.04) 100%);
+      border-color: var(--border-gold) !important;
+    }
+    .import-card-inner {
+      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    }
+    .import-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(200,150,12,0.1);
+      border: 1px solid var(--border-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .import-info { flex: 1; min-width: 200px; }
+    .import-btn  { flex-shrink: 0; }
+    .code-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 5px;
+      padding: 1px 7px;
+      font-family: monospace; font-size: 0.8em;
+      color: var(--gold-light); font-style: normal;
+    }
+
+    .import-progress {
+      margin-top: 1.4rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--border);
+    }
+    .import-progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .import-progress-label { font-size: 0.8rem; color: var(--muted); }
+    .import-progress-pct   { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
+    .import-track {
+      height: 4px; background: rgba(255,255,255,0.07);
+      border-radius: 99px; overflow: hidden;
+    }
+    .import-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      transition: width 0.4s ease;
+    }
+
+    .import-results {
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .import-result-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.82rem;
+    }
+    .res-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .res-green { background: var(--green); }
+    .res-amber { background: var(--amber); }
+    .res-red   { background: var(--red); }
+    .res-label { color: var(--muted); }
+    .res-val   { font-weight: 600; color: var(--text); min-width: 20px; }
+
+    .hidden { display: none !important; }
+
+    /* store-item preview inside import results */
+    .import-preview-list {
+      margin-top: 1rem;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .import-preview-item {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--dark4); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 0.82rem;
+    }
+    .import-preview-item.will-import { border-color: rgba(34,197,94,0.2); }
+    .import-preview-item.will-skip   { border-color: rgba(245,158,11,0.15); opacity: 0.6; }
+    .import-preview-badge {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em;
+      text-transform: uppercase; padding: 3px 9px; border-radius: 99px; flex-shrink: 0;
+    }
+    .badge-new  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .badge-skip { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+
+    /* MODAL IMPORT PREVIEW */
+    .modal-lg { max-width: 560px; }
+    .modal-scroll { max-height: 340px; overflow-y: auto; margin: 1rem 0; }
+    .modal-scroll::-webkit-scrollbar { width: 4px; }
+    .modal-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+
+
     .empty-state {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 3rem 2rem; gap: 0.8rem;
@@ -606,6 +699,52 @@
         </div>
       </div>
 
+      <!-- Import from index.html -->
+      <div class="card import-card">
+        <div class="import-card-inner">
+          <div class="import-icon-wrap">
+            <span class="import-icon">📥</span>
+          </div>
+          <div class="import-info">
+            <div class="card-title" style="margin-bottom:4px;">Importar Lojas do <code class="code-tag">index.html</code></div>
+            <div class="card-sub" style="margin-bottom:0;">Lê os cartões de loja definidos no ficheiro <code class="code-tag">index.html</code> e importa-os para o Firebase automaticamente. Lojas já existentes são ignoradas (sem duplicados).</div>
+          </div>
+          <button class="btn btn-gold import-btn" id="importBtn" onclick="iniciarImportacao()">
+            <span id="importBtnIcon">⬆️</span> Importar Agora
+          </button>
+        </div>
+
+        <!-- Progress bar (hidden until import starts) -->
+        <div class="import-progress hidden" id="importProgress">
+          <div class="import-progress-header">
+            <span class="import-progress-label" id="importProgressLabel">A analisar lojas...</span>
+            <span class="import-progress-pct" id="importProgressPct">0%</span>
+          </div>
+          <div class="import-track">
+            <div class="import-fill" id="importFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Results (hidden until done) -->
+        <div class="import-results hidden" id="importResults">
+          <div class="import-result-row" id="resImportadas">
+            <span class="res-dot res-green"></span>
+            <span class="res-label">Importadas</span>
+            <span class="res-val" id="resImportadasVal">0</span>
+          </div>
+          <div class="import-result-row" id="resIgnoradas">
+            <span class="res-dot res-amber"></span>
+            <span class="res-label">Já existiam (ignoradas)</span>
+            <span class="res-val" id="resIgnoradasVal">0</span>
+          </div>
+          <div class="import-result-row" id="resErros">
+            <span class="res-dot res-red"></span>
+            <span class="res-label">Erros</span>
+            <span class="res-val" id="resErrosVal">0</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Recent logs preview -->
       <div class="card">
         <div class="card-title">📋 Atividade Recente</div>
@@ -756,7 +895,30 @@
   </main>
 </div>
 
+<!-- MODAL IMPORT PREVIEW -->
+<div class="modal-overlay" id="modalImport">
+  <div class="modal modal-lg">
+    <div class="modal-title">📥 Pré-visualização da Importação</div>
+    <div class="modal-sub" id="modalImportSub">Lojas encontradas no <code class="code-tag">index.html</code>. Reveja antes de confirmar.</div>
+    <div class="modal-scroll">
+      <div class="import-preview-list" id="importPreviewList"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;padding:10px 0 4px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
+      <span id="previewCountNew" style="color:var(--green);font-weight:600;"></span>
+      <span>novas</span>
+      <span style="color:var(--border);">·</span>
+      <span id="previewCountSkip" style="color:var(--amber);font-weight:600;"></span>
+      <span>já existem</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalImport')">Cancelar</button>
+      <button class="btn btn-gold" id="modalImportConfirm">⬆️ Importar Novas</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CONFIRM DELETE -->
+
 <div class="modal-overlay" id="modalDelete">
   <div class="modal">
     <div class="modal-title">⚠️ Confirmar Eliminação</div>
@@ -1049,6 +1211,224 @@
   /* expose to global scope */
   window.carregarLojas = carregarLojas;
   window.carregarLogs  = carregarLogs;
+
+  /* ══════════════════════════════════════
+     IMPORTAR LOJAS DO index.html
+  ══════════════════════════════════════ */
+
+  /* Lojas hardcoded no index.html — fonte de verdade estática */
+  const LOJAS_INDEX = [
+    {
+      id_local: 4,
+      name: 'Massaca Lounge Bar',
+      categoria: 'restauracao',
+      piso: 'Piso 0',
+      location: 'Loja 01',
+      status: 'open',
+      heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80',
+      desc: 'Gastronomia mediterrânea com os melhores sabores do mar e da terra.',
+      phone: '+258 21 000 001',
+      email: 'lounge@massaka.co.mz',
+    },
+    {
+      id_local: 5,
+      name: 'Bottle Store Massaca',
+      categoria: 'restauracao',
+      piso: 'Piso 0',
+      location: 'Loja 03',
+      status: 'open',
+      heroImg: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=700&q=80',
+      desc: 'Os melhores cafés, bolos artesanais e pequenos-almoços no coração do mall.',
+      phone: '+258 21 000 002',
+      email: 'bottlestore@massaka.co.mz',
+    },
+    {
+      id_local: 6,
+      name: 'Talho Massaca',
+      categoria: 'restauracao',
+      piso: 'Piso 0',
+      location: 'Loja 02',
+      status: 'open',
+      heroImg: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80',
+      desc: 'Carnes frescas e selecionadas com cortes artesanais e receitas exclusivas.',
+      phone: '+258 21 000 003',
+      email: 'talho@massaka.co.mz',
+    },
+    {
+      id_local: 9,
+      name: 'Nefithys Salão Unissexo',
+      categoria: 'beleza',
+      piso: 'Piso 0',
+      location: 'Loja 07',
+      status: 'open',
+      heroImg: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=700&q=80',
+      desc: 'Cosmética, perfumaria e tratamentos de beleza das melhores marcas.',
+      phone: '+258 21 000 004',
+      email: 'nefithys@massaka.co.mz',
+    },
+    {
+      id_local: 10,
+      name: 'CF Gym',
+      categoria: 'desporto',
+      piso: 'Piso 0',
+      location: 'Loja 40',
+      status: 'open',
+      heroImg: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&q=80',
+      desc: 'Ginásio completo com equipamento de última geração para todos os níveis.',
+      phone: '+258 21 000 005',
+      email: 'cfgym@massaka.co.mz',
+    },
+  ];
+
+  /* Step 1 — load, diff against Firestore, show preview modal */
+  window.iniciarImportacao = async () => {
+    const btn = document.getElementById('importBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A analisar...';
+
+    try {
+      /* Fetch existing names from Firestore */
+      const snap = await getDocs(collection(db, 'lojas'));
+      const existingNames = new Set();
+      snap.forEach(d => existingNames.add((d.data().name || '').trim().toLowerCase()));
+
+      const toImport = [];
+      const toSkip   = [];
+
+      LOJAS_INDEX.forEach(loja => {
+        const key = loja.name.trim().toLowerCase();
+        if (existingNames.has(key)) { toSkip.push(loja); }
+        else                         { toImport.push(loja); }
+      });
+
+      /* Build preview list */
+      const catEmoji = { restauracao:'🍽️', beleza:'💇', desporto:'🏋️', casa:'🏠', moda:'👗', tecnologia:'💻' };
+      let previewHtml = '';
+
+      [...toImport, ...toSkip].forEach(loja => {
+        const isNew = toImport.includes(loja);
+        previewHtml += `
+          <div class="import-preview-item ${isNew ? 'will-import' : 'will-skip'}">
+            <span>${catEmoji[loja.categoria] || '🏪'}</span>
+            <span style="flex:1;font-weight:500;">${loja.name}</span>
+            <span style="font-size:0.75rem;color:var(--muted);">${loja.piso} · ${loja.location}</span>
+            <span class="import-preview-badge ${isNew ? 'badge-new' : 'badge-skip'}">${isNew ? 'Nova' : 'Existe'}</span>
+          </div>`;
+      });
+
+      if (LOJAS_INDEX.length === 0) {
+        previewHtml = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Nenhuma loja encontrada no index.html.</p></div>';
+      }
+
+      document.getElementById('importPreviewList').innerHTML = previewHtml;
+      document.getElementById('previewCountNew').textContent  = toImport.length;
+      document.getElementById('previewCountSkip').textContent = toSkip.length;
+      document.getElementById('modalImportSub').innerHTML =
+        `Lojas encontradas no <code class="code-tag">index.html</code>. Reveja antes de confirmar.`;
+
+      /* Wire confirm button */
+      document.getElementById('modalImportConfirm').onclick = () => executarImportacao(toImport);
+      if (toImport.length === 0) {
+        document.getElementById('modalImportConfirm').disabled = true;
+        document.getElementById('modalImportConfirm').textContent = '✅ Todas já importadas';
+      } else {
+        document.getElementById('modalImportConfirm').disabled = false;
+        document.getElementById('modalImportConfirm').innerHTML = `⬆️ Importar ${toImport.length} Loja${toImport.length > 1 ? 's' : ''}`;
+      }
+
+      openModal('modalImport');
+    } catch(e) {
+      showToast('error', '❌ Erro ao analisar lojas: ' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span id="importBtnIcon">⬆️</span> Importar Agora';
+    }
+  };
+
+  /* Step 2 — actually write to Firestore with progress UI */
+  async function executarImportacao(lojas) {
+    closeModal('modalImport');
+
+    if (lojas.length === 0) {
+      showToast('warning', '⚠️ Nenhuma loja nova para importar.');
+      return;
+    }
+
+    /* Show progress bar */
+    document.getElementById('importProgress').classList.remove('hidden');
+    document.getElementById('importResults').classList.add('hidden');
+
+    const btn = document.getElementById('importBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A importar...';
+
+    let importadas = 0, erros = 0;
+    const total = lojas.length;
+
+    const setProgress = (done) => {
+      const pct = Math.round((done / total) * 100);
+      document.getElementById('importFill').style.width  = pct + '%';
+      document.getElementById('importProgressPct').textContent = pct + '%';
+      document.getElementById('importProgressLabel').textContent =
+        done < total ? `A importar "${lojas[done]?.name || ''}..."` : 'A finalizar...';
+    };
+
+    setProgress(0);
+
+    for (let i = 0; i < lojas.length; i++) {
+      const loja = lojas[i];
+      setProgress(i);
+      try {
+        await addDoc(collection(db, 'lojas'), {
+          name:       loja.name,
+          categoria:  loja.categoria,
+          piso:       loja.piso,
+          location:   loja.location,
+          status:     loja.status,
+          heroImg:    loja.heroImg,
+          desc:       loja.desc,
+          phone:      loja.phone,
+          email:      loja.email,
+          id_local:   loja.id_local,
+          importadoEm: new Date().toISOString(),
+          fonte: 'index.html',
+        });
+        await log('created', loja.name, 'importação');
+        importadas++;
+      } catch(e) {
+        console.error('Erro ao importar', loja.name, e);
+        erros++;
+      }
+      /* small delay for visible progress animation */
+      await new Promise(r => setTimeout(r, 220));
+    }
+
+    /* Finish */
+    setProgress(total);
+    document.getElementById('importProgressLabel').textContent = 'Importação concluída!';
+
+    /* Show results */
+    document.getElementById('importResults').classList.remove('hidden');
+    document.getElementById('resImportadasVal').textContent = importadas;
+    document.getElementById('resIgnoradasVal').textContent  = 0;
+    document.getElementById('resErrosVal').textContent      = erros;
+
+    /* Toast */
+    if (erros === 0) {
+      showToast('success', `✅ ${importadas} loja${importadas !== 1 ? 's' : ''} importada${importadas !== 1 ? 's' : ''} com sucesso!`);
+    } else {
+      showToast('warning', `⚠️ ${importadas} importadas, ${erros} com erro.`);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '✅ Importação Concluída';
+    setTimeout(() => { btn.innerHTML = '<span>⬆️</span> Importar Novamente'; }, 4000);
+
+    await carregarLojas();
+    await atualizarStats();
+    await carregarLogs();
+  }
+
 </script>
 
 <script>
