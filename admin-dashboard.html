@@ -1,1 +1,83 @@
 
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin | Massaka</title>
+    <style>
+        body { font-family: sans-serif; background: #0b0b0b; color: white; padding: 20px; }
+        .card { background: #141414; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        button { padding: 10px; cursor: pointer; background: #C8960C; border: none; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Painel de Administração</h1>
+
+    <div class="card">
+        <h2>Modo de Manutenção</h2>
+        <button onclick="toggleManutencao()">Ativar/Desativar Manutenção</button>
+    </div>
+
+    <div class="card">
+        <h2>Gestão de Lojas</h2>
+        <div id="listaLojas">Carregando lojas...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        // COLA AQUI O TEU OBJETO FIREBASECONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
+  authDomain: "massaka-admin.firebaseapp.com",
+  projectId: "massaka-admin",
+  storageBucket: "massaka-admin.firebasestorage.app",
+  messagingSenderId: "485883674077",
+  appId: "1:485883674077:web:0113a94271b200d09bca34",
+  measurementId: "G-5QQE1VYZDQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore();
+
+        // --- FUNÇÃO APAGAR LOJA COM LOG ---
+        window.apagarLoja = async (lojaId, nome) => {
+            if(!confirm("Apagar " + nome + "?")) return;
+            
+            await deleteDoc(doc(db, "lojas", lojaId));
+            
+            await addDoc(collection(db, "logs"), {
+                acao: "Loja apagada",
+                alvo: nome,
+                data: new Date().toISOString()
+            });
+            alert("Loja removida e log registado!");
+            location.reload();
+        }
+
+        // --- FUNÇÃO MANUTENÇÃO ---
+        window.toggleManutencao = async () => {
+            const docRef = doc(db, "config", "site");
+            const snap = await getDoc(docRef);
+            const atual = snap.exists() ? snap.data().emManutencao : false;
+            
+            await updateDoc(docRef, { emManutencao: !atual });
+            alert("Modo manutenção alterado para: " + !atual);
+        }
+
+        // --- CARREGAR LOJAS ---
+        async function carregarLojas() {
+            const snap = await getDocs(collection(db, "lojas"));
+            let html = "";
+            snap.forEach(d => {
+                const l = d.data();
+                html += `<p>${l.name} <button onclick="apagarLoja('${d.id}', '${l.name}')">Apagar</button></p>`;
+            });
+            document.getElementById("listaLojas").innerHTML = html;
+        }
+        carregarLojas();
+    </script>
+</body>
+</html>
