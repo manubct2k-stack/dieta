@@ -1,288 +1,799 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrandMall – Centro Comercial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-const DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+    :root {
+      --gold: #ec9a00;
+      --gold-light: #e4bd6b;
+      --dark: #0E0E0E;
+      --dark2: #1A1A1A;
+      --dark3: #242424;
+      --cream: #F5F0E8;
+      --cream2: #EDE6D6;
+      --text: #2A2A2A;
+      --muted: #7A7A7A;
+      --white: #FFFFFF;
+      --radius: 16px;
+    }
 
-function calcIMC(peso, altura) {
-  const h = altura / 100;
-  return (peso / (h * h)).toFixed(1);
-}
+    html { scroll-behavior: smooth; }
 
-function calcTMB(peso, altura, idade, sexo) {
-  if (sexo === "masculino") return Math.round(88.36 + 13.4 * peso + 4.8 * altura - 5.7 * idade);
-  return Math.round(447.6 + 9.2 * peso + 3.1 * altura - 4.3 * idade);
-}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-function imcInfo(v) {
-  const n = Number(v);
-  if (n < 18.5) return { label: "Abaixo do peso", cor: "#64b5f6" };
-  if (n < 25)   return { label: "Peso normal",    cor: "#4ade80" };
-  if (n < 30)   return { label: "Sobrepeso",      cor: "#fbbf24" };
-  return             { label: "Obesidade",         cor: "#f87171" };
-}
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 72px;
+      background: rgba(14,14,14,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,169,110,0.25);
+    }
 
-async function chamarClaude(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: "Responde APENAS com JSON válido. Sem texto extra. Sem markdown. Sem explicações.",
-      messages: [{ role: "user", content: prompt }]
-    })
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--white); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      background: var(--dark);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding: 0 5vw;
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: repeating-linear-gradient(0deg, rgba(200,169,110,0.04) 0px, rgba(200,169,110,0.04) 1px, transparent 1px, transparent 60px),
+                        repeating-linear-gradient(90deg, rgba(200,169,110,0.04) 0px, rgba(200,169,110,0.04) 1px, transparent 1px, transparent 60px);
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(200,169,110,0.12);
+      border: 1px solid rgba(200,169,110,0.3);
+      border-radius: 100px;
+      padding: 6px 18px;
+      font-size: 0.75rem; font-weight: 500;
+      color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      color: var(--white);
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em { color: var(--gold); font-style: italic; }
+
+    .hero p {
+      font-size: 1.1rem; color: rgba(255,255,255,0.55);
+      max-width: 520px; line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--gold);
+      color: var(--dark);
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-weight: 600; font-size: 0.9rem;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(200,169,110,0.4); }
+
+    .hero-scroll {
+      position: absolute; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.3);
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(200,169,110,0.6), transparent);
+      animation: scrollAnim 1.6s ease-in-out infinite;
+    }
+    @keyframes scrollAnim { 0%,100% { opacity: 0.3; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(1.3); } }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      background: var(--dark2);
+      display: flex; justify-content: center; gap: 0;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 2rem 3.5rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; color: var(--gold); font-weight: 700;
+    }
+    .stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      text-align: center;
+      padding: 6rem 5vw 3rem;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      font-size: 1rem; color: var(--muted); max-width: 500px; margin: 0 auto; line-height: 1.7;
+    }
+
+    /* ── CATEGORY FILTER ── */
+    .categories {
+      display: flex; justify-content: center;
+      flex-wrap: wrap; gap: 10px;
+      padding: 0 5vw 2.5rem;
+    }
+
+    .cat-btn {
+      padding: 8px 22px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(14,14,14,0.15);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.04em;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: var(--white);
+    }
+    .cat-btn.active { background: var(--gold); border-color: var(--gold); color: var(--dark); }
+
+    /* ── STORE GRID ── */
+    .stores-section { padding: 0 5vw 6rem; }
+
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .store-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: block;
+      position: relative;
+    }
+    .store-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    }
+
+    .store-card-img {
+      width: 100%; aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s;
+    }
+    .store-card:hover .store-card-img { transform: scale(1.05); }
+
+    .store-card-img-wrap { overflow: hidden; position: relative; }
+
+    .store-status {
+      position: absolute; top: 12px; right: 12px;
+      padding: 4px 12px; border-radius: 100px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .status-open { background: rgba(255,255,255,0.92); color: #1A8A4A; }
+    .status-closed { background: rgba(255,255,255,0.92); color: #C0392B; }
+
+    .store-card-cat {
+      position: absolute; top: 12px; left: 12px;
+      padding: 4px 12px; border-radius: 100px;
+      background: var(--gold); color: var(--dark);
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    .store-card-body { padding: 20px; }
+    .store-card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .store-card-desc {
+      font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 14px;
+    }
+    .store-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--cream2);
+      padding-top: 14px;
+    }
+    .store-floor {
+      font-size: 0.78rem; color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .store-arrow {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--dark); font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .store-card:hover .store-arrow { background: var(--gold); }
+
+    /* ── MAP SECTION ── */
+    .map-section {
+      background: var(--dark);
+      padding: 6rem 5vw;
+    }
+
+    .map-section .section-header { padding-top: 0; }
+    .map-section .section-header h2, .map-section .section-tag { color: var(--white); }
+    .map-section .section-header h2 span { color: var(--gold); }
+    .map-section .section-header p { color: rgba(255,255,255,0.5); }
+
+    .map-container {
+      max-width: 860px; margin: 0 auto;
+    }
+
+    .map-input-row {
+      display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .map-input-row input {
+      flex: 1; min-width: 220px;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(200,169,110,0.25);
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .map-input-row input::placeholder { color: rgba(255,255,255,0.3); }
+    .map-input-row input:focus { border-color: var(--gold); }
+
+    .map-input-row button {
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: none;
+      background: var(--gold);
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    .map-input-row button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(200,169,110,0.3); }
+
+    .map-frame-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(200,169,110,0.2);
+      position: relative;
+      height: 420px;
+    }
+    .map-frame-wrap iframe {
+      width: 100%; height: 100%; border: 0;
+      display: block;
+    }
+
+    .map-info-cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-top: 24px;
+    }
+    .map-info-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(200,169,110,0.15);
+      border-radius: 14px; padding: 20px;
+    }
+    .map-info-card .icon {
+      font-size: 1.5rem; margin-bottom: 10px;
+    }
+    .map-info-card h4 {
+      font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--gold); margin-bottom: 6px;
+    }
+    .map-info-card p { font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.5; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #080808;
+      padding: 4rem 5vw 2rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      gap: 3rem; margin-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 3rem;
+    }
+    .footer-brand .nav-logo { display: inline-block; margin-bottom: 1rem; font-size: 1.8rem; }
+    .footer-brand p { font-size: 0.85rem; max-width: 260px; line-height: 1.7; }
+
+    .footer-col h5 {
+      font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.7);
+      margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a {
+      text-decoration: none; font-size: 0.875rem;
+      color: rgba(255,255,255,0.4); transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--gold); }
+
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: 0.8rem;
+    }
+
+    /* ── HIDDEN filter ── */
+    .store-card.hidden { display: none; }
+
+    /* ── animations ── */
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s; }
+    .fade-in.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="nav-logo" href="index.html"><span>Centro</span><span> Comercial</span><span></span> Massaka <span></span></a>
+  <ul class="nav-links">
+    <li><a href="#lojas">Lojas</a></li>
+    <li><a href="#mapa">Como Chegar</a></li>
+    <li><a href="#info">Informações</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge">✦ Bem-vindo ao futuro do retalho</div>
+  <h1>Centro Comercial <em>Massaka</em></h1>
+  <p>O centro comercial premium que reúne as melhores marcas, gastronomia e experiências numa só morada.</p>
+  <a class="hero-cta" href="#lojas">Explorar Lojas ↓</a>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">5+</span><span class="stat-label">Lojas</span></div>
+  <div class="stat-item"><span class="stat-num">1</span><span class="stat-label">Pisos</span></div>
+  <div class="stat-item"><span class="stat-num">10+</span><span class="stat-label">Lugares de Parque</span></div>
+  <div class="stat-item"><span class="stat-num">Todos os dias</span><span class="stat-label">Dias Abertos</span></div>
+</div>
+
+<!-- STORES SECTION -->
+<section id="lojas">
+  <div class="section-header">
+    <span class="section-tag">✦ As Nossas Lojas</span>
+    <h2>Descubra o que temos para si</h2>
+    <p>Mais de 5 lojas cuidadosamente selecionadas entre gastronomia, desporto e muito mais.</p>
+  </div>
+
+  <div class="categories">
+    <button class="cat-btn active" data-cat="all">Todas</button>
+    <button class="cat-btn" data-cat="restauracao">Restauração</button>
+    <button class="cat-btn" data-cat="beleza">Beleza</button>
+    <button class="cat-btn" data-cat="desporto">Desporto</button>
+    <button class="cat-btn" data-cat="casa">Casa</button>
+  </div>
+
+  <div class="stores-section">
+    <div class="stores-grid" id="storesGrid">
+
+       <!-- MODA 
+      <a class="store-card fade-in" href="loja.html?id=1" data-cat="moda">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80" alt="Zara" />
+          <span class="store-card-cat">Moda</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Zara</div>
+          <div class="store-card-desc">Moda contemporânea para toda a família, da roupa ao acessório.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 1 · Loja 12</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+      
+
+      <a class="store-card fade-in" href="loja.html?id=2" data-cat="moda">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80" alt="H&M" />
+          <span class="store-card-cat">Moda</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">H&M</div>
+          <div class="store-card-desc">Moda acessível com as últimas tendências da estação para todas as idades.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 1 · Loja 15</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <a class="store-card fade-in" href="loja.html?id=3" data-cat="moda">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80" alt="Massimo Dutti" />
+          <span class="store-card-cat">Moda</span>
+          <span class="store-status status-closed">● Fechado</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Massimo Dutti</div>
+          <div class="store-card-desc">Elegância e sofisticação com coleções premium para homem e mulher.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 2 · Loja 08</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+      -->
+
+      <!-- RESTAURAÇÃO -->
+       <section id="res">
+      <a class="store-card fade-in" href="loja.html?id=4" data-cat="restauracao">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80" alt="Restaurante Mediterrâneo" />
+          <span class="store-card-cat">Restauração</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Massaca Lounge Bar</div>
+          <div class="store-card-desc">Gastronomia mediterrânea com os melhores sabores do mar e da terra.
+            Contacto: +258 ----
+          </div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 0 · Loja 01</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <a class="store-card fade-in" href="loja.html?id=5" data-cat="restauracao">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80" alt="Café Central" />
+          <span class="store-card-cat">Restauração</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Bottle Store Massaca</div>
+          <div class="store-card-desc">Os melhores cafés, bolos artesanais e pequenos-almoços no coração do mall.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 0 · Loja 3</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <a class="store-card fade-in" href="loja.html?id=6" data-cat="restauracao" id="res">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80" alt="Burger Lab" />
+          <span class="store-card-cat">Restauração</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Talho Massaca</div>
+          <div class="store-card-desc">Hambúrgueres artesanais com ingredientes frescos e receitas exclusivas.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 0 · Loja 2</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+      </section>
+    
+
+      <!-- TECNOLOGIA 
+      <a class="store-card fade-in" href="loja.html?id=7" data-cat="tecnologia">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=80" alt="Apple Store" />
+          <span class="store-card-cat">Tecnologia</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">iStore</div>
+          <div class="store-card-desc">Revendedor autorizado Apple com todo o ecossistema de produtos e suporte.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 1 · Loja 30</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <a class="store-card fade-in" href="loja.html?id=8" data-cat="tecnologia">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=600&q=80" alt="Tech World" />
+          <span class="store-card-cat">Tecnologia</span>
+          <span class="store-status status-closed">● Fechado</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Tech World</div>
+          <div class="store-card-desc">Gaming, gadgets e tecnologia de ponta para os entusiastas do digital.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 2 · Loja 18</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a> -->
+
+      <!-- BELEZA -->
+      <a class="store-card fade-in" href="loja.html?id=9" data-cat="beleza" id="bel">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&q=80" alt="Beauty Bar" />
+          <span class="store-card-cat">Beleza</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Nefithys Salao Unisexo</div>
+          <div class="store-card-desc">Cosmética, perfumaria e tratamentos de beleza das melhores marcas mundiais.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 0 · Loja 07</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- DESPORTO -->
+      <a class="store-card fade-in" href="loja.html?id=10" data-cat="desporto" id="des">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80" alt="SportZone" />
+          <span class="store-card-cat">Desporto</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">CF Gym</div>
+          <div class="store-card-desc">Equipamento, roupa e calçado desportivo para todos os níveis e modalidades.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 0 · Loja 40</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- CASA 
+      <a class="store-card fade-in" href="loja.html?id=11" data-cat="casa">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80" alt="Casa & Design" />
+          <span class="store-card-cat">Casa</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Casa & Design</div>
+          <div class="store-card-desc">Mobiliário, decoração e acessórios para tornar a sua casa num lar especial.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 2 · Loja 50</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+
+      <a class="store-card fade-in" href="loja.html?id=12" data-cat="casa">
+        <div class="store-card-img-wrap">
+          <img class="store-card-img" src="https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&q=80" alt="Zara Home" />
+          <span class="store-card-cat">Casa</span>
+          <span class="store-status status-open">● Aberto</span>
+        </div>
+        <div class="store-card-body">
+          <div class="store-card-name">Zara Home</div>
+          <div class="store-card-desc">Têxteis, cozinha e decoração com o estilo inconfundível da marca espanhola.</div>
+          <div class="store-card-footer">
+            <span class="store-floor">📍 Piso 2 · Loja 52</span>
+            <div class="store-arrow">→</div>
+          </div>
+        </div>
+      </a>
+-->
+    </div>
+  </div>
+</section>
+
+<!-- MAP SECTION -->
+<section class="map-section" id="mapa">
+  <div class="map-container">
+    <div class="section-header">
+      <span class="section-tag">✦ Como Chegar</span>
+      <h2>Encontre-nos <span>no mapa</span></h2>
+      <p>Introduza a sua morada para obter as melhores indicações até nós.</p>
+    </div>
+
+    <div class="map-input-row">
+      <input type="text" id="addressInput" placeholder="Introduza a sua morada ou localização..." />
+      <button onclick="openDirections()">Obter Direções →</button>
+    </div>
+
+    <div class="map-frame-wrap">
+      <iframe id="mapFrame"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2697.5864007342025!2d32.29396730956905!3d-26.055264977073353!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ee67d0017e8b5db%3A0xc6fe70a3be981e5d!2sCentro%20Comercial%20Massaka!5e1!3m2!1spt-PT!2smz!4v1780408972173!5m2!1spt-PT!2smz"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <div class="map-info-cards">
+      <div class="map-info-card">
+        <div class="icon">📍</div>
+        <h4>Endereço</h4>
+        <p>Av. Julius Nyerere, 3500<br>Maputo, Moçambique</p>
+      </div>
+      <div class="map-info-card">
+        <div class="icon">🕐</div>
+        <h4>Horário</h4>
+        <p>Segunda a Sábado<br>09:00 – 22:00<br>Domingo: 10:00 – 20:00</p>
+      </div>
+      <div class="map-info-card">
+        <div class="icon">🚗</div>
+        <h4>Estacionamento</h4>
+        <p>800 lugares gratuitos<br>Acesso pela Av. Principal<br>Aberto 24h</p>
+      </div>
+      <div class="map-info-card">
+        <div class="icon">📞</div>
+        <h4>Contacto</h4>
+        <p>+258 21 000 000<br>info@grandmall.co.mz</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="info">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a class="nav-logo" href="index.html">Grand<span>Mall</span></a>
+      <p>O melhor destino de compras e lazer em Moçambique. Qualidade, conforto e variedade num só lugar.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Lojas</h5>
+      <ul>
+        <li><a href="#res">Restauração</a></li>
+        <li><a href="#bel">Beleza</a></li>
+        <li><a href="#des">Desporto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Mall</h5>
+      <ul>
+        <li><a href="#">Sobre Nós</a></li>
+        <li><a href="#">Eventos</a></li>
+        <li><a href="#">Promoções</a></li>
+        <li><a href="#mapa">Como Chegar</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Informações</h5>
+      <ul>
+        <li><a href="#">Alugar um Espaço</a></li>
+        <li><a href="#">Política de Privacidade</a></li>
+        <li><a href="#">Termos de Uso</a></li>
+        <li><a href="#mapa">Contactos</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Centro Comercial Massaka. Todos os direitos reservados.</span>
+    <span>Maputo, Moçambique</span>
+  </div>
+</footer>
+
+<script>
+  // Category filter
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.store-card').forEach(card => {
+        if (cat === 'all' || card.dataset.cat === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
   });
-  if (!res.ok) throw new Error(`Erro ${res.status}`);
-  const data = await res.json();
-  const texto = data.content?.find(b => b.type === "text")?.text || "";
-  const match = texto.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("JSON inválido");
-  return JSON.parse(match[0]);
-}
 
-export default function App() {
-  const [etapa, setEtapa]     = useState("form");
-  const [form, setForm]       = useState({ nome: "", idade: "", peso: "", altura: "", sexo: "masculino" });
-  const [erro, setErro]       = useState("");
-  const [loading, setLoading] = useState(false);
-  const [progresso, setProgresso] = useState({ atual: 0, total: 0, msg: "" });
-
-  // plano[modo][diaIndex] = { refeicoes: [...] }
-  const [plano, setPlano]     = useState({ perda: [], muscular: [] });
-  const [resumo, setResumo]   = useState(null);
-
-  const [modo, setModo]       = useState("perda");
-  const [diaAtivo, setDiaAtivo] = useState(0);
-
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-
-  async function gerar() {
-    const { nome, idade, peso, altura, sexo } = form;
-    if (!idade || !peso || !altura) { setErro("Preenche todos os campos."); return; }
-    if (Number(idade) < 10 || Number(idade) > 100) { setErro("Idade inválida (10–100)."); return; }
-    if (Number(peso)  < 30 || Number(peso)  > 300) { setErro("Peso inválido (30–300 kg)."); return; }
-    if (Number(altura)< 100|| Number(altura)> 250) { setErro("Altura inválida (100–250 cm)."); return; }
-
-    setErro("");
-    setLoading(true);
-
-    const imc      = calcIMC(Number(peso), Number(altura));
-    const tmb      = calcTMB(Number(peso), Number(altura), Number(idade), sexo);
-    const calPerda = tmb - 400;
-    const calMus   = tmb + 300;
-
-    const perfil = `Pessoa: ${nome || "utilizador"}, ${idade} anos, ${peso}kg, ${altura}cm, ${sexo}. IMC ${imc}. Ingredientes de Maputo, Moçambique: frango, peixe (carapau/tilápia/atum), camarão, ovos, carne de vaca, feijão, feijão-nhemba, mandioca, batata-doce, xima, arroz, pão integral, couve, espinafre, tomate, cebola, alho, cenoura, pepino, abacate, papaia, manga, banana, laranja, amendoim, castanha de caju, leite, iogurte natural, azeite, limão.`;
-
-    try {
-      // 1. Resumo
-      setProgresso({ atual: 1, total: 11, msg: "A calcular perfil..." });
-      const res = await chamarClaude(`${perfil}
-Devolve JSON: {"imc":"${imc}","classificacao":"string","calPerda":${calPerda},"calMus":${calMus},"dica":"uma dica curta personalizada"}`);
-      setResumo(res);
-
-      const novoPlano = { perda: [], muscular: [] };
-
-      // 2–6: dias perda
-      for (let i = 0; i < 5; i++) {
-        setProgresso({ atual: 2 + i, total: 11, msg: `Perda de gordura – ${DIAS[i]}...` });
-        const dia = await chamarClaude(`${perfil} Objetivo: perda de gordura, ~${calPerda} kcal/dia.
-Cria o plano alimentar para ${DIAS[i]}-feira com 5 refeições.
-JSON: {"refeicoes":[{"nome":"emoji Nome","hora":"HH:MM","itens":["item com quantidade","..."]},...]}`);
-        novoPlano.perda.push(dia);
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
       }
+    });
+  }, { threshold: 0.1 });
 
-      // 7–11: dias muscular
-      for (let i = 0; i < 5; i++) {
-        setProgresso({ atual: 7 + i, total: 11, msg: `Ganho muscular – ${DIAS[i]}...` });
-        const dia = await chamarClaude(`${perfil} Objetivo: ganho muscular, ~${calMus} kcal/dia.
-Cria o plano alimentar para ${DIAS[i]}-feira com 6 refeições (inclui pré e pós-treino).
-JSON: {"refeicoes":[{"nome":"emoji Nome","hora":"HH:MM","itens":["item com quantidade","..."]},...]}`);
-        novoPlano.muscular.push(dia);
-      }
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-      setPlano(novoPlano);
-      setEtapa("plano");
-    } catch (e) {
-      setErro("Algo correu mal: " + e.message + ". Tenta novamente.");
-      console.error(e);
-    } finally {
-      setLoading(false);
+  // Map directions
+  function openDirections() {
+    const address = document.getElementById('addressInput').value.trim();
+    const dest = 'Centro+Comercial+Massaka';
+    if (address) {
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(address)}&destination=${encodeURIComponent(dest)}`;
+      window.open(url, '_blank');
+    } else {
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dest)}`;
+      window.open(url, '_blank');
     }
   }
 
-  // ── CORES ──
-  const ac = modo === "perda" ? "#00e5c3" : "#f59e0b";
-  const acDim = modo === "perda" ? "#00e5c318" : "#f59e0b18";
+  document.getElementById('addressInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') openDirections();
+  });
+</script>
 
-  // ── FORMULÁRIO ──
-  if (etapa === "form") return (
-    <div style={{ minHeight:"100vh", background:"#080c14", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"1.5rem", fontFamily:"'Segoe UI',sans-serif" }}>
-      <style>{`
-        *{box-sizing:border-box}
-        .inp{width:100%;background:#131d2e;border:1.5px solid #1e2d42;border-radius:10px;padding:.75rem 1rem;color:#e8edf5;font-size:.95rem;outline:none;transition:.2s}
-        .inp:focus{border-color:#00e5c3;box-shadow:0 0 0 3px #00e5c322}
-        .lbl{display:block;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:#6b7fa3;margin-bottom:.35rem}
-        .sbtn{flex:1;padding:.65rem;border-radius:8px;border:1.5px solid #1e2d42;background:#131d2e;color:#6b7fa3;cursor:pointer;font-size:.82rem;transition:.2s}
-        .sbtn.on{border-color:#00e5c3;background:#00e5c318;color:#00e5c3}
-        .gbtn{width:100%;padding:1rem;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#00b894,#00e5c3);color:#080c14;margin-top:1.4rem;transition:.15s}
-        .gbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px #00e5c344}
-        .gbtn:disabled{opacity:.45;cursor:not-allowed}
-      `}</style>
-
-      <div style={{ width:"100%", maxWidth:"400px" }}>
-        <div style={{ textAlign:"center", marginBottom:"2rem" }}>
-          <div style={{ fontSize:"2.8rem" }}>🌿</div>
-          <h1 style={{ margin:".4rem 0 0", color:"#e8edf5", fontSize:"1.7rem", fontWeight:700 }}>Dieta Personalizada</h1>
-          <p style={{ margin:".4rem 0 0", color:"#6b7fa3", fontSize:".82rem" }}>Maputo · Ingredientes locais · Plano à tua medida</p>
-        </div>
-
-        <div style={{ background:"#0e1520", borderRadius:"18px", padding:"1.6rem", border:"1px solid #1e2d42" }}>
-          <div style={{ display:"flex", flexDirection:"column", gap:"1rem" }}>
-            <div>
-              <label className="lbl">Nome (opcional)</label>
-              <input className="inp" name="nome" value={form.nome} onChange={handleChange} placeholder="Ex: Carlos" />
-            </div>
-            <div style={{ display:"flex", gap:".8rem" }}>
-              <div style={{ flex:1 }}>
-                <label className="lbl">Idade</label>
-                <input className="inp" name="idade" type="number" value={form.idade} onChange={handleChange} placeholder="25" />
-              </div>
-              <div style={{ flex:1 }}>
-                <label className="lbl">Peso (kg)</label>
-                <input className="inp" name="peso" type="number" value={form.peso} onChange={handleChange} placeholder="70" />
-              </div>
-            </div>
-            <div>
-              <label className="lbl">Altura (cm)</label>
-              <input className="inp" name="altura" type="number" value={form.altura} onChange={handleChange} placeholder="170" />
-            </div>
-            <div>
-              <label className="lbl">Sexo</label>
-              <div style={{ display:"flex", gap:".5rem" }}>
-                {["masculino","feminino"].map(s => (
-                  <button key={s} className={`sbtn${form.sexo===s?" on":""}`} onClick={() => setForm({...form, sexo:s})}>
-                    {s==="masculino" ? "♂ Masculino" : "♀ Feminino"}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {erro && <p style={{ color:"#f87171", fontSize:".78rem", marginTop:".9rem", textAlign:"center" }}>{erro}</p>}
-
-          {loading ? (
-            <div style={{ marginTop:"1.4rem" }}>
-              <div style={{ background:"#1e2d42", borderRadius:"8px", height:"6px", overflow:"hidden" }}>
-                <div style={{ background:"linear-gradient(90deg,#00b894,#00e5c3)", height:"100%", width:`${(progresso.atual/progresso.total)*100}%`, transition:"width .4s ease", borderRadius:"8px" }} />
-              </div>
-              <p style={{ color:"#6b7fa3", fontSize:".75rem", textAlign:"center", margin:".6rem 0 0" }}>
-                {progresso.msg} ({progresso.atual}/{progresso.total})
-              </p>
-            </div>
-          ) : (
-            <button className="gbtn" onClick={gerar}>✨ Gerar Plano Personalizado</button>
-          )}
-        </div>
-        <p style={{ textAlign:"center", fontSize:".62rem", color:"#2a3a53", marginTop:"1rem" }}>
-          Gerado por IA · Consulta um nutricionista para acompanhamento clínico
-        </p>
-      </div>
-    </div>
-  );
-
-  // ── PLANO ──
-  const diaData = plano[modo]?.[diaAtivo];
-  const inf = resumo ? imcInfo(resumo.imc) : { label:"", cor:"#fff" };
-
-  return (
-    <div style={{ minHeight:"100vh", background:"#080c14", fontFamily:"'Segoe UI',sans-serif", color:"#e8edf5" }}>
-      <style>{`
-        *{box-sizing:border-box}
-        ::-webkit-scrollbar{display:none}
-        .dbtn{flex-shrink:0;padding:.4rem .9rem;border-radius:20px;cursor:pointer;font-size:.75rem;transition:.2s;white-space:nowrap}
-        .mbtn{flex:1;padding:.7rem;border:none;cursor:pointer;font-weight:700;font-size:.8rem;transition:.3s}
-        .rcard{border-radius:13px;padding:.9rem;margin-bottom:.65rem;border:1px solid #1e2d42;transition:.15s}
-        .rcard:hover{transform:translateX(3px)}
-        .vbtn{background:none;border:1px solid #1e2d42;color:#6b7fa3;border-radius:8px;padding:.35rem .8rem;cursor:pointer;font-size:.72rem;transition:.2s}
-        .vbtn:hover{border-color:#6b7fa3;color:#e8edf5}
-      `}</style>
-
-      {/* Header */}
-      <div style={{ background:"linear-gradient(160deg,#0e1520,#131d2e)", padding:"1.4rem 1.2rem 1.1rem", borderBottom:"1px solid #1e2d42" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:".9rem" }}>
-          <div>
-            <h1 style={{ margin:0, fontSize:"1.2rem", fontWeight:700 }}>Olá, {form.nome || "atleta"} 👋</h1>
-            <p style={{ margin:".15rem 0 0", fontSize:".72rem", color:"#6b7fa3" }}>Plano personalizado · Maputo</p>
-          </div>
-          <button className="vbtn" onClick={() => { setEtapa("form"); setPlano({perda:[],muscular:[]}); setResumo(null); setDiaAtivo(0); }}>← Refazer</button>
-        </div>
-
-        {resumo && (
-          <div style={{ display:"flex", gap:".6rem", marginBottom:".8rem" }}>
-            {[
-              { l:"IMC", v: resumo.imc, s: inf.label, c: inf.cor },
-              { l:"Perda", v: resumo.calPerda, s:"kcal/dia", c:"#00e5c3" },
-              { l:"Músculo", v: resumo.calMus, s:"kcal/dia", c:"#f59e0b" },
-            ].map((x,i) => (
-              <div key={i} style={{ flex:1, background:"#131d2e", borderRadius:"10px", padding:".65rem .4rem", textAlign:"center", border:"1px solid #1e2d42" }}>
-                <div style={{ fontSize:".58rem", color:"#6b7fa3", textTransform:"uppercase", letterSpacing:"1px" }}>{x.l}</div>
-                <div style={{ fontSize:".95rem", fontWeight:700, color:x.c, lineHeight:1.1 }}>{x.v}</div>
-                <div style={{ fontSize:".58rem", color:"#6b7fa3" }}>{x.s}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {resumo?.dica && (
-          <div style={{ background: acDim, borderRadius:"8px", padding:".55rem .8rem", border:`1px solid ${ac}33` }}>
-            <p style={{ margin:0, fontSize:".72rem", color:ac, lineHeight:1.5 }}>💡 {resumo.dica}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Toggle modo */}
-      <div style={{ display:"flex", margin:"1rem 1rem 0", borderRadius:"10px", overflow:"hidden", border:"1.5px solid #1e2d42" }}>
-        {["perda","muscular"].map(m => (
-          <button key={m} className="mbtn" onClick={() => { setModo(m); setDiaAtivo(0); }} style={{
-            background: modo===m ? (m==="perda" ? "linear-gradient(135deg,#00b894,#00e5c3)" : "linear-gradient(135deg,#e65c00,#f9d423)") : "transparent",
-            color: modo===m ? "#080c14" : "#6b7fa3",
-          }}>
-            {m==="perda" ? "⚖️ Perda de Gordura" : "💪 Ganho Muscular"}
-          </button>
-        ))}
-      </div>
-
-      {/* Dias */}
-      <div style={{ display:"flex", gap:".5rem", padding:".9rem 1rem 0", overflowX:"auto" }}>
-        {DIAS.map((d,i) => (
-          <button key={i} className="dbtn" onClick={() => setDiaAtivo(i)} style={{
-            border:`1.5px solid ${diaAtivo===i ? ac : "#1e2d42"}`,
-            background: diaAtivo===i ? acDim : "transparent",
-            color: diaAtivo===i ? ac : "#6b7fa3",
-            fontWeight: diaAtivo===i ? 700 : 400,
-          }}>{d}</button>
-        ))}
-      </div>
-
-      {/* Refeições */}
-      <div style={{ padding:"1rem" }}>
-        {diaData?.refeicoes?.map((r,i) => (
-          <div key={i} className="rcard" style={{ background:"#131d2e", borderLeft:`3px solid ${i===0 ? ac : "#1e2d42"}` }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:".5rem" }}>
-              <span style={{ fontWeight:600, fontSize:".86rem" }}>{r.nome}</span>
-              <span style={{ background:acDim, color:ac, borderRadius:"20px", padding:".08rem .5rem", fontSize:".68rem", fontFamily:"monospace" }}>{r.hora}</span>
-            </div>
-            <ul style={{ margin:0, paddingLeft:"1.1rem" }}>
-              {r.itens?.map((item,j) => (
-                <li key={j} style={{ fontSize:".78rem", marginBottom:".2rem", color:"#9aafc7", lineHeight:1.5 }}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-
-        <p style={{ textAlign:"center", fontSize:".62rem", color:"#2a3a53", marginTop:"1.2rem" }}>
-          Plano gerado por IA · Consulta um nutricionista em Maputo para acompanhamento
-        </p>
-      </div>
-    </div>
-  );
-}
+</body>
+</html>
