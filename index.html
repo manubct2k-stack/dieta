@@ -580,6 +580,345 @@
     }
     .footer-bottom a:hover { color: var(--gold); }
 
+    .footer-admin-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.18);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.72rem; font-weight: 400;
+      letter-spacing: 0.1em;
+      padding: 6px 14px; border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .footer-admin-btn:hover {
+      border-color: rgba(200,150,12,0.4);
+      color: rgba(200,150,12,0.6);
+    }
+
+    /* ══════════════════════════════════════
+       MODALS (login + admin panel)
+    ══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,0,0,0.78);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-box {
+      background: #111;
+      border: 1px solid rgba(200,150,12,0.2);
+      border-radius: var(--radius-lg);
+      padding: 2.8rem 2.5rem;
+      width: min(440px, 92vw);
+      transform: translateY(24px);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem; color: var(--white);
+      margin-bottom: 0.35rem;
+    }
+    .modal-logo span { color: var(--gold); font-style: italic; }
+    .modal-subtitle {
+      font-size: 0.8rem; color: rgba(255,255,255,0.3);
+      margin-bottom: 2rem; letter-spacing: 0.04em;
+    }
+    .modal-field { margin-bottom: 1.2rem; }
+    .modal-field label {
+      display: block; font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.4); margin-bottom: 8px;
+    }
+    .modal-field input {
+      width: 100%; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .modal-field input:focus { border-color: rgba(200,150,12,0.5); }
+    .modal-error {
+      font-size: 0.8rem; color: #e05252;
+      margin-bottom: 1rem; display: none;
+    }
+    .modal-error.show { display: block; }
+    .modal-submit {
+      width: 100%; padding: 13px;
+      background: var(--gold); color: var(--dark);
+      border: none; border-radius: 99px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.04em;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .modal-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+    .modal-close {
+      position: absolute; top: 16px; right: 18px;
+      background: none; border: none;
+      color: rgba(255,255,255,0.25); font-size: 1.3rem;
+      cursor: pointer; line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: rgba(255,255,255,0.7); }
+
+    /* ══════════════════════════════════════
+       ADMIN PANEL (full screen)
+    ══════════════════════════════════════ */
+    #adminPanel {
+      position: fixed; inset: 0; z-index: 9500;
+      background: #0a0a0a;
+      display: none; flex-direction: column;
+      overflow: hidden;
+    }
+    #adminPanel.open { display: flex; }
+
+    .admin-topbar {
+      background: #0f0f0f;
+      border-bottom: 1px solid rgba(200,150,12,0.15);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .admin-topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; color: var(--white);
+    }
+    .admin-topbar-title span { color: var(--gold); font-style: italic; }
+    .admin-topbar-right {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .admin-user-badge {
+      font-size: 0.75rem; color: rgba(255,255,255,0.35);
+      letter-spacing: 0.08em;
+    }
+    .admin-logout-btn {
+      background: rgba(200,150,12,0.1);
+      border: 1px solid rgba(200,150,12,0.25);
+      color: var(--gold-light); font-family: 'Outfit', sans-serif;
+      font-size: 0.78rem; padding: 7px 16px; border-radius: 99px;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .admin-logout-btn:hover { background: rgba(200,150,12,0.2); }
+
+    .admin-body {
+      display: flex; flex: 1; overflow: hidden;
+    }
+
+    .admin-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: #0c0c0c;
+      border-right: 1px solid rgba(255,255,255,0.04);
+      padding: 2rem 0;
+      overflow-y: auto;
+    }
+    .admin-nav-label {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: rgba(255,255,255,0.2);
+      padding: 0 1.5rem; margin-bottom: 0.8rem; margin-top: 1.5rem;
+    }
+    .admin-nav-label:first-child { margin-top: 0; }
+    .admin-nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 1.5rem;
+      font-size: 0.84rem; font-weight: 400;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      border-left: 2px solid transparent;
+      user-select: none;
+    }
+    .admin-nav-item:hover { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.7); }
+    .admin-nav-item.active {
+      background: rgba(200,150,12,0.07);
+      color: var(--gold-light);
+      border-left-color: var(--gold);
+    }
+    .admin-nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+
+    .admin-content {
+      flex: 1; overflow-y: auto;
+      padding: 2.5rem 2.8rem;
+    }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    .admin-section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 600;
+      color: var(--white); margin-bottom: 0.4rem;
+    }
+    .admin-section-sub {
+      font-size: 0.83rem; color: rgba(255,255,255,0.3);
+      margin-bottom: 2.5rem;
+    }
+
+    /* Stats cards */
+    .admin-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px; margin-bottom: 2.5rem;
+    }
+    .admin-stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+    }
+    .admin-stat-card .s-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; color: var(--gold); font-weight: 600;
+    }
+    .admin-stat-card .s-label {
+      font-size: 0.75rem; color: rgba(255,255,255,0.3);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    /* Add user form */
+    .admin-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 2rem 2.2rem;
+      margin-bottom: 2rem;
+    }
+    .admin-card-title {
+      font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--gold); margin-bottom: 1.5rem;
+    }
+    .admin-form-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-bottom: 14px;
+    }
+    .admin-form-row.single { grid-template-columns: 1fr; }
+    .admin-field label {
+      display: block; font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.3); margin-bottom: 7px;
+    }
+    .admin-field input, .admin-field select {
+      width: 100%; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-family: 'Outfit', sans-serif; font-size: 0.86rem;
+      color: var(--white); outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .admin-field input:focus, .admin-field select:focus {
+      border-color: rgba(200,150,12,0.45);
+    }
+    .admin-field select option { background: #1a1a1a; }
+
+    /* Permissions checkboxes */
+    .perms-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
+      gap: 10px; margin-top: 10px;
+    }
+    .perm-item {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .perm-item:hover { border-color: rgba(200,150,12,0.3); background: rgba(200,150,12,0.04); }
+    .perm-item input[type=checkbox] { accent-color: var(--gold); width: 15px; height: 15px; }
+    .perm-item span { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+
+    .admin-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold); color: var(--dark);
+      border: none; border-radius: 99px;
+      padding: 11px 24px;
+      font-family: 'Outfit', sans-serif; font-size: 0.84rem; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.04em;
+      transition: opacity 0.2s, transform 0.2s;
+      margin-top: 16px;
+    }
+    .admin-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .admin-btn.secondary {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.09);
+    }
+    .admin-btn.secondary:hover { background: rgba(255,255,255,0.1); }
+    .admin-btn.danger {
+      background: rgba(224,82,82,0.15);
+      color: #e05252;
+      border: 1px solid rgba(224,82,82,0.25);
+    }
+    .admin-btn.danger:hover { background: rgba(224,82,82,0.25); }
+
+    /* Users table */
+    .users-table-wrap { overflow-x: auto; }
+    .users-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    .users-table th {
+      text-align: left; font-size: 0.68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.25);
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .users-table td {
+      padding: 14px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.6);
+      vertical-align: middle;
+    }
+    .users-table tr:last-child td { border-bottom: none; }
+    .users-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .role-badge {
+      display: inline-block;
+      padding: 3px 11px; border-radius: 99px;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .role-admin { background: rgba(200,150,12,0.15); color: var(--gold-light); }
+    .role-editor { background: rgba(82,130,224,0.15); color: #82aaff; }
+    .role-viewer { background: rgba(82,224,130,0.15); color: #82e0aa; }
+    .role-moderador { background: rgba(180,82,224,0.15); color: #c482ff; }
+    .role-lojista { background: rgba(224,160,82,0.15); color: #e0a052; }
+
+    /* Toast */
+    .admin-toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;
+      background: #1a1a1a; border: 1px solid rgba(200,150,12,0.35);
+      border-radius: var(--radius-sm);
+      padding: 14px 22px;
+      font-size: 0.86rem; color: var(--white);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transform: translateY(20px); opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .admin-toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 3rem;
+      color: rgba(255,255,255,0.2); font-size: 0.9rem;
+    }
+    .empty-state-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+
     /* ══════════════════════════════════════
        SCROLL FADE-IN ANIMATIONS
     ══════════════════════════════════════ */
@@ -793,7 +1132,7 @@
       <div class="map-info-card">
         <span class="card-icon">📍</span>
         <h4>Endereço</h4>
-        <p>R400<br>Boane, Maputo, Moçambique</p>
+        <p>Av. Julius Nyerere, 3500<br>Maputo, Moçambique</p>
       </div>
       <div class="map-info-card">
         <span class="card-icon">🕐</span>
@@ -854,9 +1193,264 @@
   </div>
   <div class="footer-bottom">
     <span>© 2025 Centro Comercial Massaka. Todos os direitos reservados.</span>
-    <span>Maputo, Moçambique</span>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <span>Maputo, Moçambique</span>
+      <button class="footer-admin-btn" onclick="openLoginModal()">⚙ Administração</button>
+    </div>
   </div>
 </footer>
+
+<!-- ── LOGIN MODAL ── -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    <div class="modal-logo">Centro Comercial <span>Massaka</span></div>
+    <div class="modal-subtitle">Acesso Restrito · Administração</div>
+    <div class="modal-field">
+      <label>Utilizador</label>
+      <input type="text" id="loginUser" placeholder="Nome de utilizador" autocomplete="off" />
+    </div>
+    <div class="modal-field">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <div class="modal-error" id="loginError">Utilizador ou senha incorrectos. Tente novamente.</div>
+    <button class="modal-submit" onclick="doLogin()">Entrar →</button>
+  </div>
+</div>
+
+<!-- ── ADMIN PANEL ── -->
+<div id="adminPanel">
+  <!-- Top bar -->
+  <div class="admin-topbar">
+    <div class="admin-topbar-title">Massaka <span>Admin</span></div>
+    <div class="admin-topbar-right">
+      <span class="admin-user-badge" id="adminUserBadge">manu · Administrador</span>
+      <button class="admin-logout-btn" onclick="adminLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <!-- Sidebar -->
+    <nav class="admin-sidebar">
+      <div class="admin-nav-label">Geral</div>
+      <div class="admin-nav-item active" onclick="showSection('dashboard')">
+        <span class="admin-nav-icon">📊</span> Dashboard
+      </div>
+
+      <div class="admin-nav-label">Utilizadores</div>
+      <div class="admin-nav-item" onclick="showSection('addUser')">
+        <span class="admin-nav-icon">➕</span> Adicionar Utilizador
+      </div>
+      <div class="admin-nav-item" onclick="showSection('manageUsers')">
+        <span class="admin-nav-icon">👥</span> Gerir Utilizadores
+      </div>
+
+      <div class="admin-nav-label">Conteúdo</div>
+      <div class="admin-nav-item" onclick="showSection('lojas')">
+        <span class="admin-nav-icon">🏪</span> Gerir Lojas
+      </div>
+      <div class="admin-nav-item" onclick="showSection('eventos')">
+        <span class="admin-nav-icon">📅</span> Eventos
+      </div>
+      <div class="admin-nav-label">Sistema</div>
+      <div class="admin-nav-item" onclick="showSection('configuracoes')">
+        <span class="admin-nav-icon">⚙️</span> Configurações
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="admin-section active" id="section-dashboard">
+        <div class="admin-section-title">Dashboard</div>
+        <div class="admin-section-sub">Visão geral do sistema · Centro Comercial Massaka</div>
+        <div class="admin-stats">
+          <div class="admin-stat-card">
+            <div class="s-num" id="statUsers">1</div>
+            <div class="s-label">Utilizadores</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="s-num">6</div>
+            <div class="s-label">Lojas Activas</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="s-num">5</div>
+            <div class="s-label">Categorias</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="s-num">7×</div>
+            <div class="s-label">Dias Aberto</div>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Utilizadores Recentes</div>
+          <div id="dashUserList"></div>
+        </div>
+      </div>
+
+      <!-- ADD USER -->
+      <div class="admin-section" id="section-addUser">
+        <div class="admin-section-title">Adicionar Utilizador</div>
+        <div class="admin-section-sub">Crie um novo utilizador e defina o seu cargo e permissões.</div>
+        <div class="admin-card">
+          <div class="admin-card-title">Dados do Utilizador</div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label>Nome Completo</label>
+              <input type="text" id="newName" placeholder="Ex: João Silva" />
+            </div>
+            <div class="admin-field">
+              <label>Nome de Utilizador</label>
+              <input type="text" id="newUsername" placeholder="Ex: joaosilva" />
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label>Email</label>
+              <input type="email" id="newEmail" placeholder="email@massaka.co.mz" />
+            </div>
+            <div class="admin-field">
+              <label>Senha</label>
+              <input type="password" id="newPassword" placeholder="Senha segura" />
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label>Cargo / Função</label>
+              <select id="newRole">
+                <option value="viewer">Visualizador</option>
+                <option value="editor">Editor</option>
+                <option value="moderador">Moderador</option>
+                <option value="lojista">Lojista</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label>Departamento</label>
+              <input type="text" id="newDept" placeholder="Ex: Marketing, Operações..." />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-title">Permissões no Site</div>
+          <div class="perms-grid">
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="ver_lojas" checked /> <span>👁 Ver Lojas</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="editar_lojas" /> <span>✏️ Editar Lojas</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="adicionar_lojas" /> <span>➕ Adicionar Lojas</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="remover_lojas" /> <span>🗑 Remover Lojas</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="ver_eventos" checked /> <span>📅 Ver Eventos</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="gerir_eventos" /> <span>📋 Gerir Eventos</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="gerir_utilizadores" /> <span>👥 Gerir Utilizadores</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="ver_relatorios" /> <span>📊 Ver Relatórios</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="publicar_promocoes" /> <span>🏷 Publicar Promoções</span>
+            </label>
+            <label class="perm-item">
+              <input type="checkbox" name="perm" value="configuracoes" /> <span>⚙️ Configurações</span>
+            </label>
+          </div>
+          <button class="admin-btn" onclick="addUser()">➕ Criar Utilizador</button>
+        </div>
+      </div>
+
+      <!-- MANAGE USERS -->
+      <div class="admin-section" id="section-manageUsers">
+        <div class="admin-section-title">Gerir Utilizadores</div>
+        <div class="admin-section-sub">Lista de todos os utilizadores registados no sistema.</div>
+        <div class="admin-card">
+          <div class="admin-card-title">Utilizadores do Sistema</div>
+          <div class="users-table-wrap">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Utilizador</th>
+                  <th>Email</th>
+                  <th>Cargo</th>
+                  <th>Departamento</th>
+                  <th>Permissões</th>
+                  <th>Acções</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOJAS -->
+      <div class="admin-section" id="section-lojas">
+        <div class="admin-section-title">Gerir Lojas</div>
+        <div class="admin-section-sub">Adicione, edite ou remova lojas do centro comercial.</div>
+        <div class="admin-card">
+          <div class="admin-card-title">📌 Funcionalidade em desenvolvimento</div>
+          <p style="color:rgba(255,255,255,0.3);font-size:0.86rem;line-height:1.7">
+            Esta secção permitirá gerir todas as lojas do Centro Comercial Massaka —<br>
+            adicionar novas lojas, editar informações, alterar horários e estado (aberto/fechado).
+          </p>
+        </div>
+      </div>
+
+      <!-- EVENTOS -->
+      <div class="admin-section" id="section-eventos">
+        <div class="admin-section-title">Eventos</div>
+        <div class="admin-section-sub">Gira os eventos e promoções do mall.</div>
+        <div class="admin-card">
+          <div class="admin-card-title">📌 Funcionalidade em desenvolvimento</div>
+          <p style="color:rgba(255,255,255,0.3);font-size:0.86rem;line-height:1.7">
+            Aqui poderá criar, editar e publicar eventos, promoções e campanhas especiais para o site.
+          </p>
+        </div>
+      </div>
+
+      <!-- CONFIGURAÇÕES -->
+      <div class="admin-section" id="section-configuracoes">
+        <div class="admin-section-title">Configurações</div>
+        <div class="admin-section-sub">Definições gerais do sistema administrativo.</div>
+        <div class="admin-card">
+          <div class="admin-card-title">Informações do Administrador</div>
+          <div class="admin-form-row">
+            <div class="admin-field">
+              <label>Nome de Utilizador Admin</label>
+              <input type="text" value="manu" disabled style="opacity:0.5" />
+            </div>
+            <div class="admin-field">
+              <label>Nível de Acesso</label>
+              <input type="text" value="Super Administrador" disabled style="opacity:0.5" />
+            </div>
+          </div>
+          <p style="color:rgba(255,255,255,0.2);font-size:0.78rem;margin-top:1rem;">
+            As credenciais do super-administrador só podem ser alteradas directamente no código-fonte.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="admin-toast" id="adminToast"></div>
 
 <script>
   /* ── CATEGORY FILTER ── */
@@ -906,6 +1500,183 @@
 
   document.getElementById('addressInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') openDirections();
+  });
+
+  /* ══════════════════════════════════════
+     ADMIN SYSTEM
+  ══════════════════════════════════════ */
+  const ADMIN_CREDS = { username: 'manu', password: '8467' };
+
+  // Users stored in memory (in a real app would be a backend)
+  let users = [
+    {
+      id: 1,
+      name: 'Manu (Super Admin)',
+      username: 'manu',
+      email: 'manu@massaka.co.mz',
+      role: 'admin',
+      dept: 'Direcção',
+      perms: ['ver_lojas','editar_lojas','adicionar_lojas','remover_lojas','ver_eventos','gerir_eventos','gerir_utilizadores','ver_relatorios','publicar_promocoes','configuracoes']
+    }
+  ];
+
+  const ROLE_LABELS = {
+    admin: 'Administrador',
+    editor: 'Editor',
+    moderador: 'Moderador',
+    viewer: 'Visualizador',
+    lojista: 'Lojista'
+  };
+
+  const PERM_LABELS = {
+    ver_lojas: 'Ver Lojas',
+    editar_lojas: 'Editar Lojas',
+    adicionar_lojas: 'Adicionar Lojas',
+    remover_lojas: 'Remover Lojas',
+    ver_eventos: 'Ver Eventos',
+    gerir_eventos: 'Gerir Eventos',
+    gerir_utilizadores: 'Gerir Utilizadores',
+    ver_relatorios: 'Ver Relatórios',
+    publicar_promocoes: 'Publicar Promoções',
+    configuracoes: 'Configurações'
+  };
+
+  function openLoginModal() {
+    document.getElementById('loginModal').classList.add('open');
+    setTimeout(() => document.getElementById('loginUser').focus(), 300);
+  }
+
+  function closeLoginModal() {
+    document.getElementById('loginModal').classList.remove('open');
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+  }
+
+  function doLogin() {
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if (u === ADMIN_CREDS.username && p === ADMIN_CREDS.password) {
+      closeLoginModal();
+      openAdminPanel();
+    } else {
+      document.getElementById('loginError').classList.add('show');
+      document.getElementById('loginPass').value = '';
+    }
+  }
+
+  function openAdminPanel() {
+    document.getElementById('adminPanel').classList.add('open');
+    refreshDashboard();
+    refreshUsersTable();
+  }
+
+  function adminLogout() {
+    document.getElementById('adminPanel').classList.remove('open');
+  }
+
+  function showSection(name) {
+    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'manageUsers') refreshUsersTable();
+    if (name === 'dashboard') refreshDashboard();
+  }
+
+  function addUser() {
+    const name = document.getElementById('newName').value.trim();
+    const username = document.getElementById('newUsername').value.trim();
+    const email = document.getElementById('newEmail').value.trim();
+    const password = document.getElementById('newPassword').value.trim();
+    const role = document.getElementById('newRole').value;
+    const dept = document.getElementById('newDept').value.trim();
+    const perms = [...document.querySelectorAll('input[name=perm]:checked')].map(c => c.value);
+
+    if (!name || !username || !email || !password) {
+      showToast('⚠️ Preencha todos os campos obrigatórios.');
+      return;
+    }
+    if (users.find(u => u.username === username)) {
+      showToast('⚠️ Esse nome de utilizador já existe.');
+      return;
+    }
+
+    const newUser = {
+      id: Date.now(),
+      name, username, email, password, role, dept, perms
+    };
+    users.push(newUser);
+
+    // Reset form
+    ['newName','newUsername','newEmail','newPassword','newDept'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('newRole').value = 'viewer';
+    document.querySelectorAll('input[name=perm]').forEach(c => c.checked = c.value === 'ver_lojas');
+
+    showToast('✅ Utilizador "' + username + '" criado com sucesso!');
+    refreshDashboard();
+  }
+
+  function deleteUser(id) {
+    if (id === 1) { showToast('⚠️ Não pode remover o super-administrador.'); return; }
+    users = users.filter(u => u.id !== id);
+    refreshUsersTable();
+    refreshDashboard();
+    showToast('🗑 Utilizador removido.');
+  }
+
+  function refreshUsersTable() {
+    const tbody = document.getElementById('usersTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    users.forEach(u => {
+      const roleClass = 'role-' + u.role;
+      const permCount = (u.perms || []).length;
+      const permTip = (u.perms || []).map(p => PERM_LABELS[p] || p).join(', ') || '—';
+      tbody.innerHTML += `
+        <tr>
+          <td style="color:#fff">${u.name}</td>
+          <td><code style="color:rgba(200,150,12,0.8);font-size:0.8rem">@${u.username}</code></td>
+          <td>${u.email || '—'}</td>
+          <td><span class="role-badge ${roleClass}">${ROLE_LABELS[u.role] || u.role}</span></td>
+          <td style="color:rgba(255,255,255,0.3)">${u.dept || '—'}</td>
+          <td><span style="font-size:0.78rem;color:rgba(255,255,255,0.35)" title="${permTip}">${permCount} permissão${permCount!==1?'ões':''}</span></td>
+          <td>
+            ${u.id !== 1 ? `<button class="admin-btn danger" style="margin-top:0;padding:6px 14px;font-size:0.75rem" onclick="deleteUser(${u.id})">Remover</button>` : '<span style="color:rgba(255,255,255,0.15);font-size:0.75rem">—</span>'}
+          </td>
+        </tr>`;
+    });
+  }
+
+  function refreshDashboard() {
+    const el = document.getElementById('statUsers');
+    if (el) el.textContent = users.length;
+
+    const dashList = document.getElementById('dashUserList');
+    if (!dashList) return;
+    if (users.length === 0) {
+      dashList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👤</div>Nenhum utilizador ainda.</div>';
+      return;
+    }
+    dashList.innerHTML = `<table class="users-table"><thead><tr><th>Nome</th><th>Utilizador</th><th>Cargo</th><th>Permissões</th></tr></thead><tbody>` +
+      users.map(u => `<tr>
+        <td style="color:#fff">${u.name}</td>
+        <td><code style="color:rgba(200,150,12,0.8);font-size:0.8rem">@${u.username}</code></td>
+        <td><span class="role-badge role-${u.role}">${ROLE_LABELS[u.role]||u.role}</span></td>
+        <td style="font-size:0.78rem;color:rgba(255,255,255,0.35)">${(u.perms||[]).length} permissões</td>
+      </tr>`).join('') + `</tbody></table>`;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('adminToast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  // Close modal on overlay click
+  document.getElementById('loginModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLoginModal();
   });
 </script>
 
