@@ -1,4 +1,26 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
+// Inicializa o Firebase igual ao que fizeste no Admin
+const firebaseConfig = { apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
+  authDomain: "massaka-admin.firebaseapp.com",
+  projectId: "massaka-admin",
+  storageBucket: "massaka-admin.firebasestorage.app",
+  messagingSenderId: "485883674077",
+  appId: "1:485883674077:web:0113a94271b200d09bca34",
+  measurementId: "G-5QQE1VYZDQ"};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore();
+
+// Escuta em tempo real se o modo manutenção mudou
+onSnapshot(doc(db, "config", "site"), (doc) => {
+    if (doc.exists() && doc.data().emManutencao === true) {
+        // Só redireciona se já não estiver na página de manutenção para evitar loop
+        if (!window.location.pathname.includes("manutencao.html")) {
+            window.location.href = "manutencao.html";
+        }
+    }
+});
 /* ── CATEGORY FILTER ── */
 const catBtns  = document.querySelectorAll('.cat-btn');
 const storeCards = document.querySelectorAll('.store-card');
