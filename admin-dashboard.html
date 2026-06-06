@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -7,7 +6,9 @@
     <style>
         body { font-family: sans-serif; background: #0b0b0b; color: white; padding: 20px; }
         .card { background: #141414; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        input { padding: 10px; width: 250px; border-radius: 5px; border: none; }
         button { padding: 10px; cursor: pointer; background: #C8960C; border: none; color: white; font-weight: bold; }
+        .loja-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -20,17 +21,24 @@
     </div>
 
     <div class="card">
+        <h2>Adicionar Nova Loja</h2>
+        <input type="text" id="nomeLoja" placeholder="Nome da Loja">
+        <button onclick="adicionarLoja()">Adicionar</button>
+    </div>
+
+    <div class="card">
         <h2>Gestão de Lojas</h2>
         <div id="listaLojas">Carregando lojas...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
         import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
-        // COLA AQUI O TEU OBJETO FIREBASECONFIG
+        // --- COLA AQUI A TUA FIREBASE CONFIG ---
         const firebaseConfig = {
-            apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
+              apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
   authDomain: "massaka-admin.firebaseapp.com",
   projectId: "massaka-admin",
   storageBucket: "massaka-admin.firebasestorage.app",
@@ -41,46 +49,48 @@
         
         const app = initializeApp(firebaseConfig);
         const db = getFirestore();
+        const auth = getAuth();
 
-        // --- FUNÇÃO APAGAR LOJA COM LOG ---
-        window.apagarLoja = async (lojaId, nome) => {
-            if(!confirm("Apagar " + nome + "?")) return;
-            
-            await deleteDoc(doc(db, "lojas", lojaId));
-            
-            await addDoc(collection(db, "logs"), {
-                acao: "Loja apagada",
-                alvo: nome,
-                data: new Date().toISOString()
-            });
-            alert("Loja removida e log registado!");
+        // 1. Proteção de Login
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = "admin-login.html";
+        });
+
+        // 2. Adicionar Loja
+        window.adicionarLoja = async () => {
+            const nome = document.getElementById("nomeLoja").value;
+            if(!nome) return alert("Nome inválido!");
+            await addDoc(collection(db, "lojas"), { name: nome });
+            await addDoc(collection(db, "logs"), { acao: "Loja criada", alvo: nome, data: new Date().toISOString() });
             location.reload();
         }
 
-        // --- FUNÇÃO MANUTENÇÃO ---
+        // 3. Apagar Loja
+        window.apagarLoja = async (lojaId, nome) => {
+            if(!confirm("Apagar " + nome + "?")) return;
+            await deleteDoc(doc(db, "lojas", lojaId));
+            await addDoc(collection(db, "logs"), { acao: "Loja apagada", alvo: nome, data: new Date().toISOString() });
+            location.reload();
+        }
+
+        // 4. Alternar Manutenção
         window.toggleManutencao = async () => {
             const docRef = doc(db, "config", "site");
             const snap = await getDoc(docRef);
             const atual = snap.exists() ? snap.data().emManutencao : false;
-            
             await updateDoc(docRef, { emManutencao: !atual });
-            alert("Modo manutenção alterado para: " + !atual);
+            alert("Modo manutenção agora está: " + !atual);
         }
-        <div class="card">
-    <h2>Nova Loja</h2>
-    <input type="text" id="nomeLoja" placeholder="Nome da Loja">
-    <button onclick="adicionarLoja()">Adicionar Loja</button>
-</div>
 
-        // --- CARREGAR LOJAS ---
+        // 5. Carregar Lojas
         async function carregarLojas() {
             const snap = await getDocs(collection(db, "lojas"));
             let html = "";
             snap.forEach(d => {
                 const l = d.data();
-                html += `<p>${l.name} <button onclick="apagarLoja('${d.id}', '${l.name}')">Apagar</button></p>`;
+                html += `<div class="loja-item"><span>${l.name}</span> <button onclick="apagarLoja('${d.id}', '${l.name}')">Apagar</button></div>`;
             });
-            document.getElementById("listaLojas").innerHTML = html;
+            document.getElementById("listaLojas").innerHTML = html || "Nenhuma loja encontrada.";
         }
         carregarLojas();
     </script>
