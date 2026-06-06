@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja – Centro Comercial Massaka</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C8960C;
+      --gold-light: #E4B83A;
+      --gold-pale: #FDF3D8;
+      --dark: #0B0B0B;
+      --dark2: #141414;
+      --dark3: #1E1E1E;
+      --cream: #F7F3EC;
+      --cream2: #EDE5D4;
+      --cream3: #E0D5C0;
+      --text: #1C1C1C;
+      --muted: #888;
+      --white: #FFFFFF;
+      --green: #1A7A40;
+      --red: #C0392B;
+      --radius: 14px;
+      --radius-lg: 22px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--dark2); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+
+    /* ══════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 68px;
+      background: rgba(11,11,11,0.9);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1px solid rgba(200,150,12,0.15);
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.45rem; font-weight: 600;
+      color: var(--white); text-decoration: none; letter-spacing: 0.03em;
+    }
+    .nav-logo .accent { color: var(--gold); font-style: italic; }
+
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      text-decoration: none;
+      font-size: 0.8rem; font-weight: 500; letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+    .nav-back-arrow { font-size: 1rem; transition: transform 0.2s; }
+    .nav-back:hover .nav-back-arrow { transform: translateX(-3px); }
+
+    /* ══════════════════════════════════════
+       HERO BANNER
+    ══════════════════════════════════════ */
+    .store-hero {
+      margin-top: 68px;
+      position: relative;
+      height: 55vh; min-height: 380px;
+      overflow: hidden;
+      background: var(--dark2);
+    }
+
+    .store-hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block;
+      transition: transform 8s ease;
+      transform: scale(1.05);
+    }
+    .store-hero-img.loaded { transform: scale(1); }
+
+    .store-hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(11,11,11,0.15) 0%,
+        rgba(11,11,11,0.35) 50%,
+        rgba(11,11,11,0.78) 100%
+      );
+    }
+
+    .store-hero-content {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 3rem 5vw;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      flex-wrap: wrap; gap: 1.5rem;
+    }
+
+    .store-hero-meta { flex: 1; min-width: 260px; }
+
+    .store-cat-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--dark);
+      padding: 5px 16px; border-radius: 99px;
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .store-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.05;
+      margin-bottom: 0.8rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+    }
+
+    .store-hero-floor {
+      font-size: 0.84rem; font-weight: 400;
+      color: rgba(255,255,255,0.5);
+      display: flex; align-items: center; gap: 10px;
+      animation: fadeUp 0.5s 0.18s ease both;
+    }
+    .store-hero-floor span { color: rgba(255,255,255,0.25); }
+
+    .store-status-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 10px 22px; border-radius: 99px;
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em;
+      animation: fadeUp 0.5s 0.22s ease both;
+      flex-shrink: 0;
+    }
+    .status-open  { background: rgba(26,122,64,0.18);  color: #4ADE80; border: 1px solid rgba(74,222,128,0.25); }
+    .status-closed{ background: rgba(192,57,43,0.18);  color: #F87171; border: 1px solid rgba(248,113,113,0.25); }
+
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-open  .status-dot { background: #4ADE80; animation: blink 2s ease-in-out infinite; }
+    .status-closed .status-dot { background: #F87171; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════
+       MAIN CONTENT LAYOUT
+    ══════════════════════════════════════ */
+    .store-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3.5rem 5vw 6rem;
+      align-items: start;
+    }
+
+    /* ── LEFT COLUMN ── */
+    .store-main { min-width: 0; }
+
+    /* Section title inside content */
+    .content-label {
+      font-size: 0.68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--gold); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .content-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--cream3);
+    }
+
+    /* About block */
+    .store-about {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.2rem;
+      margin-bottom: 24px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .store-desc {
+      font-size: 1rem; font-weight: 300; line-height: 1.85;
+      color: #444;
+    }
+
+    /* Gallery */
+    .store-gallery {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.2rem;
+      margin-bottom: 24px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-top: 0;
+    }
+    .gallery-item {
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 1;
+      cursor: pointer;
+      position: relative;
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+      transition: transform 0.45s var(--transition);
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-item::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(11,11,11,0);
+      transition: background 0.3s;
+    }
+    .gallery-item:hover::after { background: rgba(11,11,11,0.18); }
+
+    /* Highlights */
+    .store-highlights {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.2rem;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .highlights-list {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px; list-style: none;
+    }
+    .highlight-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid var(--cream3);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .highlight-item:hover { border-color: var(--gold); transform: translateY(-1px); }
+    .highlight-icon { font-size: 1.3rem; flex-shrink: 0; line-height: 1; }
+    .highlight-text strong {
+      display: block; font-size: 0.82rem; font-weight: 600;
+      color: var(--text); margin-bottom: 2px;
+    }
+    .highlight-text span { font-size: 0.76rem; font-weight: 300; color: var(--muted); }
+
+    /* ── RIGHT COLUMN (SIDEBAR) ── */
+    .store-sidebar { position: sticky; top: 92px; }
+
+    .sidebar-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .sidebar-card-header {
+      background: var(--dark);
+      padding: 1.5rem 1.8rem;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .sidebar-logo {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--dark3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .sidebar-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 600;
+      color: var(--white);
+    }
+    .sidebar-cat {
+      font-size: 0.72rem; font-weight: 500;
+      color: var(--gold); letter-spacing: 0.06em;
+    }
+
+    .sidebar-card-body { padding: 1.5rem 1.8rem; }
+
+    .info-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--cream2);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .info-label {
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); margin-bottom: 3px;
+    }
+    .info-value { font-size: 0.88rem; font-weight: 400; color: var(--text); line-height: 1.5; }
+    .info-value a { color: var(--gold); text-decoration: none; }
+    .info-value a:hover { text-decoration: underline; }
+
+    /* Horário rows */
+    .schedule-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.83rem; padding: 4px 0;
+    }
+    .schedule-day { font-weight: 400; color: var(--muted); }
+    .schedule-time { font-weight: 500; color: var(--text); }
+    .schedule-today { color: var(--gold); font-weight: 600; }
+
+    /* CTA buttons */
+    .sidebar-ctas {
+      padding: 0 1.8rem 1.8rem;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .cta-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 20px; border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.86rem; font-weight: 600;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .cta-primary {
+      background: var(--gold); color: var(--dark);
+    }
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(200,150,12,0.32);
+    }
+    .cta-outline {
+      background: transparent; color: var(--text);
+      border: 1.5px solid var(--cream3);
+    }
+    .cta-outline:hover { border-color: var(--text); background: var(--cream); }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      padding: 1.6rem 5vw 0;
+      max-width: 1200px; margin: 0 auto;
+      font-size: 0.78rem; font-weight: 400;
+      color: var(--muted);
+    }
+    .breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb-sep { color: var(--cream3); }
+    .breadcrumb-current { color: var(--text); font-weight: 500; }
+
+    /* ── RELATED STORES ── */
+    .related-section {
+      background: var(--dark2);
+      padding: 5rem 5vw;
+    }
+    .related-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .related-tag {
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--gold); display: block; margin-bottom: 0.7rem;
+    }
+    .related-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 600; color: var(--white);
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 18px;
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    .related-card {
+      background: var(--dark3);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      text-decoration: none; color: inherit;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      display: block;
+    }
+    .related-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+      border-color: rgba(200,150,12,0.2);
+    }
+    .related-card-img-wrap { overflow: hidden; position: relative; }
+    .related-card-img {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover;
+      display: block;
+      transition: transform 0.5s;
+    }
+    .related-card:hover .related-card-img { transform: scale(1.06); }
+    .related-card-img-wrap::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(11,11,11,0.4) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .related-card-body { padding: 18px; }
+    .related-card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--white); margin-bottom: 5px;
+    }
+    .related-card-cat {
+      font-size: 0.74rem; font-weight: 500;
+      color: var(--gold); letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .related-card-floor {
+      font-size: 0.75rem; color: rgba(255,255,255,0.3);
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #060606;
+      padding: 3rem 5vw 2rem;
+    }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: 0.78rem; font-weight: 300;
+      color: rgba(255,255,255,0.2);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 2rem;
+    }
+    .footer-bottom a {
+      color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.2s;
+    }
+    .footer-bottom a:hover { color: var(--gold); }
+
+    .footer-links {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      list-style: none;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+    .footer-links a {
+      font-size: 0.8rem; font-weight: 400;
+      color: rgba(255,255,255,0.25);
+      text-decoration: none; transition: color 0.2s;
+      letter-spacing: 0.04em;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── NOT FOUND STATE ── */
+    .not-found {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 68px);
+      padding: 4rem 5vw;
+      text-align: center;
+    }
+    .not-found-icon { font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.4; }
+    .not-found h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 600;
+      color: var(--text); margin-bottom: 0.7rem;
+    }
+    .not-found p { font-size: 0.95rem; color: var(--muted); margin-bottom: 2rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .store-layout { grid-template-columns: 1fr; }
+      .store-sidebar { position: static; }
+    }
+    @media (max-width: 560px) {
+      .highlights-list { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .store-hero { height: 45vh; }
+    }
+
+    /* ── LIGHTBOX ── */
+    .lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw; max-height: 85vh;
+      border-radius: var(--radius);
+      object-fit: contain;
+      animation: lbIn 0.25s ease;
+    }
+    @keyframes lbIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .lightbox-close {
+      position: absolute; top: 1.5rem; right: 2rem;
+      font-size: 2rem; color: rgba(255,255,255,0.5);
+      cursor: pointer; transition: color 0.2s; line-height: 1;
+      background: none; border: none;
+    }
+    .lightbox-close:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a class="nav-logo" href="index.html">Centro Comercial <span class="accent">Massaka</span></a>
+  <a class="nav-back" href="index.html#lojas">
+    <span class="nav-back-arrow">←</span> Todas as Lojas
+  </a>
+</nav>
+
+<!-- MAIN CONTENT (populated by JS) -->
+<div id="pageContent"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightboxImg" src="" alt="Galeria" />
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   STORE DATA
+══════════════════════════════════════ */
+const STORES = {
+  4: {
+    name: 'Massaca Lounge Bar',
+    category: 'Restauração',
+    emoji: '🍽️',
+    floor: 'Piso 0',
+    location: 'Loja 01',
+    status: 'open',
+    phone: '+258 21 000 001',
+    email: 'lounge@massaka.co.mz',
+    heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&q=85',
+    gallery: [
+      'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&q=80',
+      'https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&q=80',
+      'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=600&q=80',
+    ],
+    description: 'O Massaca Lounge Bar é o espaço gastronómico de referência do Centro Comercial Massaka. Com uma carta inspirada na cozinha mediterrânea e nos sabores únicos de Moçambique, cada prato é uma experiência sensorial inigualável.\n\nA nossa equipa de chefs utiliza ingredientes frescos e de origem local para criar refeições que celebram o melhor da gastronomia africana com influências internacionais. O ambiente acolhedor e o design sofisticado fazem deste espaço o local perfeito para almoços de negócios, jantares românticos ou simplesmente desfrutar de um momento de qualidade.',
+    schedule: [
+      { day: 'Segunda – Sexta', time: '10:00 – 23:00' },
+      { day: 'Sábado', time: '09:00 – 00:00' },
+      { day: 'Domingo', time: '10:00 – 22:00' },
+    ],
+    highlights: [
+      { icon: '🍷', title: 'Carta de Vinhos', sub: 'Seleção internacional' },
+      { icon: '🌿', title: 'Ingredientes Frescos', sub: 'Fornecedores locais' },
+      { icon: '🎵', title: 'Live Music', sub: 'Sextas e Sábados' },
+      { icon: '🅿️', title: 'Estacionamento', sub: 'Grátis no mall' },
+    ],
+  },
+  5: {
+    name: 'Bottle Store Massaca',
+    category: 'Restauração',
+    emoji: '🥂',
+    floor: 'Piso 0',
+    location: 'Loja 03',
+    status: 'open',
+    phone: '+258 21 000 002',
+    email: 'bottlestore@massaka.co.mz',
+    heroImg: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=1400&q=85',
+    gallery: [
+      'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=600&q=80',
+      'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=600&q=80',
+      'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600&q=80',
+    ],
+    description: 'A Bottle Store Massaca é o seu destino para bebidas premium e artesanais. Com uma vasta seleção de vinhos, cervejas artesanais, espumantes, licores e spirits das mais conceituadas marcas nacionais e internacionais, garantimos que encontra sempre a bebida certa para qualquer ocasião.\n\nAlém da venda ao público, oferecemos serviço de encomendas especiais e consultoria personalizada para eventos e celebrações. A nossa equipa especializada está disponível para o ajudar a escolher o vinho perfeito para a sua refeição ou o champagne ideal para o seu momento especial.',
+    schedule: [
+      { day: 'Segunda – Sexta', time: '09:00 – 22:00' },
+      { day: 'Sábado', time: '09:00 – 23:00' },
+      { day: 'Domingo', time: '10:00 – 20:00' },
+    ],
+    highlights: [
+      { icon: '🍾', title: 'Espumantes', sub: 'Grandes marcas' },
+      { icon: '🍺', title: 'Cervejas Artesanais', sub: '+30 variedades' },
+      { icon: '🎁', title: 'Gift Sets', sub: 'Para oferta' },
+      { icon: '📦', title: 'Encomendas', sub: 'Serviço personalizado' },
+    ],
+  },
+  6: {
+    name: 'Talho Massaca',
+    category: 'Restauração',
+    emoji: '🥩',
+    floor: 'Piso 0',
+    location: 'Loja 02',
+    status: 'open',
+    phone: '+258 21 000 003',
+    email: 'talho@massaka.co.mz',
+    heroImg: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=85',
+    gallery: [
+      'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=600&q=80',
+      'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80',
+      'https://images.unsplash.com/photo-1529042410759-befb1204b468?w=600&q=80',
+    ],
+    description: 'O Talho Massaca é sinónimo de qualidade e frescura. Trabalhamos com os melhores criadores e fornecedores de Moçambique para garantir carnes frescas, selecionadas ao dia, com os cortes mais nobres e saborosos.\n\nDo lombo ao entrecosto, da picanha ao costelão, todos os nossos produtos passam por um rigoroso controlo de qualidade. Oferecemos também serviços de preparação personalizada, marinhadas especiais da casa e embalamento a vácuo para maior durabilidade. Venha descobrir a diferença que carne de verdade faz na sua mesa.',
+    schedule: [
+      { day: 'Segunda – Sábado', time: '07:00 – 20:00' },
+      { day: 'Domingo', time: '08:00 – 14:00' },
+    ],
+    highlights: [
+      { icon: '🐄', title: 'Carne Fresca', sub: 'Abatida ao dia' },
+      { icon: '🔪', title: 'Cortes Especiais', sub: 'A pedido' },
+      { icon: '🧂', title: 'Marinhadas', sub: 'Receitas da casa' },
+      { icon: '❄️', title: 'Embalamento', sub: 'A vácuo disponível' },
+    ],
+  },
+  9: {
+    name: 'Nefithys Salão Unissexo',
+    category: 'Beleza',
+    emoji: '💇',
+    floor: 'Piso 0',
+    location: 'Loja 07',
+    status: 'open',
+    phone: '+258 21 000 004',
+    email: 'nefithys@massaka.co.mz',
+    heroImg: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=1400&q=85',
+    gallery: [
+      'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&q=80',
+      'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=600&q=80',
+      'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=600&q=80',
+    ],
+    description: 'O Nefithys Salão Unissexo é um espaço de beleza e bem-estar pensado para si. Com uma equipa de profissionais experientes e apaixonados pela arte da beleza, oferecemos uma gama completa de serviços de cabeleireiro, estética e tratamentos de bem-estar para homem e mulher.\n\nUtilizamos produtos das melhores marcas mundiais, garantindo resultados excepcionais e uma experiência de luxo acessível. Desde o corte de cabelo clássico à coloração mais sofisticada, manicure, pedicure, tratamentos faciais e depilação — no Nefithys encontra tudo o que precisa para se sentir e estar no seu melhor.',
+    schedule: [
+      { day: 'Segunda – Sexta', time: '09:00 – 20:00' },
+      { day: 'Sábado', time: '09:00 – 18:00' },
+      { day: 'Domingo', time: 'Fechado' },
+    ],
+    highlights: [
+      { icon: '✂️', title: 'Cabeleireiro', sub: 'Homem & Mulher' },
+      { icon: '💅', title: 'Manicure & Pedicure', sub: 'Gel e acrílico' },
+      { icon: '🧴', title: 'Tratamentos Faciais', sub: 'Limpeza & hidratação' },
+      { icon: '📅', title: 'Marcações', sub: 'Por telefone ou app' },
+    ],
+  },
+  10: {
+    name: 'CF Gym',
+    category: 'Desporto',
+    emoji: '🏋️',
+    floor: 'Piso 0',
+    location: 'Loja 40',
+    status: 'open',
+    phone: '+258 21 000 005',
+    email: 'cfgym@massaka.co.mz',
+    heroImg: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1400&q=85',
+    gallery: [
+      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
+      'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80',
+      'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=600&q=80',
+    ],
+    description: 'O CF Gym é o ginásio premium do Centro Comercial Massaka. Equipado com as mais modernas máquinas de musculação e cardio das melhores marcas do mundo, oferece um espaço inspirador para atingir os seus objetivos de fitness.\n\nCom Personal Trainers certificados, aulas de grupo (yoga, spinning, HIIT, pilates), zona de crossfit, piscina e balneários modernos, o CF Gym tem tudo o que precisa para uma vida saudável e ativa. Quer seja iniciante ou atleta experiente, a nossa equipa está pronta para acompanhar a sua jornada de forma personalizada.',
+    schedule: [
+      { day: 'Segunda – Sexta', time: '05:30 – 23:00' },
+      { day: 'Sábado', time: '06:00 – 22:00' },
+      { day: 'Domingo', time: '07:00 – 20:00' },
+    ],
+    highlights: [
+      { icon: '💪', title: 'Musculação', sub: 'Equipamento premium' },
+      { icon: '🧘', title: 'Aulas de Grupo', sub: 'Yoga, HIIT, Pilates' },
+      { icon: '👟', title: 'Personal Trainer', sub: 'Certificados' },
+      { icon: '🚿', title: 'Balneários', sub: 'Modernos e amplos' },
+    ],
+  },
+};
+
+/* Today's day for schedule highlight */
+const todayDayName = (() => {
+  const d = new Date().getDay();
+  if (d === 0) return 'Domingo';
+  if (d === 6) return 'Sábado';
+  return 'Segunda';
+})();
+
+/* ══════════════════════════════════════
+   RENDER PAGE
+══════════════════════════════════════ */
+function render() {
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id'), 10);
+  const store = STORES[id];
+  const container = document.getElementById('pageContent');
+
+  if (!store) {
+    document.title = 'Loja não encontrada – Massaka';
+    container.innerHTML = `
+      <div class="not-found">
+        <div class="not-found-icon">🏪</div>
+        <h2>Loja não encontrada</h2>
+        <p>A loja que procura não existe ou foi removida.</p>
+        <a class="cta-btn cta-primary" href="index.html#lojas" style="display:inline-flex;text-decoration:none;padding:13px 28px;border-radius:12px;">
+          ← Ver todas as lojas
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  document.title = `${store.name} – Centro Comercial Massaka`;
+
+  /* Related stores (exclude current) */
+  const related = Object.entries(STORES)
+    .filter(([k]) => parseInt(k) !== id)
+    .slice(0, 3);
+
+  /* Schedule rows */
+  const scheduleRows = store.schedule.map(s => {
+    const isToday = s.day.includes(todayDayName);
+    return `
+      <div class="schedule-row">
+        <span class="schedule-day ${isToday ? 'schedule-today' : ''}">${s.day}</span>
+        <span class="schedule-time ${isToday ? 'schedule-today' : ''}">${s.time}</span>
+      </div>
+    `;
+  }).join('');
+
+  /* Gallery items */
+  const galleryItems = store.gallery.map((src, i) => `
+    <div class="gallery-item" onclick="openLightbox('${src}')">
+      <img src="${src}" alt="Galeria ${i + 1}" loading="lazy" />
+    </div>
+  `).join('');
+
+  /* Highlight items */
+  const highlightItems = store.highlights.map(h => `
+    <li class="highlight-item">
+      <span class="highlight-icon">${h.icon}</span>
+      <span class="highlight-text">
+        <strong>${h.title}</strong>
+        <span>${h.sub}</span>
+      </span>
+    </li>
+  `).join('');
+
+  /* Related cards */
+  const relatedCards = related.map(([rid, rs]) => `
+    <a class="related-card" href="loja.html?id=${rid}">
+      <div class="related-card-img-wrap">
+        <img class="related-card-img" src="${rs.heroImg}" alt="${rs.name}" loading="lazy" />
+      </div>
+      <div class="related-card-body">
+        <div class="related-card-name">${rs.name}</div>
+        <div class="related-card-cat">${rs.emoji} ${rs.category}</div>
+        <div class="related-card-floor">📍 ${rs.floor} · ${rs.location}</div>
+      </div>
+    </a>
+  `).join('');
+
+  /* Description with line breaks */
+  const descHtml = store.description.split('\n\n').map(p => `<p style="margin-bottom:1rem;">${p}</p>`).join('');
+
+  const statusClass = store.status === 'open' ? 'status-open' : 'status-closed';
+  const statusText  = store.status === 'open' ? 'Aberto agora' : 'Fechado';
+
+  container.innerHTML = `
+    <!-- HERO BANNER -->
+    <div class="store-hero">
+      <img class="store-hero-img" id="heroImg" src="${store.heroImg}" alt="${store.name}" />
+      <div class="store-hero-overlay"></div>
+      <div class="store-hero-content">
+        <div class="store-hero-meta">
+          <span class="store-cat-badge">${store.emoji} ${store.category}</span>
+          <h1>${store.name}</h1>
+          <div class="store-hero-floor">
+            <span>${store.floor} · ${store.location}</span>
+            <span>|</span>
+            <span>Centro Comercial Massaka</span>
+          </div>
+        </div>
+        <div class="store-status-pill ${statusClass}">
+          <span class="status-dot"></span>
+          ${statusText}
+        </div>
+      </div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb">
+      <a href="index.html">Início</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="index.html#lojas">Lojas</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">${store.name}</span>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="store-layout">
+
+      <!-- LEFT: MAIN CONTENT -->
+      <div class="store-main">
+
+        <!-- About -->
+        <div class="store-about">
+          <p class="content-label">Sobre a Loja</p>
+          <div class="store-desc">${descHtml}</div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="store-gallery">
+          <p class="content-label">Galeria</p>
+          <div class="gallery-grid">${galleryItems}</div>
+        </div>
+
+        <!-- Highlights -->
+        <div class="store-highlights">
+          <p class="content-label">Destaques</p>
+          <ul class="highlights-list">${highlightItems}</ul>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: SIDEBAR -->
+      <aside class="store-sidebar">
+        <div class="sidebar-card">
+          <div class="sidebar-card-header">
+            <div class="sidebar-logo">${store.emoji}</div>
+            <div>
+              <div class="sidebar-name">${store.name}</div>
+              <div class="sidebar-cat">${store.category}</div>
+            </div>
+          </div>
+          <div class="sidebar-card-body">
+
+            <div class="info-row">
+              <span class="info-icon">📍</span>
+              <div>
+                <div class="info-label">Localização</div>
+                <div class="info-value">${store.floor} · ${store.location}<br>Centro Comercial Massaka</div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-icon">🕐</span>
+              <div style="width:100%">
+                <div class="info-label">Horário de Funcionamento</div>
+                <div style="margin-top:8px;">${scheduleRows}</div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-icon">📞</span>
+              <div>
+                <div class="info-label">Contacto</div>
+                <div class="info-value">
+                  <a href="tel:${store.phone}">${store.phone}</a><br>
+                  <a href="mailto:${store.email}">${store.email}</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="sidebar-ctas">
+            <a class="cta-btn cta-primary" href="https://www.google.com/maps/search/Centro+Comercial+Massaka" target="_blank">
+              🗺️ Como Chegar
+            </a>
+            <a class="cta-btn cta-outline" href="tel:${store.phone}">
+              📞 Ligar Agora
+            </a>
+            <a class="cta-btn cta-outline" href="index.html#lojas">
+              ← Voltar às Lojas
+            </a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- RELATED STORES -->
+    <section class="related-section">
+      <div class="related-header">
+        <span class="related-tag">✦ Outras Lojas</span>
+        <h2>Descubra Mais</h2>
+      </div>
+      <div class="related-grid">${relatedCards}</div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <ul class="footer-links">
+        <li><a href="index.html">Início</a></li>
+        <li><a href="index.html#lojas">Lojas</a></li>
+        <li><a href="index.html#mapa">Como Chegar</a></li>
+        <li><a href="index.html#info">Contactos</a></li>
+      </ul>
+      <div class="footer-bottom">
+        <span>© 2025 Centro Comercial Massaka. Todos os direitos reservados.</span>
+        <span>Maputo, Moçambique</span>
+      </div>
+    </footer>
+  `;
+
+  /* Hero image loaded animation */
+  const heroImg = document.getElementById('heroImg');
+  if (heroImg.complete) {
+    heroImg.classList.add('loaded');
+  } else {
+    heroImg.addEventListener('load', () => heroImg.classList.add('loaded'));
+  }
+}
+
+/* ══════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════ */
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+render();
+</script>
+
+</body>
+</html>
