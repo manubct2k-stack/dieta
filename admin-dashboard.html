@@ -66,6 +66,11 @@
             await updateDoc(docRef, { emManutencao: !atual });
             alert("Modo manutenção alterado para: " + !atual);
         }
+        <div class="card">
+    <h2>Nova Loja</h2>
+    <input type="text" id="nomeLoja" placeholder="Nome da Loja">
+    <button onclick="adicionarLoja()">Adicionar Loja</button>
+</div>
 
         // --- CARREGAR LOJAS ---
         async function carregarLojas() {
