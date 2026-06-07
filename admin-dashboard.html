@@ -800,38 +800,77 @@ window.criarUtilizador = async () => {
 };
 
 window.carregarUtilizadores = async () => {
-  const c=document.getElementById('listaUtilizadores');if(!c)return;
-  c.innerHTML='<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
-  if(!isAdmin){showAccessDeniedTab('users-content');return;}
-  try{
-    const snap=await getDocs(collection(db,'utilizadores'));const users=[];
-    snap.forEach(d=>users.push({id:d.id,...d.data()}));
-    users.sort((a,b)=>new Date(a.criadoEm||0)-new Date(b.criadoEm||0));
-    document.getElementById('statUsers').textContent=users.length;
-    if(!users.length){c.innerHTML='<div class="empty-state"><div class="empty-state-icon">👥</div><p>Nenhum utilizador.</p></div>';return;}
-    const colors=['#C8960C','#22C55E','#3B82F6','#A855F7','#EF4444','#F59E0B'];
-    const permLabels={lojas:'🏪 Lojas',manutencao:'⚙️ Manutenção',logs:'📋 Logs',utilizadores:'👥 Users'};
-    let html='';
-    users.forEach((u,i)=>{
-      const color=colors[i%colors.length];
-      const initial=(u.name||u.email||'?').charAt(0).toUpperCase();
-      const roleChip=u.role==='admin'?'chip-admin':u.role==='viewer'?'chip-viewer':'chip-staff';
-      const roleText=u.role==='admin'?'👑 Admin':u.role==='viewer'?'👁️ Viewer':'🔧 Staff';
-      const isMe=u.uid===currentUserUid;
-      const activePerms=u.role==='admin'?['lojas','manutencao','logs','utilizadores']:(u.perms||[]);
-      const permsHtml=activePerms.length?activePerms.map(p=>`<span class="perm-tag perm-${p}">${permLabels[p]||p}</span>`).join(''):`<span class="perm-tag perm-none">Sem permissões</span>`;
-      html+=`<div class="user-item ${u.active===false?'inactive-user':''}">
+  const c = document.getElementById('listaUtilizadores'); if (!c) return;
+  c.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>A carregar utilizadores...</p></div>';
+  if (!isAdmin) { showAccessDeniedTab('users-content'); return; }
+  try {
+    const snap = await getDocs(collection(db, 'utilizadores'));
+    const users = [];
+    snap.forEach(d => users.push({ id: d.id, ...d.data() }));
+    users.sort((a, b) => new Date(a.criadoEm || 0) - new Date(b.criadoEm || 0));
+
+    const statEl = document.getElementById('statUsers');
+    if (statEl) statEl.textContent = users.length;
+
+    if (!users.length) {
+      c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>Nenhum utilizador encontrado.</p></div>';
+      return;
+    }
+
+    const colors = ['#C8960C','#22C55E','#3B82F6','#A855F7','#EF4444','#F59E0B'];
+    const permLabels = { lojas:'🏪 Lojas', manutencao:'⚙️ Manutenção', logs:'📋 Logs', utilizadores:'👥 Users' };
+    let html = '';
+
+    users.forEach((u, i) => {
+      const color    = colors[i % colors.length];
+      const initial  = (u.name || u.email || '?').charAt(0).toUpperCase();
+      const roleChip = u.role === 'admin' ? 'chip-admin' : u.role === 'viewer' ? 'chip-viewer' : 'chip-staff';
+      const roleText = u.role === 'admin' ? '👑 Admin' : u.role === 'viewer' ? '👁️ Viewer' : '🔧 Staff';
+      const isMe     = u.uid === currentUserUid || u.id === currentUserUid;
+      const activePerms = u.role === 'admin' ? ['lojas','manutencao','logs','utilizadores'] : (u.perms || []);
+      const permsHtml   = activePerms.length
+        ? activePerms.map(p => `<span class="perm-tag perm-${p}">${permLabels[p] || p}</span>`).join('')
+        : '<span class="perm-tag perm-none">Sem permissões</span>';
+      const nomeSafe = (u.name || u.email || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+      html += `<div class="user-item ${u.active === false ? 'inactive-user' : ''}">
         <div class="user-avatar-lg" style="background:${color}22;border-color:${color}44;color:${color};">${initial}</div>
-        <div><div class="user-info-name">${u.name||'–'} ${isMe?'<span style="font-size:0.68rem;color:var(--muted);font-weight:400;">(você)</span>':''}</div><div class="user-info-email">${u.email||'–'}</div></div>
-        <div class="user-perms"><span class="chip ${roleChip}">${roleText}</span>${u.active===false?'<span class="chip chip-inactive">Inactivo</span>':''}${permsHtml}</div>
-        <div style="display:flex;gap:7px;align-items:center;">
+        <div style="min-width:0;">
+          <div class="user-info-name">${u.name || '–'} ${isMe ? '<span style="font-size:0.68rem;color:var(--muted);font-weight:400;">(você)</span>' : ''}</div>
+          <div class="user-info-email">${u.email || '–'}</div>
+        </div>
+        <div class="user-perms">
+          <span class="chip ${roleChip}">${roleText}</span>
+          ${u.active === false ? '<span class="chip chip-inactive">Inactivo</span>' : ''}
+          ${permsHtml}
+        </div>
+        <div style="display:flex;gap:7px;align-items:center;flex-shrink:0;">
           <button class="btn btn-blue btn-sm btn-icon" title="Editar" onclick="abrirEdicaoUser('${u.id}')">✏️</button>
-          ${!isMe?`<button class="btn btn-danger btn-sm btn-icon" title="Eliminar" onclick="pedirApagarUser('${u.id}','${(u.name||u.email||'').replace(/'/g,"\\'")}')">🗑</button>`:''}
+          ${!isMe ? `<button class="btn btn-danger btn-sm btn-icon" title="Eliminar" onclick="pedirApagarUser('${u.id}','${nomeSafe}')">🗑</button>` : ''}
         </div>
       </div>`;
     });
-    c.innerHTML=html;
-  }catch(e){c.innerHTML='<div class="empty-state"><p>❌ Erro ao carregar.</p></div>';}
+
+    c.innerHTML = html;
+
+  } catch(e) {
+    console.error('carregarUtilizadores:', e);
+    const msg = e.message || 'Erro desconhecido';
+    let hint = '';
+    if (e.code === 'permission-denied' || msg.toLowerCase().includes('permission') || msg.toLowerCase().includes('missing')) {
+      hint = `<div style="margin-top:12px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:12px 14px;font-size:0.78rem;color:var(--amber);line-height:1.7;">
+        💡 <strong>Regras do Firestore insuficientes.</strong><br>
+        No Firebase Console → Firestore → Regras, adicione:<br>
+        <code style="font-size:0.72rem;color:var(--gold-light);display:block;margin-top:6px;font-family:monospace;">match /utilizadores/{uid} {<br>&nbsp;&nbsp;allow read, write: if request.auth != null;<br>}</code>
+      </div>`;
+    }
+    c.innerHTML = `<div style="padding:1.2rem;">
+      <div style="font-size:0.9rem;color:var(--red);font-weight:500;margin-bottom:6px;">❌ Erro ao carregar utilizadores</div>
+      <div style="font-size:0.75rem;color:var(--muted);font-family:monospace;word-break:break-all;padding:8px 12px;background:var(--dark4);border-radius:8px;">${msg}${e.code ? ' ('+e.code+')' : ''}</div>
+      ${hint}
+      <button class="btn btn-ghost btn-sm" style="margin-top:14px;" onclick="carregarUtilizadores()">↺ Tentar novamente</button>
+    </div>`;
+  }
 };
 
 let editingUserId=null;
