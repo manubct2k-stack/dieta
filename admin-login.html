@@ -1,1656 +1,614 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel Admin – Centro Comercial Massaka</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Acesso Restrito — Centro Comercial Massaka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --gold: #C8960C;
-      --gold-light: #E4B83A;
-      --gold-pale: rgba(200,150,12,0.08);
-      --dark:  #080808;
-      --dark2: #0F0F0F;
-      --dark3: #161616;
-      --dark4: #1E1E1E;
-      --dark5: #262626;
-      --border: rgba(255,255,255,0.07);
-      --border-gold: rgba(200,150,12,0.2);
-      --text: #FFFFFF;
-      --muted: rgba(255,255,255,0.4);
-      --muted2: rgba(255,255,255,0.22);
-      --green: #22C55E;
-      --red: #EF4444;
-      --amber: #F59E0B;
-      --radius: 12px;
-      --radius-lg: 18px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.4);
-      --t: 0.25s cubic-bezier(0.4,0,0.2,1);
-    }
+:root {
+  --gold: #C8960C;
+  --gold-light: #E4B83A;
+  --gold-pale: rgba(200,150,12,0.08);
+  --gold-glow: rgba(200,150,12,0.18);
+  --dark:  #060606;
+  --dark2: #0C0C0C;
+  --dark3: #141414;
+  --dark4: #1C1C1C;
+  --border: rgba(255,255,255,0.07);
+  --border-gold: rgba(200,150,12,0.25);
+  --text: #F5F0E8;
+  --muted: rgba(245,240,232,0.4);
+  --red: #EF4444;
+  --t: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
 
-    html { scroll-behavior: smooth; }
+html, body {
+  height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background: var(--dark);
+  color: var(--text);
+  overflow: hidden;
+}
 
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--dark);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      overflow-x: hidden;
-    }
+/* ── BACKGROUND ── */
+.bg {
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 50%, rgba(200,150,12,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 20%, rgba(200,150,12,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 100%, rgba(200,150,12,0.05) 0%, transparent 60%),
+    var(--dark);
+}
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--dark2); }
-    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+/* Subtle grid */
+.bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,150,12,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,150,12,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+}
 
-    /* ══════════════════════════════════════
-       SIDEBAR
-    ══════════════════════════════════════ */
-    .sidebar {
-      width: 240px;
-      flex-shrink: 0;
-      background: var(--dark2);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0; bottom: 0;
-      z-index: 100;
-      padding: 0 0 1.5rem;
-    }
+/* Animated orbs */
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none;
+  animation: drift 12s ease-in-out infinite alternate;
+}
+.orb-1 { width:400px; height:400px; background:rgba(200,150,12,0.04); top:-10%; left:-5%; animation-delay:0s; }
+.orb-2 { width:300px; height:300px; background:rgba(200,150,12,0.03); bottom:5%; right:5%; animation-delay:-5s; }
+@keyframes drift { from{transform:translate(0,0) scale(1);} to{transform:translate(20px,30px) scale(1.05);} }
 
-    .sidebar-brand {
-      padding: 1.8rem 1.6rem 1.4rem;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-    .sidebar-brand-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.1;
-    }
-    .sidebar-brand-name span { color: var(--gold); font-style: italic; }
-    .sidebar-brand-sub {
-      font-size: 0.68rem; font-weight: 500;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      color: var(--muted); margin-top: 4px;
-    }
+/* ── LAYOUT ── */
+.page {
+  position: relative; z-index: 1;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
 
-    .sidebar-section-label {
-      font-size: 0.62rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      color: var(--muted2);
-      padding: 0 1.6rem;
-      margin: 1.2rem 0 0.5rem;
-    }
+/* ── LEFT PANEL ── */
+.left-panel {
+  display: none;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 420px;
+  flex-shrink: 0;
+  padding: 3rem 3.5rem;
+  height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+}
 
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 1.6rem;
-      font-size: 0.85rem; font-weight: 400;
-      color: var(--muted);
-      cursor: pointer;
-      transition: color var(--t), background var(--t);
-      border-radius: 0;
-      text-decoration: none;
-      position: relative;
-    }
-    .nav-item::before {
-      content: '';
-      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-      width: 2px; height: 0;
-      background: var(--gold);
-      border-radius: 0 2px 2px 0;
-      transition: height var(--t);
-    }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-    .nav-item.active { color: var(--text); background: rgba(200,150,12,0.08); }
-    .nav-item.active::before { height: 60%; }
-    .nav-item.active .nav-icon { color: var(--gold); }
-    .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+@media (min-width: 1000px) { .left-panel { display: flex; } .page { padding-left: 460px; } }
 
-    .sidebar-footer {
-      margin-top: auto;
-      padding: 0 1.6rem;
-    }
-    .sidebar-user {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 14px;
-      background: var(--dark3);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    .user-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--gold-pale);
-      border: 1.5px solid var(--border-gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; color: var(--gold); flex-shrink: 0;
-    }
-    .user-name { font-size: 0.8rem; font-weight: 500; color: var(--text); }
-    .user-role { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
-    .btn-logout {
-      margin-left: auto;
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 1rem;
-      transition: color var(--t);
-      flex-shrink: 0;
-    }
-    .btn-logout:hover { color: var(--red); }
+.left-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 300;
+  line-height: 1.25;
+  color: rgba(245,240,232,0.15);
+  margin-bottom: 3rem;
+  letter-spacing: -0.01em;
+}
 
-    /* ══════════════════════════════════════
-       MAIN
-    ══════════════════════════════════════ */
-    .main {
-      margin-left: 240px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+.left-quote em { font-style: italic; color: rgba(200,150,12,0.4); }
 
-    /* Top bar */
-    .topbar {
-      height: 64px;
-      background: var(--dark2);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 2.5rem;
-      position: sticky; top: 0; z-index: 50;
-    }
-    .topbar-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem; font-weight: 600; color: var(--text);
-    }
-    .topbar-right { display: flex; align-items: center; gap: 14px; }
+.left-brand { display: flex; align-items: center; gap: 14px; }
+.left-brand-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--gold-pale); border: 1px solid var(--border-gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.left-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; }
+.left-brand-name span { color: var(--gold); font-style: italic; }
+.left-brand-sub { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
 
-    .topbar-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 14px; border-radius: 99px;
-      font-size: 0.72rem; font-weight: 600;
-      letter-spacing: 0.05em;
-      transition: all var(--t);
-    }
-    .badge-online  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
-    .badge-manut   { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+/* ── LOGIN CARD ── */
+.login-wrap {
+  width: 100%;
+  max-width: 420px;
+  animation: cardIn 0.6s cubic-bezier(0.2,0,0,1) both;
+}
 
-    .topbar-time {
-      font-size: 0.78rem; color: var(--muted);
-      font-variant-numeric: tabular-nums;
-    }
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
 
-    /* Content */
-    .content {
-      padding: 2.5rem;
-      flex: 1;
-    }
+.login-card {
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2.8rem 2.6rem;
+  position: relative;
+  overflow: hidden;
+}
 
-    /* ── STAT CARDS ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 2rem;
-    }
+/* Gold top line */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.5;
+}
 
-    .stat-card {
-      background: var(--dark3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.4rem 1.6rem;
-      display: flex; align-items: flex-start; justify-content: space-between;
-      transition: border-color var(--t), transform var(--t);
-    }
-    .stat-card:hover { border-color: var(--border-gold); transform: translateY(-2px); }
-    .stat-label {
-      font-size: 0.7rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      color: var(--muted); margin-bottom: 10px;
-    }
-    .stat-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem; font-weight: 600; color: var(--text); line-height: 1;
-    }
-    .stat-sub { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
-    .stat-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--gold-pale);
-      border: 1px solid var(--border-gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; flex-shrink: 0;
-    }
+.login-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px;
+  background: var(--gold-pale);
+  border: 1px solid var(--border-gold);
+  border-radius: 99px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 1.6rem;
+}
 
-    /* ── SECTION HEADER ── */
-    .section-hd {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.2rem;
-    }
-    .section-hd h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.35rem; font-weight: 600; color: var(--text);
-    }
-    .section-hd p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+.login-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
-    /* ── CARDS ── */
-    .card {
-      background: var(--dark3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.8rem 2rem;
-      margin-bottom: 20px;
-    }
-    .card-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem; font-weight: 600; color: var(--text);
-      margin-bottom: 4px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .card-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.4rem; }
-    .card-divider { border: none; border-top: 1px solid var(--border); margin: 1.4rem 0; }
+.login-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.login-title span { color: var(--gold); font-style: italic; }
 
-    /* ── FORM ELEMENTS ── */
-    .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.login-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 2.2rem;
+  line-height: 1.5;
+}
 
-    .form-input {
-      flex: 1; min-width: 200px;
-      padding: 11px 16px;
-      background: var(--dark4);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color var(--t), background var(--t);
-    }
-    .form-input::placeholder { color: var(--muted2); }
-    .form-input:focus { border-color: var(--gold); background: var(--dark5); }
+/* ── FORM ── */
+.field { margin-bottom: 1.2rem; }
 
-    .form-select {
-      padding: 11px 16px;
-      background: var(--dark4);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
-      outline: none;
-      cursor: pointer;
-      transition: border-color var(--t);
-    }
-    .form-select:focus { border-color: var(--gold); }
-    .form-select option { background: var(--dark4); }
+.field-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 11px 22px;
-      border-radius: var(--radius);
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.84rem; font-weight: 600;
-      cursor: pointer; border: none;
-      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-      white-space: nowrap;
-      letter-spacing: 0.03em;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
+.field-wrap { position: relative; }
 
-    .btn-gold { background: var(--gold); color: #0B0B0B; }
-    .btn-gold:hover { box-shadow: 0 8px 22px rgba(200,150,12,0.3); }
+.field-icon {
+  position: absolute;
+  left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 0.95rem;
+  color: var(--muted);
+  pointer-events: none;
+  transition: color var(--t);
+}
 
-    .btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
-    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+.field-input {
+  width: 100%;
+  padding: 13px 42px 13px 42px;
+  background: var(--dark4);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color var(--t), background var(--t), box-shadow var(--t);
+}
 
-    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+.field-input::placeholder { color: rgba(255,255,255,0.2); }
 
-    .btn-sm { padding: 7px 14px; font-size: 0.78rem; }
-    .btn-icon { padding: 8px; border-radius: 8px; }
+.field-input:focus {
+  border-color: var(--border-gold);
+  background: var(--dark);
+  box-shadow: 0 0 0 3px rgba(200,150,12,0.08), 0 2px 12px rgba(0,0,0,0.3);
+}
 
-    /* ── SWITCH TOGGLE ── */
-    .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-info strong { font-size: 0.9rem; font-weight: 500; display: block; margin-bottom: 3px; }
-    .toggle-info span { font-size: 0.78rem; color: var(--muted); }
+.field-wrap:focus-within .field-icon { color: var(--gold); }
 
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0;
-      background: var(--dark5); border-radius: 99px;
-      cursor: pointer; border: 1.5px solid var(--border);
-      transition: background var(--t);
-    }
-    .slider::before {
-      content: '';
-      position: absolute;
-      height: 16px; width: 16px; border-radius: 50%;
-      left: 3px; top: 50%; transform: translateY(-50%);
-      background: var(--muted);
-      transition: transform var(--t), background var(--t);
-    }
-    .switch input:checked + .slider { background: rgba(200,150,12,0.2); border-color: var(--border-gold); }
-    .switch input:checked + .slider::before { transform: translateX(20px) translateY(-50%); background: var(--gold); }
+.field-eye {
+  position: absolute;
+  right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 4px;
+  transition: color var(--t);
+}
+.field-eye:hover { color: var(--gold); }
 
-    /* ── STORE LIST ── */
-    .store-list { display: flex; flex-direction: column; gap: 10px; }
+/* ── ERROR ── */
+.error-box {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: #FCA5A5;
+  margin-bottom: 1.2rem;
+  animation: shakeErr 0.4s ease;
+}
+.error-box.show { display: flex; }
+@keyframes shakeErr {
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-6px);}
+  40%{transform:translateX(6px);}
+  60%{transform:translateX(-4px);}
+  80%{transform:translateX(4px);}
+}
 
-    .store-item {
-      display: flex; align-items: center;
-      background: var(--dark4);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      gap: 14px;
-      transition: border-color var(--t), background var(--t);
-    }
-    .store-item:hover { border-color: var(--border-gold); background: var(--dark5); }
+/* ── SUBMIT BTN ── */
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #060606;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0.4rem;
+  position: relative;
+  overflow: hidden;
+}
 
-    .store-item-emoji {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--gold-pale);
-      border: 1px solid var(--border-gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; flex-shrink: 0;
-    }
-    .store-item-name {
-      font-size: 0.9rem; font-weight: 500; color: var(--text);
-      flex: 1;
-    }
-    .store-item-cat {
-      font-size: 0.7rem; color: var(--muted); margin-top: 2px;
-    }
+.btn-login::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
 
-    .store-status-toggle {
-      display: flex; align-items: center; gap: 8px;
-    }
-    .status-label { font-size: 0.75rem; color: var(--muted); min-width: 54px; text-align: right; }
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(200,150,12,0.35);
+  background: var(--gold-light);
+}
 
-    .store-actions { display: flex; gap: 7px; }
+.btn-login:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
 
-    /* Status chip */
-    .chip {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 99px;
-      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
-    }
-    .chip-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-    .chip-open   { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .chip-closed { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+.btn-login:disabled { opacity: 0.7; cursor: not-allowed; }
 
-    /* ── ACTIVITY LOG ── */
-    .log-list { display: flex; flex-direction: column; gap: 0; }
-    .log-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .log-item:last-child { border-bottom: none; }
-    .log-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0; margin-top: 5px;
-    }
-    .log-created { background: var(--green); }
-    .log-deleted { background: var(--red); }
-    .log-updated { background: var(--gold); }
-    .log-text { font-size: 0.82rem; color: var(--text); flex: 1; line-height: 1.4; }
-    .log-alvo { color: var(--gold); }
-    .log-time { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+/* Loading spinner in button */
+.btn-spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg);} }
+.btn-login.loading .btn-spinner { display: block; }
+.btn-login.loading .btn-text { display: none; }
 
-    /* ── IMPORT CARD ── */
-    .import-card {
-      background: linear-gradient(135deg, var(--dark3) 0%, rgba(200,150,12,0.04) 100%);
-      border-color: var(--border-gold) !important;
-    }
-    .import-card-inner {
-      display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-    }
-    .import-icon-wrap {
-      width: 52px; height: 52px; border-radius: 14px;
-      background: rgba(200,150,12,0.1);
-      border: 1px solid var(--border-gold);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; flex-shrink: 0;
-    }
-    .import-info { flex: 1; min-width: 200px; }
-    .import-btn  { flex-shrink: 0; }
-    .code-tag {
-      display: inline-block;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 5px;
-      padding: 1px 7px;
-      font-family: monospace; font-size: 0.8em;
-      color: var(--gold-light); font-style: normal;
-    }
+/* ── DIVIDER ── */
+.divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 1.6rem 0;
+  font-size: 0.72rem; color: rgba(255,255,255,0.15);
+}
+.divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
 
-    .import-progress {
-      margin-top: 1.4rem;
-      padding-top: 1.4rem;
-      border-top: 1px solid var(--border);
-    }
-    .import-progress-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px;
-    }
-    .import-progress-label { font-size: 0.8rem; color: var(--muted); }
-    .import-progress-pct   { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
-    .import-track {
-      height: 4px; background: rgba(255,255,255,0.07);
-      border-radius: 99px; overflow: hidden;
-    }
-    .import-fill {
-      height: 100%; border-radius: 99px;
-      background: linear-gradient(90deg, var(--gold), var(--gold-light));
-      transition: width 0.4s ease;
-    }
+/* ── BACK LINK ── */
+.back-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 1.4rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--t);
+}
+.back-link:hover { color: var(--gold); }
 
-    .import-results {
-      margin-top: 1.2rem;
-      padding-top: 1.2rem;
-      border-top: 1px solid var(--border);
-      display: flex; gap: 24px; flex-wrap: wrap;
-    }
-    .import-result-row {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 0.82rem;
-    }
-    .res-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .res-green { background: var(--green); }
-    .res-amber { background: var(--amber); }
-    .res-red   { background: var(--red); }
-    .res-label { color: var(--muted); }
-    .res-val   { font-weight: 600; color: var(--text); min-width: 20px; }
+/* ── SUCCESS OVERLAY ── */
+.success-overlay {
+  display: none;
+  position: absolute; inset: 0;
+  background: var(--dark3);
+  border-radius: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 10;
+  animation: fadeIn 0.3s ease both;
+}
+.success-overlay.show { display: flex; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-    .hidden { display: none !important; }
+.success-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  animation: popIn 0.5s cubic-bezier(0.2,0,0,1.4) both;
+}
+@keyframes popIn { from{transform:scale(0.4);opacity:0;} to{transform:scale(1);opacity:1;} }
 
-    /* store-item preview inside import results */
-    .import-preview-list {
-      margin-top: 1rem;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .import-preview-item {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--dark4); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 10px 14px;
-      font-size: 0.82rem;
-    }
-    .import-preview-item.will-import { border-color: rgba(34,197,94,0.2); }
-    .import-preview-item.will-skip   { border-color: rgba(245,158,11,0.15); opacity: 0.6; }
-    .import-preview-badge {
-      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em;
-      text-transform: uppercase; padding: 3px 9px; border-radius: 99px; flex-shrink: 0;
-    }
-    .badge-new  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .badge-skip { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+.success-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:600; color:#4ADE80; }
+.success-sub   { font-size:0.82rem; color:var(--muted); }
+.success-bar-wrap { width:180px; height:3px; background:var(--border); border-radius:99px; overflow:hidden; margin-top:8px; }
+.success-bar { height:100%; background:linear-gradient(90deg,var(--gold),#4ADE80); border-radius:99px; animation:fillBar 1.8s ease forwards; }
+@keyframes fillBar { from{width:0%} to{width:100%} }
 
-    /* MODAL IMPORT PREVIEW */
-    .modal-lg { max-width: 560px; }
-    .modal-scroll { max-height: 340px; overflow-y: auto; margin: 1rem 0; }
-    .modal-scroll::-webkit-scrollbar { width: 4px; }
-    .modal-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+/* ── FOOTER ── */
+.login-footer {
+  text-align: center;
+  margin-top: 1.6rem;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.15);
+}
 
-
-    .empty-state {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 3rem 2rem; gap: 0.8rem;
-    }
-    .empty-state-icon { font-size: 2.5rem; opacity: 0.25; }
-    .empty-state p { font-size: 0.88rem; color: var(--muted); }
-
-    /* ── TOAST ── */
-    .toast-container {
-      position: fixed; bottom: 2rem; right: 2rem;
-      display: flex; flex-direction: column; gap: 10px;
-      z-index: 9999; pointer-events: none;
-    }
-    .toast {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--dark3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 13px 18px;
-      font-size: 0.84rem; color: var(--text);
-      box-shadow: var(--shadow);
-      animation: toastIn 0.3s ease;
-      pointer-events: auto;
-      min-width: 240px;
-    }
-    .toast.success { border-color: rgba(34,197,94,0.3); }
-    .toast.error   { border-color: rgba(239,68,68,0.3); }
-    .toast.warning { border-color: rgba(245,158,11,0.3); }
-    .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateX(16px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
-      display: none; align-items: center; justify-content: center;
-      padding: 2rem;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--dark3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      width: 100%; max-width: 440px;
-      animation: modalIn 0.25s ease;
-    }
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem; font-weight: 600; margin-bottom: 8px;
-    }
-    .modal-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.4rem; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.4rem; }
-
-    /* ── GRID 2 col ── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-    @media (max-width: 900px) {
-      .grid-2 { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 700px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; }
-      .content { padding: 1.5rem; }
-    }
-
-    /* Loading spinner */
-    .spinner {
-      display: inline-block; width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.15);
-      border-top-color: var(--gold); border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Maintenance banner */
-    .manut-banner {
-      display: none;
-      background: rgba(245,158,11,0.1);
-      border: 1px solid rgba(245,158,11,0.25);
-      border-radius: var(--radius);
-      padding: 12px 18px;
-      font-size: 0.84rem; color: var(--amber);
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 1.8rem;
-    }
-    .manut-banner.hidden { display: none !important; }
-  </style>
+/* ── FORGOT PASSWORD LINK ── */
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  margin-top: -8px;
+  margin-bottom: 1.4rem;
+  transition: color var(--t);
+  cursor: pointer;
+}
+.forgot-link:hover { color: var(--gold); }
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     AUTH GUARD OVERLAY
-     Shown while Firebase checks auth state
-     OR when access is denied
-══════════════════════════════════════ -->
-<div id="authGuard" style="
-  position:fixed; inset:0; z-index:9999;
-  background:#070707;
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  text-align:center; padding:2rem;
-  font-family:'Outfit',sans-serif;
-">
-  <!-- Loading state (default) -->
-  <div id="authLoading">
-    <div style="
-      width:52px; height:52px; border-radius:14px;
-      background:rgba(200,150,12,0.08);
-      border:1px solid rgba(200,150,12,0.2);
-      display:flex; align-items:center; justify-content:center;
-      font-size:1.6rem; margin:0 auto 1.4rem;
-    ">🏛️</div>
-    <div style="
-      width:36px; height:36px; margin:0 auto 1.2rem;
-      border:2px solid rgba(255,255,255,0.08);
-      border-top-color:#C8960C; border-radius:50%;
-      animation:guardSpin 0.7s linear infinite;
-    "></div>
-    <div style="font-size:0.85rem; color:rgba(255,255,255,0.3); letter-spacing:0.06em;">
-      A verificar autenticação...
-    </div>
-  </div>
-
-  <!-- Denied state (shown by JS when access fails) -->
-  <div id="authDenied" style="display:none; flex-direction:column; align-items:center;">
-
-    <!-- Animated lock icon -->
-    <div style="
-      width:80px; height:80px; border-radius:24px;
-      background:rgba(239,68,68,0.08);
-      border:1px solid rgba(239,68,68,0.2);
-      display:flex; align-items:center; justify-content:center;
-      font-size:2.2rem; margin:0 auto 1.6rem;
-      animation:deniedBounce 0.5s ease both;
-    ">🔒</div>
-
-    <div id="deniedTitle" style="
-      font-family:'Cormorant Garamond',serif;
-      font-size:2rem; font-weight:600;
-      color:#EF4444; margin-bottom:0.8rem;
-      animation:deniedUp 0.4s 0.1s ease both; opacity:0;
-    ">Acesso Negado</div>
-
-    <div id="deniedMsg" style="
-      font-size:0.92rem; font-weight:300;
-      color:rgba(255,255,255,0.4);
-      max-width:380px; line-height:1.8;
-      margin-bottom:0.8rem;
-      animation:deniedUp 0.4s 0.18s ease both; opacity:0;
-    ">Não tem permissões para aceder a esta área.</div>
-
-    <div id="deniedCounter" style="
-      display:none;
-      font-size:0.76rem; font-weight:500;
-      color:rgba(239,68,68,0.5);
-      letter-spacing:0.06em;
-      margin-bottom:2rem;
-      animation:deniedUp 0.4s 0.24s ease both;
-    ">A redirecionar em 3s...</div>
-
-    <!-- Buttons -->
-    <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;
-      animation:deniedUp 0.4s 0.28s ease both; opacity:0;" id="deniedActions">
-      <a href="admin-login.html" style="
-        display:inline-flex; align-items:center; gap:8px;
-        padding:12px 26px; border-radius:99px;
-        background:#C8960C; color:#0B0B0B;
-        font-family:'Outfit',sans-serif;
-        font-size:0.85rem; font-weight:600;
-        text-decoration:none;
-        transition:transform 0.2s, box-shadow 0.2s;
-      " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(200,150,12,0.35)'"
-         onmouseout="this.style.transform='';this.style.boxShadow=''">
-        🔑 Iniciar Sessão
-      </a>
-      <a href="index.html" style="
-        display:inline-flex; align-items:center; gap:8px;
-        padding:12px 26px; border-radius:99px;
-        background:rgba(255,255,255,0.05);
-        border:1px solid rgba(255,255,255,0.1);
-        color:rgba(255,255,255,0.5);
-        font-family:'Outfit',sans-serif;
-        font-size:0.85rem; font-weight:500;
-        text-decoration:none;
-        transition:background 0.2s;
-      " onmouseover="this.style.background='rgba(255,255,255,0.1)'"
-         onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-        ← Voltar ao Site
-      </a>
-    </div>
-
-    <!-- Decorative grid lines (same as bg) -->
-    <div style="
-      position:fixed; inset:0; z-index:-1; pointer-events:none;
-      background-image:
-        repeating-linear-gradient(0deg,  rgba(239,68,68,0.015) 0, rgba(239,68,68,0.015) 1px, transparent 1px, transparent 80px),
-        repeating-linear-gradient(90deg, rgba(239,68,68,0.015) 0, rgba(239,68,68,0.015) 1px, transparent 1px, transparent 80px);
-    "></div>
-  </div>
+<div class="bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 </div>
 
-<style>
-  @keyframes guardSpin    { to { transform: rotate(360deg); } }
-  @keyframes deniedBounce { 0%{transform:scale(0.4);opacity:0} 70%{transform:scale(1.12);opacity:1} 100%{transform:scale(1)} }
-  @keyframes deniedUp     { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-</style>
-
-<!-- ══════════════════════════════════════
-     ADMIN PANEL (hidden until auth passes)
-══════════════════════════════════════ -->
-<div id="adminPanel" style="display:none; width:100%; min-height:100vh; flex-direction:row;">
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-brand-name">Centro Comercial <span>Massaka</span></div>
-    <div class="sidebar-brand-sub">Painel de Administração</div>
+<!-- LEFT PANEL (desktop only) -->
+<div class="left-panel">
+  <div class="left-quote">
+    "Acesso <em>seguro</em> às ferramentas que movem o centro."
   </div>
-
-  <span class="sidebar-section-label">Visão Geral</span>
-  <a class="nav-item active" onclick="setTab('dashboard')">
-    <span class="nav-icon">▦</span> Dashboard
-  </a>
-
-  <span class="sidebar-section-label">Gestão</span>
-  <a class="nav-item" onclick="setTab('lojas')">
-    <span class="nav-icon">🏪</span> Lojas
-  </a>
-  <a class="nav-item" onclick="setTab('manutencao')">
-    <span class="nav-icon">⚙️</span> Manutenção
-  </a>
-  <a class="nav-item" onclick="setTab('logs')">
-    <span class="nav-icon">📋</span> Registos
-  </a>
-
-  <span class="sidebar-section-label">Site</span>
-  <a class="nav-item" href="index.html" target="_blank">
-    <span class="nav-icon">↗</span> Ver Site
-  </a>
-
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="user-avatar">A</div>
-      <div>
-        <div class="user-name" id="userEmail">–</div>
-        <div class="user-role">Administrador</div>
-      </div>
-      <button class="btn-logout" onclick="logout()" title="Sair">⏻</button>
-    </div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- TOP BAR -->
-  <header class="topbar">
-    <div class="topbar-title" id="tabTitle">Dashboard</div>
-    <div class="topbar-right">
-      <span class="topbar-badge badge-online" id="siteStatusBadge">
-        <span class="badge-dot"></span> Online
-      </span>
-      <span class="topbar-time" id="clock">--:--:--</span>
-    </div>
-  </header>
-
-  <!-- CONTENT -->
-  <main class="content">
-
-    <!-- MAINTENANCE BANNER -->
-    <div class="manut-banner hidden" id="manutBanner">
-      ⚠️ <strong>Modo manutenção activo</strong> — O site público está a mostrar a página de manutenção.
-    </div>
-
-    <!-- ══ TAB: DASHBOARD ══ -->
-    <div id="tab-dashboard">
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div>
-            <div class="stat-label">Total de Lojas</div>
-            <div class="stat-value" id="statLojas">–</div>
-            <div class="stat-sub">No Firestore</div>
-          </div>
-          <div class="stat-icon">🏪</div>
-        </div>
-        <div class="stat-card">
-          <div>
-            <div class="stat-label">Lojas Abertas</div>
-            <div class="stat-value" id="statAbertas">–</div>
-            <div class="stat-sub">Estado: aberto</div>
-          </div>
-          <div class="stat-icon">🟢</div>
-        </div>
-        <div class="stat-card">
-          <div>
-            <div class="stat-label">Registos de Ações</div>
-            <div class="stat-value" id="statLogs">–</div>
-            <div class="stat-sub">Total no log</div>
-          </div>
-          <div class="stat-icon">📋</div>
-        </div>
-        <div class="stat-card">
-          <div>
-            <div class="stat-label">Estado do Site</div>
-            <div class="stat-value" id="statSite" style="font-size:1.1rem;margin-top:4px;">–</div>
-            <div class="stat-sub" id="statSiteSub">A verificar...</div>
-          </div>
-          <div class="stat-icon">🌐</div>
-        </div>
-      </div>
-
-      <!-- Import from index.html -->
-      <div class="card import-card">
-        <div class="import-card-inner">
-          <div class="import-icon-wrap">
-            <span class="import-icon">📥</span>
-          </div>
-          <div class="import-info">
-            <div class="card-title" style="margin-bottom:4px;">Importar Lojas do <code class="code-tag">index.html</code></div>
-            <div class="card-sub" style="margin-bottom:0;">Lê os cartões de loja definidos no ficheiro <code class="code-tag">index.html</code> e importa-os para o Firebase automaticamente. Lojas já existentes são ignoradas (sem duplicados).</div>
-          </div>
-          <button class="btn btn-gold import-btn" id="importBtn" onclick="iniciarImportacao()">
-            <span id="importBtnIcon">⬆️</span> Importar Agora
-          </button>
-        </div>
-
-        <!-- Progress bar (hidden until import starts) -->
-        <div class="import-progress hidden" id="importProgress">
-          <div class="import-progress-header">
-            <span class="import-progress-label" id="importProgressLabel">A analisar lojas...</span>
-            <span class="import-progress-pct" id="importProgressPct">0%</span>
-          </div>
-          <div class="import-track">
-            <div class="import-fill" id="importFill" style="width:0%"></div>
-          </div>
-        </div>
-
-        <!-- Results (hidden until done) -->
-        <div class="import-results hidden" id="importResults">
-          <div class="import-result-row" id="resImportadas">
-            <span class="res-dot res-green"></span>
-            <span class="res-label">Importadas</span>
-            <span class="res-val" id="resImportadasVal">0</span>
-          </div>
-          <div class="import-result-row" id="resIgnoradas">
-            <span class="res-dot res-amber"></span>
-            <span class="res-label">Já existiam (ignoradas)</span>
-            <span class="res-val" id="resIgnoradasVal">0</span>
-          </div>
-          <div class="import-result-row" id="resErros">
-            <span class="res-dot res-red"></span>
-            <span class="res-label">Erros</span>
-            <span class="res-val" id="resErrosVal">0</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent logs preview -->
-      <div class="card">
-        <div class="card-title">📋 Atividade Recente</div>
-        <div class="card-sub">Últimas 5 ações registadas</div>
-        <div class="log-list" id="dashLogs">
-          <div class="empty-state">
-            <div class="spinner"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: LOJAS ══ -->
-    <div id="tab-lojas" style="display:none;">
-
-      <!-- Add store -->
-      <div class="card">
-        <div class="card-title">➕ Adicionar Nova Loja</div>
-        <div class="card-sub">Preencha os detalhes da nova loja e clique em adicionar.</div>
-        <div class="form-row">
-          <input class="form-input" id="nomeLoja" placeholder="Nome da loja (ex: Café Central)" />
-          <select class="form-select" id="catLoja">
-            <option value="">Categoria...</option>
-            <option value="restauracao">Restauração</option>
-            <option value="beleza">Beleza</option>
-            <option value="desporto">Desporto</option>
-            <option value="casa">Casa</option>
-            <option value="moda">Moda</option>
-            <option value="tecnologia">Tecnologia</option>
-          </select>
-          <input class="form-input" id="pisoLoja" placeholder="Piso (ex: Piso 0)" style="max-width:160px;" />
-          <button class="btn btn-gold" onclick="adicionarLoja()">
-            ➕ Adicionar Loja
-          </button>
-        </div>
-      </div>
-
-      <!-- Store list -->
-      <div class="card">
-        <div class="section-hd">
-          <div>
-            <h2 class="card-title" style="margin-bottom:0;">Gestão de Lojas</h2>
-            <div class="card-sub" style="margin-bottom:0;">Gerir estado e informações de cada loja.</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="carregarLojas()">↺ Atualizar</button>
-        </div>
-        <hr class="card-divider" />
-        <div class="store-list" id="listaLojas">
-          <div class="empty-state">
-            <div class="spinner"></div>
-            <p>A carregar lojas...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: MANUTENÇÃO ══ -->
-    <div id="tab-manutencao" style="display:none;">
-      <div class="grid-2">
-        <div class="card" style="margin-bottom:0;">
-          <div class="card-title">⚙️ Controlo do Site</div>
-          <div class="card-sub">Gerir o estado e visibilidade do site público.</div>
-
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <strong>Modo de Manutenção</strong>
-              <span>Redireciona visitantes para a página de manutenção</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggleManut" onchange="toggleManutencao(this.checked)">
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <strong>Notificações Push</strong>
-              <span>Enviar alertas ao painel quando há atividade</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggleNotif" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <strong>Log Automático</strong>
-              <span>Registar todas as ações automaticamente</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggleLog" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="card" style="margin-bottom:0;">
-          <div class="card-title">📝 Mensagem de Manutenção</div>
-          <div class="card-sub">Personalize o texto apresentado durante a manutenção.</div>
-          <textarea class="form-input" id="manutMsg" rows="4"
-            style="width:100%;resize:vertical;line-height:1.6;"
-            placeholder="Estamos a realizar melhorias. Voltamos em breve!">Estamos a realizar melhorias no nosso site. Voltamos em breve com novidades!</textarea>
-          <div style="margin-top:12px; display:flex; gap:10px;">
-            <input class="form-input" id="manutEta" placeholder="Previsão (ex: 2h, hoje 18:00)" />
-          </div>
-          <button class="btn btn-gold" style="margin-top:12px; width:100%;" onclick="guardarMsgManutencao()">
-            💾 Guardar Mensagem
-          </button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:20px;">
-        <div class="card-title">🔗 Ligações Rápidas</div>
-        <div class="card-sub">Aceder diretamente às páginas do site.</div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-          <a href="index.html" target="_blank" class="btn btn-ghost btn-sm">↗ Página Principal</a>
-          <a href="loja.html?id=4" target="_blank" class="btn btn-ghost btn-sm">↗ Exemplo de Loja</a>
-          <a href="manutencao.html" target="_blank" class="btn btn-ghost btn-sm">↗ Página Manutenção</a>
-          <a href="admin-login.html" class="btn btn-ghost btn-sm">↗ Página de Login</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: LOGS ══ -->
-    <div id="tab-logs" style="display:none;">
-      <div class="card">
-        <div class="section-hd">
-          <div>
-            <h2 class="card-title" style="margin-bottom:0;">Registo de Atividade</h2>
-            <div class="card-sub" style="margin-bottom:0;">Histórico completo de todas as ações efetuadas.</div>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-ghost btn-sm" onclick="carregarLogs()">↺ Atualizar</button>
-            <button class="btn btn-danger btn-sm" onclick="confirmarLimparLogs()">🗑 Limpar Logs</button>
-          </div>
-        </div>
-        <hr class="card-divider" />
-        <div class="log-list" id="listaLogs">
-          <div class="empty-state">
-            <div class="spinner"></div>
-            <p>A carregar registos...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-</div><!-- /adminPanel -->
-
-<!-- MODAL IMPORT PREVIEW -->
-<div class="modal-overlay" id="modalImport">
-  <div class="modal modal-lg">
-    <div class="modal-title">📥 Pré-visualização da Importação</div>
-    <div class="modal-sub" id="modalImportSub">Lojas encontradas no <code class="code-tag">index.html</code>. Reveja antes de confirmar.</div>
-    <div class="modal-scroll">
-      <div class="import-preview-list" id="importPreviewList"></div>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;padding:10px 0 4px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted);">
-      <span id="previewCountNew" style="color:var(--green);font-weight:600;"></span>
-      <span>novas</span>
-      <span style="color:var(--border);">·</span>
-      <span id="previewCountSkip" style="color:var(--amber);font-weight:600;"></span>
-      <span>já existem</span>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalImport')">Cancelar</button>
-      <button class="btn btn-gold" id="modalImportConfirm">⬆️ Importar Novas</button>
+  <div class="left-brand">
+    <div class="left-brand-icon">🏛️</div>
+    <div>
+      <div class="left-brand-name">Centro Comercial <span>Massaka</span></div>
+      <div class="left-brand-sub">Painel de Administração</div>
     </div>
   </div>
 </div>
 
-<!-- MODAL CONFIRM DELETE -->
+<!-- LOGIN FORM -->
+<div class="page">
+  <div class="login-wrap">
+    <div class="login-card" id="loginCard">
 
-<div class="modal-overlay" id="modalDelete">
-  <div class="modal">
-    <div class="modal-title">⚠️ Confirmar Eliminação</div>
-    <div class="modal-sub" id="modalDeleteMsg">Tem a certeza que pretende eliminar esta loja? Esta ação não pode ser revertida.</div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalDelete')">Cancelar</button>
-      <button class="btn btn-danger" id="modalDeleteConfirm">Eliminar</button>
+      <!-- Success overlay -->
+      <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">✓</div>
+        <div class="success-title">Bem-vindo!</div>
+        <div class="success-sub" id="successName">A carregar o painel...</div>
+        <div class="success-bar-wrap"><div class="success-bar"></div></div>
+      </div>
+
+      <div class="login-badge"><span class="login-badge-dot"></span> Área Restrita</div>
+
+      <div class="login-title">Iniciar <span>Sessão</span></div>
+      <div class="login-sub">Introduza as suas credenciais para aceder ao painel de administração.</div>
+
+      <div class="error-box" id="errorBox">
+        <span>⚠️</span>
+        <span id="errorMsg">Credenciais inválidas.</span>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="emailInput">Endereço de Email</label>
+        <div class="field-wrap">
+          <span class="field-icon">✉</span>
+          <input class="field-input" type="email" id="emailInput"
+            placeholder="admin@massaka.co.mz"
+            autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="passInput">Palavra-passe</label>
+        <div class="field-wrap">
+          <span class="field-icon">🔒</span>
+          <input class="field-input" type="password" id="passInput"
+            placeholder="••••••••••"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')tentarLogin()" />
+          <button class="field-eye" id="eyeBtn" onclick="togglePass()" tabindex="-1">👁</button>
+        </div>
+      </div>
+
+      <span class="forgot-link" onclick="recuperarPassword()">Esqueceu a palavra-passe?</span>
+
+      <button class="btn-login" id="loginBtn" onclick="tentarLogin()">
+        <span class="btn-text">Entrar no Painel →</span>
+        <div class="btn-spinner"></div>
+      </button>
+
+      <div class="divider">acesso seguro via Firebase</div>
+
+      <a href="index.html" class="back-link">← Voltar ao site público</a>
+    </div>
+
+    <div class="login-footer">
+      © 2025 Centro Comercial Massaka · Todos os direitos reservados
     </div>
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- FIREBASE + LOGIC -->
+<!-- Firebase -->
 <script type="module">
-  import { initializeApp }        from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-  import {
-    getFirestore, collection, getDocs, doc, deleteDoc,
-    addDoc, updateDoc, getDoc, setDoc, query, orderBy, limit
-  } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+import { getFirestore, doc, getDoc }
+  from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
-  /* ── CONFIG ── */
-  const firebaseConfig = {
-    apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
-    authDomain: "massaka-admin.firebaseapp.com",
-    projectId: "massaka-admin",
-    storageBucket: "massaka-admin.firebasestorage.app",
-    messagingSenderId: "485883674077",
-    appId: "1:485883674077:web:0113a94271b200d09bca34",
-    measurementId: "G-5QQE1VYZDQ"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
+  authDomain: "massaka-admin.firebaseapp.com",
+  projectId: "massaka-admin",
+  storageBucket: "massaka-admin.firebasestorage.app",
+  messagingSenderId: "485883674077",
+  appId: "1:485883674077:web:0113a94271b200d09bca34"
+};
 
-  const app  = initializeApp(firebaseConfig);
-  const db   = getFirestore(app);
-  const auth = getAuth(app);
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-  /* ── AUTH GUARD ── */
-  onAuthStateChanged(auth, user => {
-    if (!user) {
-      /* Not logged in at all → show denied then redirect */
-      mostrarAcessoNegado(
-        'Sessão Não Iniciada',
-        'Precisa de iniciar sessão para aceder ao painel de administração.',
-        true   /* redirect to login */
-      );
+/* If already logged in, go straight to admin */
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    try {
+      const snap = await getDoc(doc(db, 'utilizadores', user.uid));
+      if (snap.exists() && snap.data().active !== false) {
+        window.location.href = 'admin.html';
+        return;
+      }
+    } catch(e) {}
+  }
+});
+
+window.tentarLogin = async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const pass  = document.getElementById('passInput').value;
+  const btn   = document.getElementById('loginBtn');
+  const errBox = document.getElementById('errorBox');
+
+  errBox.classList.remove('show');
+
+  if (!email) { mostrarErro('Por favor introduza o seu email.'); return; }
+  if (!pass)  { mostrarErro('Por favor introduza a palavra-passe.'); return; }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    /* 1. Firebase Auth sign in */
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    const uid  = cred.user.uid;
+
+    /* 2. Load Firestore profile */
+    const snap = await getDoc(doc(db, 'utilizadores', uid));
+
+    if (!snap.exists()) {
+      await auth.signOut();
+      mostrarErro('A sua conta não tem perfil de administrador. Contacte o administrador.');
+      btn.classList.remove('loading'); btn.disabled = false;
       return;
     }
 
-    /* ---- Optional: restrict to specific admin emails ----
-       Uncomment and edit the list below to only allow certain emails.
-       Everyone else sees "Acesso Negado" even if logged in. */
-    // const ADMINS = ['admin@massaka.co.mz', 'outroAdmin@massaka.co.mz'];
-    // if (!ADMINS.includes(user.email)) {
-    //   mostrarAcessoNegado(
-    //     'Acesso Negado',
-    //     `A conta "${user.email}" não tem permissões de administrador.`,
-    //     false
-    //   );
-    //   return;
-    // }
+    const userData = snap.data();
 
-    /* All good — reveal the panel */
-    document.getElementById('authGuard').style.display   = 'none';
-    document.getElementById('adminPanel').style.display  = 'flex';
-    document.getElementById('userEmail').textContent = user.email.split('@')[0];
-    initPage();
-  });
-
-  function mostrarAcessoNegado(titulo, msg, redirecionar) {
-    const overlay = document.getElementById('authGuard');
-
-    /* Switch from loading spinner to denied content */
-    document.getElementById('authLoading').style.display = 'none';
-    const denied = document.getElementById('authDenied');
-    denied.style.display = 'flex';
-
-    document.getElementById('deniedTitle').textContent = titulo;
-    document.getElementById('deniedMsg').textContent   = msg;
-
-    /* Trigger the opacity animations (they start at opacity:0 via inline style) */
-    ['deniedTitle','deniedMsg','deniedActions'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.animation = el.style.animation; /* re-trigger */
-    });
-
-    overlay.style.display = 'flex';
-
-    /* Hide main panel */
-    document.getElementById('adminPanel').style.display = 'none';
-
-    if (redirecionar) {
-      let secs = 3;
-      const counter = document.getElementById('deniedCounter');
-      counter.style.display = 'block';
-      counter.textContent = `A redirecionar em ${secs}s...`;
-      const iv = setInterval(() => {
-        secs--;
-        counter.textContent = `A redirecionar em ${secs}s...`;
-        if (secs <= 0) { clearInterval(iv); window.location.href = 'admin-login.html'; }
-      }, 1000);
-    }
-  }
-
-  /* ── INIT ── */
-  async function initPage() {
-    await carregarConfig();
-    await carregarLojas();
-    await carregarLogs();
-    await atualizarStats();
-  }
-
-  /* ── CONFIG / MANUTENÇÃO ── */
-  async function carregarConfig() {
-    try {
-      const snap = await getDoc(doc(db, 'config', 'site'));
-      const data = snap.exists() ? snap.data() : {};
-      const emManut = data.emManutencao || false;
-
-      document.getElementById('toggleManut').checked = emManut;
-      updateManutUI(emManut);
-
-      if (data.manutMsg)  document.getElementById('manutMsg').value = data.manutMsg;
-      if (data.manutEta)  document.getElementById('manutEta').value = data.manutEta;
-    } catch(e) { console.warn('Config não encontrada', e); }
-  }
-
-  function updateManutUI(active) {
-    const badge   = document.getElementById('siteStatusBadge');
-    const banner  = document.getElementById('manutBanner');
-    const statVal = document.getElementById('statSite');
-    const statSub = document.getElementById('statSiteSub');
-    if (active) {
-      badge.className = 'topbar-badge badge-manut';
-      badge.innerHTML = '<span class="badge-dot"></span> Manutenção';
-      banner.classList.remove('hidden');
-      if (statVal) { statVal.textContent = '⚠️ Manutenção'; statSub.textContent = 'Site em manutenção'; }
-    } else {
-      badge.className = 'topbar-badge badge-online';
-      badge.innerHTML = '<span class="badge-dot"></span> Online';
-      banner.classList.add('hidden');
-      if (statVal) { statVal.textContent = '✅ Online'; statSub.textContent = 'Site público activo'; }
-    }
-  }
-
-  window.toggleManutencao = async (checked) => {
-    try {
-      const docRef = doc(db, 'config', 'site');
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        await updateDoc(docRef, { emManutencao: checked });
-      } else {
-        await setDoc(docRef, { emManutencao: checked });
-      }
-      updateManutUI(checked);
-      await log('updated', checked ? 'Manutenção activada' : 'Manutenção desactivada', 'config');
-      showToast(checked ? 'warning' : 'success', checked ? '⚠️ Modo manutenção activado' : '✅ Site voltou a Online');
-      await atualizarStats();
-    } catch(e) { showToast('error', '❌ Erro ao alterar manutenção'); }
-  };
-
-  window.guardarMsgManutencao = async () => {
-    const msg = document.getElementById('manutMsg').value;
-    const eta = document.getElementById('manutEta').value;
-    try {
-      const docRef = doc(db, 'config', 'site');
-      const snap = await getDoc(docRef);
-      if (snap.exists()) { await updateDoc(docRef, { manutMsg: msg, manutEta: eta }); }
-      else { await setDoc(docRef, { manutMsg: msg, manutEta: eta, emManutencao: false }); }
-      showToast('success', '💾 Mensagem guardada com sucesso');
-    } catch(e) { showToast('error', '❌ Erro ao guardar mensagem'); }
-  };
-
-  /* ── LOJAS ── */
-  window.carregarLojas = async () => {
-    const container = document.getElementById('listaLojas');
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
-    try {
-      const snap = await getDocs(collection(db, 'lojas'));
-      if (snap.empty) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏪</div><p>Nenhuma loja encontrada.</p></div>';
-        return;
-      }
-      const catEmoji = { restauracao:'🍽️', beleza:'💇', desporto:'🏋️', casa:'🏠', moda:'👗', tecnologia:'💻' };
-      let html = '';
-      snap.forEach(d => {
-        const l = d.data();
-        const isOpen = l.status !== 'closed';
-        const emoji  = catEmoji[l.categoria] || '🏪';
-        html += `
-          <div class="store-item" id="item-${d.id}">
-            <div class="store-item-emoji">${emoji}</div>
-            <div style="flex:1;min-width:0;">
-              <div class="store-item-name">${l.name || l.nome || 'Sem nome'}</div>
-              <div class="store-item-cat">${l.categoria || '—'} ${l.piso ? '· ' + l.piso : ''}</div>
-            </div>
-            <div class="store-status-toggle">
-              <span class="chip ${isOpen ? 'chip-open' : 'chip-closed'}">
-                <span class="chip-dot"></span>${isOpen ? 'Aberto' : 'Fechado'}
-              </span>
-              <label class="switch" style="margin-left:8px;" title="${isOpen ? 'Fechar' : 'Abrir'} loja">
-                <input type="checkbox" ${isOpen ? 'checked' : ''} onchange="toggleLojaStatus('${d.id}', '${l.name}', this.checked)">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="store-actions">
-              <button class="btn btn-danger btn-sm btn-icon" onclick="pedirApagarLoja('${d.id}', '${(l.name||'').replace(/'/g,"\\'")}')">🗑</button>
-            </div>
-          </div>`;
-      });
-      container.innerHTML = html;
-    } catch(e) { container.innerHTML = '<div class="empty-state"><p>❌ Erro ao carregar lojas.</p></div>'; }
-  };
-
-  window.adicionarLoja = async () => {
-    const nome = document.getElementById('nomeLoja').value.trim();
-    const cat  = document.getElementById('catLoja').value;
-    const piso = document.getElementById('pisoLoja').value.trim();
-    if (!nome) { showToast('error', '⚠️ Introduza o nome da loja'); return; }
-    try {
-      await addDoc(collection(db, 'lojas'), {
-        name: nome, categoria: cat || null, piso: piso || null,
-        status: 'open', criadoEm: new Date().toISOString()
-      });
-      await log('created', nome, 'loja');
-      showToast('success', `✅ Loja "${nome}" adicionada`);
-      document.getElementById('nomeLoja').value = '';
-      document.getElementById('catLoja').value  = '';
-      document.getElementById('pisoLoja').value = '';
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error', '❌ Erro ao adicionar loja'); }
-  };
-
-  window.toggleLojaStatus = async (id, nome, isOpen) => {
-    try {
-      await updateDoc(doc(db, 'lojas', id), { status: isOpen ? 'open' : 'closed' });
-      await log('updated', `${nome} → ${isOpen ? 'Aberta' : 'Fechada'}`, 'loja');
-      showToast('success', `${isOpen ? '🟢' : '🔴'} ${nome} marcada como ${isOpen ? 'aberta' : 'fechada'}`);
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error', '❌ Erro ao atualizar estado'); }
-  };
-
-  let pendingDeleteId = null, pendingDeleteNome = null;
-  window.pedirApagarLoja = (id, nome) => {
-    pendingDeleteId   = id;
-    pendingDeleteNome = nome;
-    document.getElementById('modalDeleteMsg').textContent =
-      `Tem a certeza que pretende eliminar "${nome}"? Esta ação não pode ser revertida.`;
-    document.getElementById('modalDeleteConfirm').onclick = () => confirmarApagarLoja();
-    openModal('modalDelete');
-  };
-
-  async function confirmarApagarLoja() {
-    closeModal('modalDelete');
-    try {
-      await deleteDoc(doc(db, 'lojas', pendingDeleteId));
-      await log('deleted', pendingDeleteNome, 'loja');
-      showToast('success', `🗑 "${pendingDeleteNome}" eliminada`);
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error', '❌ Erro ao eliminar loja'); }
-  }
-
-  /* ── LOGS ── */
-  async function log(tipo, alvo, colecao = 'desconhecido') {
-    if (!document.getElementById('toggleLog')?.checked) return;
-    try {
-      await addDoc(collection(db, 'logs'), {
-        tipo, alvo, colecao, data: new Date().toISOString()
-      });
-    } catch(e) {}
-  }
-
-  window.carregarLogs = async () => {
-    const container = document.getElementById('listaLogs');
-    if (!container) return;
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
-    try {
-      const snap = await getDocs(collection(db, 'logs'));
-      const logs = [];
-      snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
-      logs.sort((a,b) => new Date(b.data) - new Date(a.data));
-      if (logs.length === 0) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>Nenhum registo encontrado.</p></div>';
-        return;
-      }
-      container.innerHTML = logs.map(l => logHtml(l)).join('');
-      // Fill dashboard preview
-      const dash = document.getElementById('dashLogs');
-      if (dash) dash.innerHTML = logs.slice(0,5).map(l => logHtml(l)).join('') || '<div class="empty-state"><p>Sem atividade.</p></div>';
-      document.getElementById('statLogs').textContent = logs.length;
-    } catch(e) { container.innerHTML = '<div class="empty-state"><p>❌ Erro ao carregar logs.</p></div>'; }
-  };
-
-  function logHtml(l) {
-    const dot   = l.tipo === 'created' ? 'log-created' : l.tipo === 'deleted' ? 'log-deleted' : 'log-updated';
-    const label = l.tipo === 'created' ? 'Criado' : l.tipo === 'deleted' ? 'Eliminado' : 'Actualizado';
-    const date  = l.data ? new Date(l.data).toLocaleString('pt-MZ', { dateStyle:'short', timeStyle:'short' }) : '–';
-    return `<div class="log-item">
-      <div class="log-dot ${dot}"></div>
-      <div class="log-text">${label}: <span class="log-alvo">${l.alvo}</span></div>
-      <div class="log-time">${date}</div>
-    </div>`;
-  }
-
-  window.confirmarLimparLogs = () => {
-    document.getElementById('modalDeleteMsg').textContent = 'Tem a certeza que pretende limpar todo o histórico de atividade?';
-    document.getElementById('modalDeleteConfirm').textContent = 'Limpar Tudo';
-    document.getElementById('modalDeleteConfirm').onclick = async () => {
-      closeModal('modalDelete');
-      try {
-        const snap = await getDocs(collection(db, 'logs'));
-        const dels = snap.docs.map(d => deleteDoc(doc(db, 'logs', d.id)));
-        await Promise.all(dels);
-        showToast('success', '🗑 Registos limpos');
-        await carregarLogs();
-      } catch(e) { showToast('error', '❌ Erro ao limpar logs'); }
-    };
-    openModal('modalDelete');
-  };
-
-  /* ── STATS ── */
-  async function atualizarStats() {
-    try {
-      const lojaSnap = await getDocs(collection(db, 'lojas'));
-      let total = 0, abertas = 0;
-      lojaSnap.forEach(d => { total++; if ((d.data().status || 'open') !== 'closed') abertas++; });
-      document.getElementById('statLojas').textContent   = total;
-      document.getElementById('statAbertas').textContent = abertas;
-
-      const logSnap = await getDocs(collection(db, 'logs'));
-      document.getElementById('statLogs').textContent = logSnap.size;
-
-      const cfgSnap = await getDoc(doc(db, 'config', 'site'));
-      const emManut = cfgSnap.exists() ? cfgSnap.data().emManutencao : false;
-      document.getElementById('statSite').textContent = emManut ? '⚠️ Manutenção' : '✅ Online';
-      document.getElementById('statSiteSub').textContent = emManut ? 'Site em manutenção' : 'Site público activo';
-    } catch(e) {}
-  }
-
-  /* ── LOGOUT ── */
-  window.logout = async () => {
-    await signOut(auth);
-    window.location.href = 'admin-login.html';
-  };
-
-  /* expose to global scope */
-  window.carregarLojas = carregarLojas;
-  window.carregarLogs  = carregarLogs;
-
-  /* ══════════════════════════════════════
-     IMPORTAR LOJAS DO index.html
-  ══════════════════════════════════════ */
-
-  /* Lojas hardcoded no index.html — fonte de verdade estática */
-  const LOJAS_INDEX = [
-    {
-      id_local: 4,
-      name: 'Massaca Lounge Bar',
-      categoria: 'restauracao',
-      piso: 'Piso 0',
-      location: 'Loja 01',
-      status: 'open',
-      heroImg: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80',
-      desc: 'Gastronomia mediterrânea com os melhores sabores do mar e da terra.',
-      phone: '+258 21 000 001',
-      email: 'lounge@massaka.co.mz',
-    },
-    {
-      id_local: 5,
-      name: 'Bottle Store Massaca',
-      categoria: 'restauracao',
-      piso: 'Piso 0',
-      location: 'Loja 03',
-      status: 'open',
-      heroImg: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=700&q=80',
-      desc: 'Os melhores cafés, bolos artesanais e pequenos-almoços no coração do mall.',
-      phone: '+258 21 000 002',
-      email: 'bottlestore@massaka.co.mz',
-    },
-    {
-      id_local: 6,
-      name: 'Talho Massaca',
-      categoria: 'restauracao',
-      piso: 'Piso 0',
-      location: 'Loja 02',
-      status: 'open',
-      heroImg: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80',
-      desc: 'Carnes frescas e selecionadas com cortes artesanais e receitas exclusivas.',
-      phone: '+258 21 000 003',
-      email: 'talho@massaka.co.mz',
-    },
-    {
-      id_local: 9,
-      name: 'Nefithys Salão Unissexo',
-      categoria: 'beleza',
-      piso: 'Piso 0',
-      location: 'Loja 07',
-      status: 'open',
-      heroImg: 'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=700&q=80',
-      desc: 'Cosmética, perfumaria e tratamentos de beleza das melhores marcas.',
-      phone: '+258 21 000 004',
-      email: 'nefithys@massaka.co.mz',
-    },
-    {
-      id_local: 10,
-      name: 'CF Gym',
-      categoria: 'desporto',
-      piso: 'Piso 0',
-      location: 'Loja 40',
-      status: 'open',
-      heroImg: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&q=80',
-      desc: 'Ginásio completo com equipamento de última geração para todos os níveis.',
-      phone: '+258 21 000 005',
-      email: 'cfgym@massaka.co.mz',
-    },
-  ];
-
-  /* Step 1 — load, diff against Firestore, show preview modal */
-  window.iniciarImportacao = async () => {
-    const btn = document.getElementById('importBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A analisar...';
-
-    try {
-      /* Fetch existing names from Firestore */
-      const snap = await getDocs(collection(db, 'lojas'));
-      const existingNames = new Set();
-      snap.forEach(d => existingNames.add((d.data().name || '').trim().toLowerCase()));
-
-      const toImport = [];
-      const toSkip   = [];
-
-      LOJAS_INDEX.forEach(loja => {
-        const key = loja.name.trim().toLowerCase();
-        if (existingNames.has(key)) { toSkip.push(loja); }
-        else                         { toImport.push(loja); }
-      });
-
-      /* Build preview list */
-      const catEmoji = { restauracao:'🍽️', beleza:'💇', desporto:'🏋️', casa:'🏠', moda:'👗', tecnologia:'💻' };
-      let previewHtml = '';
-
-      [...toImport, ...toSkip].forEach(loja => {
-        const isNew = toImport.includes(loja);
-        previewHtml += `
-          <div class="import-preview-item ${isNew ? 'will-import' : 'will-skip'}">
-            <span>${catEmoji[loja.categoria] || '🏪'}</span>
-            <span style="flex:1;font-weight:500;">${loja.name}</span>
-            <span style="font-size:0.75rem;color:var(--muted);">${loja.piso} · ${loja.location}</span>
-            <span class="import-preview-badge ${isNew ? 'badge-new' : 'badge-skip'}">${isNew ? 'Nova' : 'Existe'}</span>
-          </div>`;
-      });
-
-      if (LOJAS_INDEX.length === 0) {
-        previewHtml = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Nenhuma loja encontrada no index.html.</p></div>';
-      }
-
-      document.getElementById('importPreviewList').innerHTML = previewHtml;
-      document.getElementById('previewCountNew').textContent  = toImport.length;
-      document.getElementById('previewCountSkip').textContent = toSkip.length;
-      document.getElementById('modalImportSub').innerHTML =
-        `Lojas encontradas no <code class="code-tag">index.html</code>. Reveja antes de confirmar.`;
-
-      /* Wire confirm button */
-      document.getElementById('modalImportConfirm').onclick = () => executarImportacao(toImport);
-      if (toImport.length === 0) {
-        document.getElementById('modalImportConfirm').disabled = true;
-        document.getElementById('modalImportConfirm').textContent = '✅ Todas já importadas';
-      } else {
-        document.getElementById('modalImportConfirm').disabled = false;
-        document.getElementById('modalImportConfirm').innerHTML = `⬆️ Importar ${toImport.length} Loja${toImport.length > 1 ? 's' : ''}`;
-      }
-
-      openModal('modalImport');
-    } catch(e) {
-      showToast('error', '❌ Erro ao analisar lojas: ' + e.message);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<span id="importBtnIcon">⬆️</span> Importar Agora';
-    }
-  };
-
-  /* Step 2 — actually write to Firestore with progress UI */
-  async function executarImportacao(lojas) {
-    closeModal('modalImport');
-
-    if (lojas.length === 0) {
-      showToast('warning', '⚠️ Nenhuma loja nova para importar.');
+    /* 3. Check if active */
+    if (userData.active === false) {
+      await auth.signOut();
+      mostrarErro('A sua conta foi desactivada. Contacte o administrador.');
+      btn.classList.remove('loading'); btn.disabled = false;
       return;
     }
 
-    /* Show progress bar */
-    document.getElementById('importProgress').classList.remove('hidden');
-    document.getElementById('importResults').classList.add('hidden');
+    /* 4. SUCCESS */
+    const name = userData.name || email.split('@')[0];
+    document.getElementById('successName').textContent = `Olá, ${name}! A redirecionar...`;
+    document.getElementById('successOverlay').classList.add('show');
 
-    const btn = document.getElementById('importBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A importar...';
+    setTimeout(() => { window.location.href = 'admin.html'; }, 1900);
 
-    let importadas = 0, erros = 0;
-    const total = lojas.length;
-
-    const setProgress = (done) => {
-      const pct = Math.round((done / total) * 100);
-      document.getElementById('importFill').style.width  = pct + '%';
-      document.getElementById('importProgressPct').textContent = pct + '%';
-      document.getElementById('importProgressLabel').textContent =
-        done < total ? `A importar "${lojas[done]?.name || ''}..."` : 'A finalizar...';
+  } catch(e) {
+    btn.classList.remove('loading'); btn.disabled = false;
+    const erros = {
+      'auth/user-not-found':     'Email não encontrado. Verifique o endereço introduzido.',
+      'auth/wrong-password':     'Palavra-passe incorrecta. Tente novamente.',
+      'auth/invalid-credential': 'Email ou palavra-passe incorrectos.',
+      'auth/invalid-email':      'Formato de email inválido.',
+      'auth/too-many-requests':  'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+      'auth/user-disabled':      'Esta conta foi desactivada.',
+      'auth/network-request-failed': 'Sem ligação à internet. Verifique a sua rede.',
     };
-
-    setProgress(0);
-
-    for (let i = 0; i < lojas.length; i++) {
-      const loja = lojas[i];
-      setProgress(i);
-      try {
-        await addDoc(collection(db, 'lojas'), {
-          name:       loja.name,
-          categoria:  loja.categoria,
-          piso:       loja.piso,
-          location:   loja.location,
-          status:     loja.status,
-          heroImg:    loja.heroImg,
-          desc:       loja.desc,
-          phone:      loja.phone,
-          email:      loja.email,
-          id_local:   loja.id_local,
-          importadoEm: new Date().toISOString(),
-          fonte: 'index.html',
-        });
-        await log('created', loja.name, 'importação');
-        importadas++;
-      } catch(e) {
-        console.error('Erro ao importar', loja.name, e);
-        erros++;
-      }
-      /* small delay for visible progress animation */
-      await new Promise(r => setTimeout(r, 220));
-    }
-
-    /* Finish */
-    setProgress(total);
-    document.getElementById('importProgressLabel').textContent = 'Importação concluída!';
-
-    /* Show results */
-    document.getElementById('importResults').classList.remove('hidden');
-    document.getElementById('resImportadasVal').textContent = importadas;
-    document.getElementById('resIgnoradasVal').textContent  = 0;
-    document.getElementById('resErrosVal').textContent      = erros;
-
-    /* Toast */
-    if (erros === 0) {
-      showToast('success', `✅ ${importadas} loja${importadas !== 1 ? 's' : ''} importada${importadas !== 1 ? 's' : ''} com sucesso!`);
-    } else {
-      showToast('warning', `⚠️ ${importadas} importadas, ${erros} com erro.`);
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = '✅ Importação Concluída';
-    setTimeout(() => { btn.innerHTML = '<span>⬆️</span> Importar Novamente'; }, 4000);
-
-    await carregarLojas();
-    await atualizarStats();
-    await carregarLogs();
+    mostrarErro(erros[e.code] || `Erro de autenticação: ${e.message}`);
   }
+};
 
+window.recuperarPassword = async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  if (!email) {
+    mostrarErro('Introduza o seu email no campo acima para recuperar a palavra-passe.');
+    document.getElementById('emailInput').focus();
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    mostrarSucesso('Email de recuperação enviado para ' + email);
+  } catch(e) {
+    if (e.code === 'auth/user-not-found') mostrarErro('Não existe conta com esse email.');
+    else mostrarErro('Erro ao enviar email de recuperação.');
+  }
+};
+
+function mostrarErro(msg) {
+  const box = document.getElementById('errorBox');
+  document.getElementById('errorMsg').textContent = msg;
+  box.classList.remove('show');
+  void box.offsetWidth; // force reflow for animation
+  box.classList.add('show');
+}
+
+function mostrarSucesso(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.background   = 'rgba(34,197,94,0.06)';
+  box.style.borderColor  = 'rgba(34,197,94,0.2)';
+  box.style.color        = '#86EFAC';
+  document.getElementById('errorMsg').textContent = msg;
+  box.classList.add('show');
+}
 </script>
 
 <script>
-  /* ── TAB SWITCHING ── */
-  const tabs = ['dashboard','lojas','manutencao','logs'];
-  const titles = { dashboard:'Dashboard', lojas:'Gestão de Lojas', manutencao:'Manutenção', logs:'Registos de Atividade' };
-
-  function setTab(name) {
-    tabs.forEach(t => {
-      document.getElementById('tab-' + t).style.display = t === name ? '' : 'none';
-    });
-    document.querySelectorAll('.nav-item').forEach((el, i) => {
-      el.classList.toggle('active', el.getAttribute('onclick') === `setTab('${name}')`);
-    });
-    document.getElementById('tabTitle').textContent = titles[name] || name;
-  }
-
-  /* ── MODAL ── */
-  function openModal(id)  { document.getElementById(id).classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-  window.closeModal = closeModal;
-
-  /* ── TOAST ── */
-  function showToast(type, msg) {
-    const container = document.getElementById('toastContainer');
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.innerHTML = `<span>${msg}</span>`;
-    container.appendChild(el);
-    setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(16px)'; el.style.transition = '0.3s'; setTimeout(() => el.remove(), 350); }, 3500);
-  }
-  window.showToast = showToast;
-
-  /* ── CLOCK ── */
-  function tick() {
-    document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-MZ');
-  }
-  tick(); setInterval(tick, 1000);
+function togglePass() {
+  const inp = document.getElementById('passInput');
+  const eye = document.getElementById('eyeBtn');
+  if (inp.type === 'password') { inp.type = 'text'; eye.textContent = '🙈'; }
+  else { inp.type = 'password'; eye.textContent = '👁'; }
+}
 </script>
+
 </body>
 </html>
