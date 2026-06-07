@@ -7,405 +7,265 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --gold: #C8960C;
-      --gold-light: #E4B83A;
-      --gold-pale: rgba(200,150,12,0.08);
-      --dark:  #080808;
-      --dark2: #0F0F0F;
-      --dark3: #161616;
-      --dark4: #1E1E1E;
-      --dark5: #262626;
-      --border: rgba(255,255,255,0.07);
-      --border-gold: rgba(200,150,12,0.2);
-      --text: #FFFFFF;
-      --muted: rgba(255,255,255,0.4);
-      --muted2: rgba(255,255,255,0.22);
-      --green: #22C55E;
-      --red: #EF4444;
-      --amber: #F59E0B;
-      --blue: #3B82F6;
-      --purple: #A855F7;
-      --radius: 12px;
-      --radius-lg: 18px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.4);
-      --t: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --gold:#C8960C; --gold-light:#E4B83A; --gold-pale:rgba(200,150,12,0.08);
+      --dark:#080808; --dark2:#0F0F0F; --dark3:#161616; --dark4:#1E1E1E; --dark5:#262626;
+      --border:rgba(255,255,255,0.07); --border-gold:rgba(200,150,12,0.2);
+      --text:#FFFFFF; --muted:rgba(255,255,255,0.4); --muted2:rgba(255,255,255,0.22);
+      --green:#22C55E; --red:#EF4444; --amber:#F59E0B; --blue:#3B82F6; --purple:#A855F7;
+      --radius:12px; --radius-lg:18px; --shadow:0 4px 24px rgba(0,0,0,0.4);
+      --t:0.25s cubic-bezier(0.4,0,0.2,1);
     }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Outfit',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; display:flex; overflow-x:hidden; }
+    ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--dark2)} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:99px}
 
-    html { scroll-behavior: smooth; }
+    /* SIDEBAR */
+    .sidebar{width:240px;flex-shrink:0;background:var(--dark2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;padding:0 0 1.5rem}
+    .sidebar-brand{padding:1.8rem 1.6rem 1.4rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+    .sidebar-brand-name{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--text);line-height:1.1}
+    .sidebar-brand-name span{color:var(--gold);font-style:italic}
+    .sidebar-brand-sub{font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-top:4px}
+    .sidebar-section-label{font-size:0.62rem;font-weight:600;text-transform:uppercase;letter-spacing:0.14em;color:var(--muted2);padding:0 1.6rem;margin:1.2rem 0 0.5rem}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 1.6rem;font-size:0.85rem;font-weight:400;color:var(--muted);cursor:pointer;transition:color var(--t),background var(--t);text-decoration:none;position:relative}
+    .nav-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:2px;height:0;background:var(--gold);border-radius:0 2px 2px 0;transition:height var(--t)}
+    .nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04)}
+    .nav-item.active{color:var(--text);background:rgba(200,150,12,0.08)}
+    .nav-item.active::before{height:60%}
+    .nav-item.active .nav-icon{color:var(--gold)}
+    .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+    .nav-item.nav-locked{opacity:0.35;pointer-events:none;cursor:not-allowed}
+    .nav-lock-badge{font-size:0.6rem;margin-left:auto;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--muted2)}
+    /* Admin-only badge on nav */
+    .nav-admin-badge{font-size:0.6rem;margin-left:auto;background:rgba(200,150,12,0.12);border:1px solid rgba(200,150,12,0.25);border-radius:4px;padding:1px 6px;color:var(--gold);font-weight:600}
+    .sidebar-footer{margin-top:auto;padding:0 1.6rem}
+    .sidebar-user{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--dark3);border-radius:var(--radius);border:1px solid var(--border)}
+    .user-avatar{width:32px;height:32px;border-radius:50%;background:var(--gold-pale);border:1.5px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:0.85rem;color:var(--gold);flex-shrink:0;font-weight:600}
+    .user-name{font-size:0.8rem;font-weight:500;color:var(--text)}
+    .user-role{font-size:0.68rem;color:var(--muted);margin-top:1px}
+    .btn-logout{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;transition:color var(--t);flex-shrink:0}
+    .btn-logout:hover{color:var(--red)}
 
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--dark);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      overflow-x: hidden;
-    }
+    /* MAIN */
+    .main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{height:64px;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;position:sticky;top:0;z-index:50}
+    .topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--text)}
+    .topbar-right{display:flex;align-items:center;gap:14px}
+    .topbar-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:0.72rem;font-weight:600;letter-spacing:0.05em;transition:all var(--t)}
+    .badge-online{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25)}
+    .badge-manut{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.25)}
+    .badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+    .topbar-time{font-size:0.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+    .content{padding:2.5rem;flex:1}
 
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--dark2); }
-    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
+    /* STAT CARDS */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:2rem}
+    .stat-card{background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.4rem 1.6rem;display:flex;align-items:flex-start;justify-content:space-between;transition:border-color var(--t),transform var(--t)}
+    .stat-card:hover{border-color:var(--border-gold);transform:translateY(-2px)}
+    .stat-label{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:10px}
+    .stat-value{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--text);line-height:1}
+    .stat-sub{font-size:0.72rem;color:var(--muted);margin-top:6px}
+    .stat-icon{width:38px;height:38px;border-radius:10px;background:var(--gold-pale);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
 
-    /* ══ SIDEBAR ══ */
-    .sidebar {
-      width: 240px; flex-shrink: 0;
-      background: var(--dark2);
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; bottom: 0;
-      z-index: 100; padding: 0 0 1.5rem;
-    }
-    .sidebar-brand { padding: 1.8rem 1.6rem 1.4rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
-    .sidebar-brand-name { font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 600; color: var(--text); line-height: 1.1; }
-    .sidebar-brand-name span { color: var(--gold); font-style: italic; }
-    .sidebar-brand-sub { font-size: 0.68rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 4px; }
-    .sidebar-section-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted2); padding: 0 1.6rem; margin: 1.2rem 0 0.5rem; }
+    /* SECTION HEADER */
+    .section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .section-hd h2{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:600;color:var(--text)}
+    .section-hd p{font-size:0.8rem;color:var(--muted);margin-top:2px}
 
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 1.6rem;
-      font-size: 0.85rem; font-weight: 400;
-      color: var(--muted); cursor: pointer;
-      transition: color var(--t), background var(--t);
-      text-decoration: none; position: relative;
-    }
-    .nav-item::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 2px; height: 0; background: var(--gold); border-radius: 0 2px 2px 0; transition: height var(--t); }
-    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-    .nav-item.active { color: var(--text); background: rgba(200,150,12,0.08); }
-    .nav-item.active::before { height: 60%; }
-    .nav-item.active .nav-icon { color: var(--gold); }
-    .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
-    .nav-item.nav-locked { opacity: 0.35; pointer-events: none; cursor: not-allowed; }
-    .nav-lock-badge { font-size: 0.6rem; margin-left: auto; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; color: var(--muted2); }
+    /* CARDS */
+    .card{background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.8rem 2rem;margin-bottom:20px}
+    .card-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:10px}
+    .card-sub{font-size:0.78rem;color:var(--muted);margin-bottom:1.4rem}
+    .card-divider{border:none;border-top:1px solid var(--border);margin:1.4rem 0}
 
-    .sidebar-footer { margin-top: auto; padding: 0 1.6rem; }
-    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--dark3); border-radius: var(--radius); border: 1px solid var(--border); }
-    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gold-pale); border: 1.5px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: var(--gold); flex-shrink: 0; font-weight: 600; }
-    .user-name { font-size: 0.8rem; font-weight: 500; color: var(--text); }
-    .user-role { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
-    .btn-logout { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; transition: color var(--t); flex-shrink: 0; }
-    .btn-logout:hover { color: var(--red); }
+    /* FORM */
+    .form-row{display:flex;gap:10px;flex-wrap:wrap}
+    .form-input{flex:1;min-width:200px;padding:11px 16px;background:var(--dark4);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;transition:border-color var(--t),background var(--t)}
+    .form-input::placeholder{color:var(--muted2)}
+    .form-input:focus{border-color:var(--gold);background:var(--dark5)}
+    .form-select{padding:11px 16px;background:var(--dark4);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'Outfit',sans-serif;font-size:0.88rem;outline:none;cursor:pointer;transition:border-color var(--t)}
+    .form-select:focus{border-color:var(--gold)}
+    .form-select option{background:var(--dark4)}
 
-    /* ══ MAIN ══ */
-    .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-    .topbar { height: 64px; background: var(--dark2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2.5rem; position: sticky; top: 0; z-index: 50; }
-    .topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--text); }
-    .topbar-right { display: flex; align-items: center; gap: 14px; }
-    .topbar-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 99px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; transition: all var(--t); }
-    .badge-online { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
-    .badge-manut  { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
-    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .topbar-time { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;border:none;transition:transform 0.2s,box-shadow 0.2s,background 0.2s;white-space:nowrap;letter-spacing:0.03em}
+    .btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(0)}
+    .btn-gold{background:var(--gold);color:#0B0B0B} .btn-gold:hover{box-shadow:0 8px 22px rgba(200,150,12,0.3)}
+    .btn-danger{background:rgba(239,68,68,0.12);color:var(--red);border:1px solid rgba(239,68,68,0.25)} .btn-danger:hover{background:rgba(239,68,68,0.2)}
+    .btn-ghost{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border)} .btn-ghost:hover{background:rgba(255,255,255,0.1)}
+    .btn-blue{background:rgba(59,130,246,0.12);color:var(--blue);border:1px solid rgba(59,130,246,0.25)} .btn-blue:hover{background:rgba(59,130,246,0.2)}
+    .btn-sm{padding:7px 14px;font-size:0.78rem} .btn-icon{padding:8px;border-radius:8px} .btn:disabled{opacity:0.5;pointer-events:none}
 
-    .content { padding: 2.5rem; flex: 1; }
+    /* SWITCH */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info strong{font-size:0.9rem;font-weight:500;display:block;margin-bottom:3px}
+    .toggle-info span{font-size:0.78rem;color:var(--muted)}
+    .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;inset:0;background:var(--dark5);border-radius:99px;cursor:pointer;border:1.5px solid var(--border);transition:background var(--t)}
+    .slider::before{content:'';position:absolute;height:16px;width:16px;border-radius:50%;left:3px;top:50%;transform:translateY(-50%);background:var(--muted);transition:transform var(--t),background var(--t)}
+    .switch input:checked+.slider{background:rgba(200,150,12,0.2);border-color:var(--border-gold)}
+    .switch input:checked+.slider::before{transform:translateX(20px) translateY(-50%);background:var(--gold)}
 
-    /* ══ STAT CARDS ══ */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 2rem; }
-    .stat-card { background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.4rem 1.6rem; display: flex; align-items: flex-start; justify-content: space-between; transition: border-color var(--t), transform var(--t); }
-    .stat-card:hover { border-color: var(--border-gold); transform: translateY(-2px); }
-    .stat-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; }
-    .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--text); line-height: 1; }
-    .stat-sub { font-size: 0.72rem; color: var(--muted); margin-top: 6px; }
-    .stat-icon { width: 38px; height: 38px; border-radius: 10px; background: var(--gold-pale); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    /* STORES */
+    .store-list{display:flex;flex-direction:column;gap:10px}
+    .store-item{display:flex;align-items:center;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;gap:14px;transition:border-color var(--t),background var(--t)}
+    .store-item:hover{border-color:var(--border-gold);background:var(--dark5)}
+    .store-item-emoji{width:38px;height:38px;border-radius:10px;background:var(--gold-pale);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .store-item-name{font-size:0.9rem;font-weight:500;color:var(--text);flex:1}
+    .store-item-cat{font-size:0.7rem;color:var(--muted);margin-top:2px}
+    .store-status-toggle{display:flex;align-items:center;gap:8px}
+    .store-actions{display:flex;gap:7px}
 
-    /* ══ SECTION HEADER ══ */
-    .section-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
-    .section-hd h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.35rem; font-weight: 600; color: var(--text); }
-    .section-hd p { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    /* CHIPS */
+    .chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:0.68rem;font-weight:600;letter-spacing:0.05em}
+    .chip-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+    .chip-open{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+    .chip-closed{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+    .chip-admin{background:rgba(200,150,12,0.12);color:var(--gold);border:1px solid rgba(200,150,12,0.25)}
+    .chip-staff{background:rgba(59,130,246,0.1);color:var(--blue);border:1px solid rgba(59,130,246,0.2)}
+    .chip-viewer{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border)}
+    .chip-inactive{background:rgba(239,68,68,0.08);color:var(--red);border:1px solid rgba(239,68,68,0.15)}
+    .chip-block{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+    .chip-allow{background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
 
-    /* ══ CARDS ══ */
-    .card { background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.8rem 2rem; margin-bottom: 20px; }
-    .card-title { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-weight: 600; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
-    .card-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.4rem; }
-    .card-divider { border: none; border-top: 1px solid var(--border); margin: 1.4rem 0; }
+    /* LOGS */
+    .log-list{display:flex;flex-direction:column;gap:0}
+    .log-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+    .log-item:last-child{border-bottom:none}
+    .log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+    .log-created{background:var(--green)} .log-deleted{background:var(--red)} .log-updated{background:var(--gold)}
+    .log-text{font-size:0.82rem;color:var(--text);flex:1;line-height:1.4}
+    .log-alvo{color:var(--gold)}
+    .log-time{font-size:0.7rem;color:var(--muted);flex-shrink:0;margin-top:2px}
 
-    /* ══ FORM ELEMENTS ══ */
-    .form-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .form-input { flex: 1; min-width: 200px; padding: 11px 16px; background: var(--dark4); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.88rem; outline: none; transition: border-color var(--t), background var(--t); }
-    .form-input::placeholder { color: var(--muted2); }
-    .form-input:focus { border-color: var(--gold); background: var(--dark5); }
-    .form-select { padding: 11px 16px; background: var(--dark4); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.88rem; outline: none; cursor: pointer; transition: border-color var(--t); }
-    .form-select:focus { border-color: var(--gold); }
-    .form-select option { background: var(--dark4); }
+    /* IMPORT */
+    .import-card{background:linear-gradient(135deg,var(--dark3) 0%,rgba(200,150,12,0.04) 100%);border-color:var(--border-gold) !important}
+    .import-card-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .import-icon-wrap{width:52px;height:52px;border-radius:14px;background:rgba(200,150,12,0.1);border:1px solid var(--border-gold);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+    .import-info{flex:1;min-width:200px}
+    .code-tag{display:inline-block;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:5px;padding:1px 7px;font-family:monospace;font-size:0.8em;color:var(--gold-light);font-style:normal}
+    .import-progress{margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--border)}
+    .import-progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .import-progress-label{font-size:0.8rem;color:var(--muted)} .import-progress-pct{font-size:0.8rem;font-weight:600;color:var(--gold)}
+    .import-track{height:4px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden}
+    .import-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.4s ease}
+    .import-results{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--border);display:flex;gap:24px;flex-wrap:wrap}
+    .import-result-row{display:flex;align-items:center;gap:8px;font-size:0.82rem}
+    .res-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .res-green{background:var(--green)} .res-amber{background:var(--amber)} .res-red{background:var(--red)}
+    .res-label{color:var(--muted)} .res-val{font-weight:600;color:var(--text);min-width:20px}
+    .import-preview-list{margin-top:1rem;display:flex;flex-direction:column;gap:8px}
+    .import-preview-item{display:flex;align-items:center;gap:10px;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:0.82rem}
+    .import-preview-item.will-import{border-color:rgba(34,197,94,0.2)}
+    .import-preview-item.will-skip{border-color:rgba(245,158,11,0.15);opacity:0.6}
+    .import-preview-badge{font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:3px 9px;border-radius:99px;flex-shrink:0}
+    .badge-new{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+    .badge-skip{background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.2)}
 
-    /* ══ BUTTONS ══ */
-    .btn { display: inline-flex; align-items: center; gap: 7px; padding: 11px 22px; border-radius: var(--radius); font-family: 'Outfit', sans-serif; font-size: 0.84rem; font-weight: 600; cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; white-space: nowrap; letter-spacing: 0.03em; }
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-    .btn-gold { background: var(--gold); color: #0B0B0B; }
-    .btn-gold:hover { box-shadow: 0 8px 22px rgba(200,150,12,0.3); }
-    .btn-danger { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
-    .btn-danger:hover { background: rgba(239,68,68,0.2); }
-    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
-    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
-    .btn-blue { background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
-    .btn-blue:hover { background: rgba(59,130,246,0.2); }
-    .btn-sm { padding: 7px 14px; font-size: 0.78rem; }
-    .btn-icon { padding: 8px; border-radius: 8px; }
-    .btn:disabled { opacity: 0.5; pointer-events: none; }
+    /* USERS */
+    .user-list{display:flex;flex-direction:column;gap:10px}
+    .user-item{display:grid;grid-template-columns:42px 1fr auto auto;align-items:center;gap:14px;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color var(--t),background var(--t)}
+    .user-item:hover{border-color:var(--border-gold);background:var(--dark5)}
+    .user-item.inactive-user{opacity:0.55}
+    .user-avatar-lg{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;flex-shrink:0;border:2px solid var(--border)}
+    .user-info-name{font-size:0.9rem;font-weight:500;color:var(--text)}
+    .user-info-email{font-size:0.72rem;color:var(--muted);margin-top:2px}
+    .user-perms{display:flex;gap:5px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .perm-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:99px;font-size:0.63rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+    .perm-lojas{background:rgba(34,197,94,0.08);color:var(--green);border:1px solid rgba(34,197,94,0.15)}
+    .perm-manutencao{background:rgba(245,158,11,0.08);color:var(--amber);border:1px solid rgba(245,158,11,0.15)}
+    .perm-logs{background:rgba(59,130,246,0.08);color:var(--blue);border:1px solid rgba(59,130,246,0.15)}
+    .perm-utilizadores{background:rgba(168,85,247,0.08);color:var(--purple);border:1px solid rgba(168,85,247,0.15)}
+    .perm-admin{background:rgba(200,150,12,0.12);color:var(--gold);border:1px solid rgba(200,150,12,0.25)}
+    .perm-none{background:rgba(255,255,255,0.04);color:var(--muted2);border:1px solid var(--border)}
 
-    /* ══ SWITCH TOGGLE ══ */
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-info strong { font-size: 0.9rem; font-weight: 500; display: block; margin-bottom: 3px; }
-    .toggle-info span { font-size: 0.78rem; color: var(--muted); }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; inset: 0; background: var(--dark5); border-radius: 99px; cursor: pointer; border: 1.5px solid var(--border); transition: background var(--t); }
-    .slider::before { content: ''; position: absolute; height: 16px; width: 16px; border-radius: 50%; left: 3px; top: 50%; transform: translateY(-50%); background: var(--muted); transition: transform var(--t), background var(--t); }
-    .switch input:checked + .slider { background: rgba(200,150,12,0.2); border-color: var(--border-gold); }
-    .switch input:checked + .slider::before { transform: translateX(20px) translateY(-50%); background: var(--gold); }
+    /* PERMS GRID */
+    .perms-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1rem 0}
+    .perm-checkbox-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--dark4);border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color var(--t),background var(--t)}
+    .perm-checkbox-item:hover{border-color:rgba(200,150,12,0.3);background:var(--dark5)}
+    .perm-checkbox-item.selected{border-color:var(--border-gold);background:var(--gold-pale)}
+    .perm-checkbox-item input[type="checkbox"]{display:none}
+    .perm-check-box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all var(--t);font-size:0.75rem}
+    .perm-checkbox-item.selected .perm-check-box{background:var(--gold);border-color:var(--gold);color:#0B0B0B}
+    .perm-check-label strong{display:block;font-size:0.85rem;font-weight:500}
+    .perm-check-label span{font-size:0.7rem;color:var(--muted)}
 
-    /* ══ STORE LIST ══ */
-    .store-list { display: flex; flex-direction: column; gap: 10px; }
-    .store-item { display: flex; align-items: center; background: var(--dark4); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; gap: 14px; transition: border-color var(--t), background var(--t); }
-    .store-item:hover { border-color: var(--border-gold); background: var(--dark5); }
-    .store-item-emoji { width: 38px; height: 38px; border-radius: 10px; background: var(--gold-pale); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-    .store-item-name { font-size: 0.9rem; font-weight: 500; color: var(--text); flex: 1; }
-    .store-item-cat { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-    .store-status-toggle { display: flex; align-items: center; gap: 8px; }
-    .store-actions { display: flex; gap: 7px; }
+    /* ROLE SELECTOR */
+    .role-selector{display:flex;gap:8px;margin:1rem 0}
+    .role-btn{flex:1;padding:10px 14px;border-radius:var(--radius);background:var(--dark4);border:1.5px solid var(--border);color:var(--muted);font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all var(--t);text-align:center}
+    .role-btn:hover{border-color:var(--border-gold);color:var(--text)}
+    .role-btn.selected{background:var(--gold-pale);border-color:var(--border-gold);color:var(--gold)}
 
-    /* ══ STATUS CHIPS ══ */
-    .chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; }
-    .chip-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-    .chip-open   { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .chip-closed { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-    .chip-admin  { background: rgba(200,150,12,0.12); color: var(--gold); border: 1px solid rgba(200,150,12,0.25); }
-    .chip-staff  { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
-    .chip-viewer { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
-    .chip-inactive { background: rgba(239,68,68,0.08); color: var(--red); border: 1px solid rgba(239,68,68,0.15); }
+    /* INVITE NOTICE */
+    .invite-notice{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius);padding:12px 16px;font-size:0.8rem;color:rgba(255,255,255,0.6);display:flex;align-items:flex-start;gap:10px;margin-bottom:1.2rem;line-height:1.6}
+    .invite-notice-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
 
-    /* ══ ACTIVITY LOG ══ */
-    .log-list { display: flex; flex-direction: column; gap: 0; }
-    .log-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .log-item:last-child { border-bottom: none; }
-    .log-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-    .log-created { background: var(--green); }
-    .log-deleted { background: var(--red); }
-    .log-updated { background: var(--gold); }
-    .log-text { font-size: 0.82rem; color: var(--text); flex: 1; line-height: 1.4; }
-    .log-alvo { color: var(--gold); }
-    .log-time { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+    /* MANUT BANNER */
+    .manut-banner{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:12px 18px;font-size:0.84rem;color:var(--amber);display:flex;align-items:center;gap:10px;margin-bottom:1.8rem}
+    .manut-banner.hidden{display:none !important}
 
-    /* ══ IMPORT CARD ══ */
-    .import-card { background: linear-gradient(135deg, var(--dark3) 0%, rgba(200,150,12,0.04) 100%); border-color: var(--border-gold) !important; }
-    .import-card-inner { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-    .import-icon-wrap { width: 52px; height: 52px; border-radius: 14px; background: rgba(200,150,12,0.1); border: 1px solid var(--border-gold); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
-    .import-info { flex: 1; min-width: 200px; }
-    .code-tag { display: inline-block; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; padding: 1px 7px; font-family: monospace; font-size: 0.8em; color: var(--gold-light); font-style: normal; }
-    .import-progress { margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--border); }
-    .import-progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .import-progress-label { font-size: 0.8rem; color: var(--muted); }
-    .import-progress-pct { font-size: 0.8rem; font-weight: 600; color: var(--gold); }
-    .import-track { height: 4px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
-    .import-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 0.4s ease; }
-    .import-results { margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--border); display: flex; gap: 24px; flex-wrap: wrap; }
-    .import-result-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; }
-    .res-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .res-green { background: var(--green); } .res-amber { background: var(--amber); } .res-red { background: var(--red); }
-    .res-label { color: var(--muted); } .res-val { font-weight: 600; color: var(--text); min-width: 20px; }
-    .import-preview-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 8px; }
-    .import-preview-item { display: flex; align-items: center; gap: 10px; background: var(--dark4); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 0.82rem; }
-    .import-preview-item.will-import { border-color: rgba(34,197,94,0.2); }
-    .import-preview-item.will-skip   { border-color: rgba(245,158,11,0.15); opacity: 0.6; }
-    .import-preview-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; flex-shrink: 0; }
-    .badge-new  { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-    .badge-skip { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    /* EMPTY + SPINNER */
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:0.8rem}
+    .empty-state-icon{font-size:2.5rem;opacity:0.25}
+    .empty-state p{font-size:0.88rem;color:var(--muted)}
+    .spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,0.15);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ══ USER TABLE ══ */
-    .user-list { display: flex; flex-direction: column; gap: 10px; }
-    .user-item {
-      display: grid;
-      grid-template-columns: 42px 1fr auto auto;
-      align-items: center; gap: 14px;
-      background: var(--dark4); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px 16px;
-      transition: border-color var(--t), background var(--t);
-    }
-    .user-item:hover { border-color: var(--border-gold); background: var(--dark5); }
-    .user-item.inactive-user { opacity: 0.55; }
-    .user-avatar-lg {
-      width: 42px; height: 42px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; flex-shrink: 0;
-      border: 2px solid var(--border);
-    }
-    .user-info-name { font-size: 0.9rem; font-weight: 500; color: var(--text); }
-    .user-info-email { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-    .user-perms { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
-    .perm-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 3px 9px; border-radius: 99px;
-      font-size: 0.63rem; font-weight: 600; letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-    .perm-lojas      { background: rgba(34,197,94,0.08); color: var(--green); border: 1px solid rgba(34,197,94,0.15); }
-    .perm-manutencao { background: rgba(245,158,11,0.08); color: var(--amber); border: 1px solid rgba(245,158,11,0.15); }
-    .perm-logs       { background: rgba(59,130,246,0.08); color: var(--blue); border: 1px solid rgba(59,130,246,0.15); }
-    .perm-utilizadores { background: rgba(168,85,247,0.08); color: var(--purple); border: 1px solid rgba(168,85,247,0.15); }
-    .perm-admin      { background: rgba(200,150,12,0.12); color: var(--gold); border: 1px solid rgba(200,150,12,0.25); }
-    .perm-none       { background: rgba(255,255,255,0.04); color: var(--muted2); border: 1px solid var(--border); }
-    .user-actions { display: flex; gap: 7px; align-items: center; }
+    /* TOAST */
+    .toast-container{position:fixed;bottom:2rem;right:2rem;display:flex;flex-direction:column;gap:10px;z-index:9999;pointer-events:none}
+    .toast{display:flex;align-items:center;gap:10px;background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius);padding:13px 18px;font-size:0.84rem;color:var(--text);box-shadow:var(--shadow);animation:toastIn 0.3s ease;pointer-events:auto;min-width:240px}
+    .toast.success{border-color:rgba(34,197,94,0.3)} .toast.error{border-color:rgba(239,68,68,0.3)} .toast.warning{border-color:rgba(245,158,11,0.3)}
+    @keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 
-    /* ══ PERMISSIONS GRID IN MODAL ══ */
-    .perms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1rem 0; }
-    .perm-checkbox-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px;
-      background: var(--dark4); border: 1.5px solid var(--border);
-      border-radius: var(--radius); cursor: pointer;
-      transition: border-color var(--t), background var(--t);
-    }
-    .perm-checkbox-item:hover { border-color: rgba(200,150,12,0.3); background: var(--dark5); }
-    .perm-checkbox-item.selected { border-color: var(--border-gold); background: var(--gold-pale); }
-    .perm-checkbox-item input[type="checkbox"] { display: none; }
-    .perm-check-box {
-      width: 20px; height: 20px; border-radius: 6px;
-      border: 1.5px solid var(--border); flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: all var(--t); font-size: 0.75rem;
-    }
-    .perm-checkbox-item.selected .perm-check-box { background: var(--gold); border-color: var(--gold); color: #0B0B0B; }
-    .perm-check-label strong { display: block; font-size: 0.85rem; font-weight: 500; }
-    .perm-check-label span { font-size: 0.7rem; color: var(--muted); }
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:2rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--dark3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;width:100%;max-width:440px;animation:modalIn 0.25s ease}
+    .modal-lg{max-width:560px}
+    @keyframes modalIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+    .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;margin-bottom:8px}
+    .modal-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.4rem}
+    .modal-scroll{max-height:340px;overflow-y:auto;margin:1rem 0}
+    .modal-scroll::-webkit-scrollbar{width:4px} .modal-scroll::-webkit-scrollbar-thumb{background:var(--gold);border-radius:99px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.4rem}
 
-    /* ══ ROLE SELECTOR ══ */
-    .role-selector { display: flex; gap: 8px; margin: 1rem 0; }
-    .role-btn {
-      flex: 1; padding: 10px 14px; border-radius: var(--radius);
-      background: var(--dark4); border: 1.5px solid var(--border);
-      color: var(--muted); font-family: 'Outfit', sans-serif;
-      font-size: 0.78rem; font-weight: 600; cursor: pointer;
-      transition: all var(--t); text-align: center;
-    }
-    .role-btn:hover { border-color: var(--border-gold); color: var(--text); }
-    .role-btn.selected { background: var(--gold-pale); border-color: var(--border-gold); color: var(--gold); }
+    /* IP */
+    .ip-list{display:flex;flex-direction:column;gap:10px}
+    .ip-item{display:flex;align-items:center;gap:14px;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;transition:border-color var(--t),background var(--t)}
+    .ip-item.ip-blocked{border-color:rgba(239,68,68,0.18)} .ip-item.ip-allowed{border-color:rgba(34,197,94,0.18)}
+    .ip-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .ip-icon-block{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2)} .ip-icon-allow{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2)}
+    .ip-addr{font-size:0.92rem;font-weight:600;font-family:monospace;color:var(--text)}
+    .ip-note{font-size:0.72rem;color:var(--muted);margin-top:2px} .ip-meta{font-size:0.68rem;color:var(--muted2);margin-top:2px}
+    .ip-actions{display:flex;gap:7px;margin-left:auto}
+    .ip-type-selector{display:flex;gap:8px;margin-bottom:12px}
+    .ip-type-btn{flex:1;padding:9px 14px;border-radius:var(--radius);background:var(--dark4);border:1.5px solid var(--border);color:var(--muted);font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all var(--t);text-align:center}
+    .ip-type-btn.sel-block{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.35);color:var(--red)}
+    .ip-type-btn.sel-allow{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.35);color:var(--green)}
+    .ip-stats-row{display:flex;gap:14px;margin-bottom:1.4rem;flex-wrap:wrap}
+    .ip-stat-mini{display:flex;align-items:center;gap:8px;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;flex:1;min-width:120px}
+    .ip-stat-mini-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .ip-stat-mini-val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;line-height:1}
+    .ip-stat-mini-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+    .ip-warning-box{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:12px 16px;font-size:0.8rem;color:rgba(255,255,255,0.55);display:flex;align-items:flex-start;gap:10px;margin-bottom:1.2rem;line-height:1.6}
 
-    /* ══ INVITE CARD ══ */
-    .invite-notice {
-      background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2);
-      border-radius: var(--radius); padding: 12px 16px;
-      font-size: 0.8rem; color: rgba(255,255,255,0.6);
-      display: flex; align-items: flex-start; gap: 10px;
-      margin-bottom: 1.2rem; line-height: 1.6;
-    }
-    .invite-notice-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    /* ADMIN ONLY badge in card */
+    .admin-only-banner{background:rgba(200,150,12,0.06);border:1px solid rgba(200,150,12,0.2);border-radius:var(--radius);padding:10px 16px;font-size:0.78rem;color:var(--gold);display:flex;align-items:center;gap:8px;margin-bottom:1.2rem}
 
-    /* ══ MANUT BANNER ══ */
-    .manut-banner { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); border-radius: var(--radius); padding: 12px 18px; font-size: 0.84rem; color: var(--amber); display: flex; align-items: center; gap: 10px; margin-bottom: 1.8rem; }
-    .manut-banner.hidden { display: none !important; }
-
-    /* ══ EMPTY + SPINNER ══ */
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 2rem; gap: 0.8rem; }
-    .empty-state-icon { font-size: 2.5rem; opacity: 0.25; }
-    .empty-state p { font-size: 0.88rem; color: var(--muted); }
-    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.15); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ══ TOAST ══ */
-    .toast-container { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
-    .toast { display: flex; align-items: center; gap: 10px; background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 18px; font-size: 0.84rem; color: var(--text); box-shadow: var(--shadow); animation: toastIn 0.3s ease; pointer-events: auto; min-width: 240px; }
-    .toast.success { border-color: rgba(34,197,94,0.3); }
-    .toast.error   { border-color: rgba(239,68,68,0.3); }
-    .toast.warning { border-color: rgba(245,158,11,0.3); }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
-
-    /* ══ MODAL ══ */
-    .modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; padding: 2rem; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--dark3); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; width: 100%; max-width: 440px; animation: modalIn 0.25s ease; }
-    .modal-lg { max-width: 560px; }
-    @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
-    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; margin-bottom: 8px; }
-    .modal-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.4rem; }
-    .modal-scroll { max-height: 340px; overflow-y: auto; margin: 1rem 0; }
-    .modal-scroll::-webkit-scrollbar { width: 4px; }
-    .modal-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 99px; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.4rem; }
-
-    /* ══ IP BLOCKER ══ */
-    .ip-list { display: flex; flex-direction: column; gap: 10px; }
-    .ip-item {
-      display: flex; align-items: center; gap: 14px;
-      background: var(--dark4); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 13px 16px;
-      transition: border-color var(--t), background var(--t);
-    }
-    .ip-item:hover { border-color: rgba(239,68,68,0.3); background: var(--dark5); }
-    .ip-item.ip-blocked { border-color: rgba(239,68,68,0.18); }
-    .ip-item.ip-allowed { border-color: rgba(34,197,94,0.18); }
-    .ip-icon {
-      width: 36px; height: 36px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; flex-shrink: 0;
-    }
-    .ip-icon-block { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
-    .ip-icon-allow { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
-    .ip-addr { font-size: 0.92rem; font-weight: 600; font-family: monospace; color: var(--text); }
-    .ip-note { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-    .ip-meta { font-size: 0.68rem; color: var(--muted2); margin-top: 2px; }
-    .ip-actions { display: flex; gap: 7px; margin-left: auto; }
-
-    .ip-type-selector { display: flex; gap: 8px; margin-bottom: 12px; }
-    .ip-type-btn {
-      flex: 1; padding: 9px 14px; border-radius: var(--radius);
-      background: var(--dark4); border: 1.5px solid var(--border);
-      color: var(--muted); font-family: 'Outfit', sans-serif;
-      font-size: 0.8rem; font-weight: 600; cursor: pointer;
-      transition: all var(--t); text-align: center;
-    }
-    .ip-type-btn:hover { border-color: var(--border-gold); color: var(--text); }
-    .ip-type-btn.sel-block { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); color: var(--red); }
-    .ip-type-btn.sel-allow { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.35); color: var(--green); }
-
-    .ip-stats-row { display: flex; gap: 14px; margin-bottom: 1.4rem; flex-wrap: wrap; }
-    .ip-stat-mini {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--dark4); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 10px 16px;
-      flex: 1; min-width: 120px;
-    }
-    .ip-stat-mini-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .ip-stat-mini-val { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; line-height: 1; }
-    .ip-stat-mini-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-
-    .chip-block { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
-    .chip-allow { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-
-    .ip-warning-box {
-      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
-      border-radius: var(--radius); padding: 12px 16px;
-      font-size: 0.8rem; color: rgba(255,255,255,0.55);
-      display: flex; align-items: flex-start; gap: 10px;
-      margin-bottom: 1.2rem; line-height: 1.6;
-    }
-
-    /* ══ ACCESS DENIED OVERLAY (for tab-level) ══ */
-    .access-denied-overlay {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 4rem 2rem; gap: 1rem; text-align: center;
-    }
-    .access-denied-icon { font-size: 3rem; opacity: 0.3; }
-
-    /* ══ GRID ══ */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .hidden { display: none !important; }
-
-    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-    @media (max-width: 700px) { .sidebar { display: none; } .main { margin-left: 0; } .content { padding: 1.5rem; } }
+    .access-denied-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;gap:1rem;text-align:center}
+    .access-denied-icon{font-size:3rem;opacity:0.3}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .hidden{display:none !important}
+    @media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+    @media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.content{padding:1.5rem}}
   </style>
 </head>
 <body>
 
-<!-- ══ AUTH GUARD ══ -->
-<div id="authGuard" style="
-  position:fixed; inset:0; z-index:9999; background:#070707;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:2rem; font-family:'Outfit',sans-serif;
-">
+<!-- AUTH GUARD -->
+<div id="authGuard" style="position:fixed;inset:0;z-index:9999;background:#070707;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;font-family:'Outfit',sans-serif;">
   <div id="authLoading">
     <div style="width:52px;height:52px;border-radius:14px;background:rgba(200,150,12,0.08);border:1px solid rgba(200,150,12,0.2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 1.4rem;">🏛️</div>
     <div style="width:36px;height:36px;margin:0 auto 1.2rem;border:2px solid rgba(255,255,255,0.08);border-top-color:#C8960C;border-radius:50%;animation:guardSpin 0.7s linear infinite;"></div>
@@ -414,7 +274,7 @@
   <div id="authDenied" style="display:none;flex-direction:column;align-items:center;">
     <div style="width:80px;height:80px;border-radius:24px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);display:flex;align-items:center;justify-content:center;font-size:2.2rem;margin:0 auto 1.6rem;animation:deniedBounce 0.5s ease both;">🔒</div>
     <div id="deniedTitle" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:#EF4444;margin-bottom:0.8rem;animation:deniedUp 0.4s 0.1s ease both;opacity:0;">Acesso Negado</div>
-    <div id="deniedMsg" style="font-size:0.92rem;font-weight:300;color:rgba(255,255,255,0.4);max-width:380px;line-height:1.8;margin-bottom:0.8rem;animation:deniedUp 0.4s 0.18s ease both;opacity:0;">Não tem permissões para aceder a esta área.</div>
+    <div id="deniedMsg" style="font-size:0.92rem;font-weight:300;color:rgba(255,255,255,0.4);max-width:380px;line-height:1.8;margin-bottom:0.8rem;animation:deniedUp 0.4s 0.18s ease both;opacity:0;"></div>
     <div id="deniedCounter" style="display:none;font-size:0.76rem;font-weight:500;color:rgba(239,68,68,0.5);letter-spacing:0.06em;margin-bottom:2rem;"></div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:deniedUp 0.4s 0.28s ease both;opacity:0;" id="deniedActions">
       <a href="admin-login.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 26px;border-radius:99px;background:#C8960C;color:#0B0B0B;font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:600;text-decoration:none;">🔑 Iniciar Sessão</a>
@@ -422,64 +282,40 @@
     </div>
   </div>
 </div>
-
 <style>
-  @keyframes guardSpin    { to { transform: rotate(360deg); } }
-  @keyframes deniedBounce { 0%{transform:scale(0.4);opacity:0} 70%{transform:scale(1.12);opacity:1} 100%{transform:scale(1)} }
-  @keyframes deniedUp     { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes guardSpin{to{transform:rotate(360deg)}}
+  @keyframes deniedBounce{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.12);opacity:1}100%{transform:scale(1)}}
+  @keyframes deniedUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 </style>
 
-<!-- ══ ADMIN PANEL ══ -->
+<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;width:100%;min-height:100vh;flex-direction:row;">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-brand">
     <div class="sidebar-brand-name">Centro Comercial <span>Massaka</span></div>
     <div class="sidebar-brand-sub">Painel de Administração</div>
   </div>
-
   <span class="sidebar-section-label">Visão Geral</span>
-  <a class="nav-item active" onclick="setTab('dashboard')">
-    <span class="nav-icon">▦</span> Dashboard
-  </a>
-
+  <a class="nav-item active" onclick="setTab('dashboard')"><span class="nav-icon">▦</span> Dashboard</a>
   <span class="sidebar-section-label">Gestão</span>
-  <a class="nav-item" id="nav-lojas" onclick="setTab('lojas')">
-    <span class="nav-icon">🏪</span> Lojas
-  </a>
-  <a class="nav-item" id="nav-manutencao" onclick="setTab('manutencao')">
-    <span class="nav-icon">⚙️</span> Manutenção
-  </a>
-  <a class="nav-item" id="nav-logs" onclick="setTab('logs')">
-    <span class="nav-icon">📋</span> Registos
-  </a>
-  <a class="nav-item" id="nav-utilizadores" onclick="setTab('utilizadores')">
-    <span class="nav-icon">👥</span> Utilizadores
-  </a>
-
-  <a class="nav-item" id="nav-ips" onclick="setTab('ips')">
-    <span class="nav-icon">🛡️</span> Bloqueio de IPs
-  </a>
-
+  <a class="nav-item" id="nav-lojas" onclick="setTab('lojas')"><span class="nav-icon">🏪</span> Lojas</a>
+  <a class="nav-item" id="nav-manutencao" onclick="setTab('manutencao')"><span class="nav-icon">⚙️</span> Manutenção</a>
+  <a class="nav-item" id="nav-logs" onclick="setTab('logs')"><span class="nav-icon">📋</span> Registos</a>
+  <!-- Users nav — only shown to admins via JS -->
+  <a class="nav-item hidden" id="nav-utilizadores" onclick="setTab('utilizadores')"><span class="nav-icon">👥</span> Utilizadores <span class="nav-admin-badge">Admin</span></a>
+  <a class="nav-item" id="nav-ips" onclick="setTab('ips')"><span class="nav-icon">🛡️</span> Bloqueio de IPs</a>
   <span class="sidebar-section-label">Site</span>
-  <a class="nav-item" href="index.html" target="_blank">
-    <span class="nav-icon">↗</span> Ver Site
-  </a>
-
+  <a class="nav-item" href="index.html" target="_blank"><span class="nav-icon">↗</span> Ver Site</a>
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="user-avatar" id="userAvatarInitial">A</div>
-      <div>
-        <div class="user-name" id="userEmail">–</div>
-        <div class="user-role" id="userRoleLabel">Administrador</div>
-      </div>
+      <div><div class="user-name" id="userEmail">–</div><div class="user-role" id="userRoleLabel">–</div></div>
       <button class="btn-logout" onclick="logout()" title="Sair">⏻</button>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
   <header class="topbar">
     <div class="topbar-title" id="tabTitle">Dashboard</div>
@@ -490,33 +326,16 @@
   </header>
 
   <main class="content">
+    <div class="manut-banner hidden" id="manutBanner">⚠️ <strong>Modo manutenção activo</strong> — O site público está a mostrar a página de manutenção.</div>
 
-    <div class="manut-banner hidden" id="manutBanner">
-      ⚠️ <strong>Modo manutenção activo</strong> — O site público está a mostrar a página de manutenção.
-    </div>
-
-    <!-- ══ TAB: DASHBOARD ══ -->
+    <!-- DASHBOARD -->
     <div id="tab-dashboard">
       <div class="stats-grid">
-        <div class="stat-card">
-          <div><div class="stat-label">Total de Lojas</div><div class="stat-value" id="statLojas">–</div><div class="stat-sub">No Firestore</div></div>
-          <div class="stat-icon">🏪</div>
-        </div>
-        <div class="stat-card">
-          <div><div class="stat-label">Lojas Abertas</div><div class="stat-value" id="statAbertas">–</div><div class="stat-sub">Estado: aberto</div></div>
-          <div class="stat-icon">🟢</div>
-        </div>
-        <div class="stat-card">
-          <div><div class="stat-label">Utilizadores</div><div class="stat-value" id="statUsers">–</div><div class="stat-sub">Contas registadas</div></div>
-          <div class="stat-icon">👥</div>
-        </div>
-        <div class="stat-card">
-          <div><div class="stat-label">Estado do Site</div><div class="stat-value" id="statSite" style="font-size:1.1rem;margin-top:4px;">–</div><div class="stat-sub" id="statSiteSub">A verificar...</div></div>
-          <div class="stat-icon">🌐</div>
-        </div>
+        <div class="stat-card"><div><div class="stat-label">Total de Lojas</div><div class="stat-value" id="statLojas">–</div><div class="stat-sub">No Firestore</div></div><div class="stat-icon">🏪</div></div>
+        <div class="stat-card"><div><div class="stat-label">Lojas Abertas</div><div class="stat-value" id="statAbertas">–</div><div class="stat-sub">Estado: aberto</div></div><div class="stat-icon">🟢</div></div>
+        <div class="stat-card"><div><div class="stat-label">Utilizadores</div><div class="stat-value" id="statUsers">–</div><div class="stat-sub">Contas registadas</div></div><div class="stat-icon">👥</div></div>
+        <div class="stat-card"><div><div class="stat-label">Estado do Site</div><div class="stat-value" id="statSite" style="font-size:1.1rem;margin-top:4px;">–</div><div class="stat-sub" id="statSiteSub">A verificar...</div></div><div class="stat-icon">🌐</div></div>
       </div>
-
-      <!-- Import from index.html -->
       <div class="card import-card">
         <div class="import-card-inner">
           <div class="import-icon-wrap"><span>📥</span></div>
@@ -524,15 +343,10 @@
             <div class="card-title" style="margin-bottom:4px;">Importar Lojas do <code class="code-tag">index.html</code></div>
             <div class="card-sub" style="margin-bottom:0;">Lê os cartões de loja e importa-os para o Firebase. Lojas já existentes são ignoradas.</div>
           </div>
-          <button class="btn btn-gold" id="importBtn" onclick="iniciarImportacao()">
-            <span>⬆️</span> Importar Agora
-          </button>
+          <button class="btn btn-gold" id="importBtn" onclick="iniciarImportacao()"><span>⬆️</span> Importar Agora</button>
         </div>
         <div class="import-progress hidden" id="importProgress">
-          <div class="import-progress-header">
-            <span class="import-progress-label" id="importProgressLabel">A analisar lojas...</span>
-            <span class="import-progress-pct" id="importProgressPct">0%</span>
-          </div>
+          <div class="import-progress-header"><span class="import-progress-label" id="importProgressLabel">A analisar lojas...</span><span class="import-progress-pct" id="importProgressPct">0%</span></div>
           <div class="import-track"><div class="import-fill" id="importFill" style="width:0%"></div></div>
         </div>
         <div class="import-results hidden" id="importResults">
@@ -541,7 +355,6 @@
           <div class="import-result-row"><span class="res-dot res-red"></span><span class="res-label">Erros</span><span class="res-val" id="resErrosVal">0</span></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">📋 Atividade Recente</div>
         <div class="card-sub">Últimas 5 ações registadas</div>
@@ -549,7 +362,7 @@
       </div>
     </div>
 
-    <!-- ══ TAB: LOJAS ══ -->
+    <!-- LOJAS -->
     <div id="tab-lojas" style="display:none;">
       <div id="lojas-content">
         <div class="card">
@@ -566,48 +379,34 @@
               <option value="moda">Moda</option>
               <option value="tecnologia">Tecnologia</option>
             </select>
-            <input class="form-input" id="pisoLoja" placeholder="Piso" style="max-width:160px;" />
+            <input class="form-input" id="pisoLoja" placeholder="Piso" style="max-width:160px;"/>
             <button class="btn btn-gold" onclick="adicionarLoja()">➕ Adicionar</button>
           </div>
         </div>
         <div class="card">
-          <div class="section-hd">
-            <div><h2 class="card-title" style="margin-bottom:0;">Gestão de Lojas</h2><div class="card-sub" style="margin-bottom:0;">Gerir estado e informações de cada loja.</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="carregarLojas()">↺ Atualizar</button>
-          </div>
-          <hr class="card-divider" />
+          <div class="section-hd"><div><h2 class="card-title" style="margin-bottom:0;">Gestão de Lojas</h2><div class="card-sub" style="margin-bottom:0;">Gerir estado e informações de cada loja.</div></div><button class="btn btn-ghost btn-sm" onclick="carregarLojas()">↺ Atualizar</button></div>
+          <hr class="card-divider"/>
           <div class="store-list" id="listaLojas"><div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ══ TAB: MANUTENÇÃO ══ -->
+    <!-- MANUTENÇÃO -->
     <div id="tab-manutencao" style="display:none;">
       <div id="manut-content">
         <div class="grid-2">
           <div class="card" style="margin-bottom:0;">
             <div class="card-title">⚙️ Controlo do Site</div>
             <div class="card-sub">Gerir o estado e visibilidade do site público.</div>
-            <div class="toggle-row">
-              <div class="toggle-info"><strong>Modo de Manutenção</strong><span>Redireciona visitantes para a página de manutenção</span></div>
-              <label class="switch"><input type="checkbox" id="toggleManut" onchange="toggleManutencao(this.checked)"><span class="slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-info"><strong>Notificações Push</strong><span>Alertas ao painel quando há atividade</span></div>
-              <label class="switch"><input type="checkbox" id="toggleNotif" checked><span class="slider"></span></label>
-            </div>
-            <div class="toggle-row">
-              <div class="toggle-info"><strong>Log Automático</strong><span>Registar todas as ações automaticamente</span></div>
-              <label class="switch"><input type="checkbox" id="toggleLog" checked><span class="slider"></span></label>
-            </div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Modo de Manutenção</strong><span>Redireciona visitantes para a página de manutenção</span></div><label class="switch"><input type="checkbox" id="toggleManut" onchange="toggleManutencao(this.checked)"><span class="slider"></span></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Notificações Push</strong><span>Alertas ao painel quando há atividade</span></div><label class="switch"><input type="checkbox" id="toggleNotif" checked><span class="slider"></span></label></div>
+            <div class="toggle-row"><div class="toggle-info"><strong>Log Automático</strong><span>Registar todas as ações automaticamente</span></div><label class="switch"><input type="checkbox" id="toggleLog" checked><span class="slider"></span></label></div>
           </div>
           <div class="card" style="margin-bottom:0;">
             <div class="card-title">📝 Mensagem de Manutenção</div>
             <div class="card-sub">Personalize o texto apresentado durante a manutenção.</div>
             <textarea class="form-input" id="manutMsg" rows="4" style="width:100%;resize:vertical;line-height:1.6;" placeholder="Estamos a realizar melhorias...">Estamos a realizar melhorias no nosso site. Voltamos em breve com novidades!</textarea>
-            <div style="margin-top:12px;">
-              <input class="form-input" id="manutEta" placeholder="Previsão (ex: 2h, hoje 18:00)" />
-            </div>
+            <div style="margin-top:12px;"><input class="form-input" id="manutEta" placeholder="Previsão (ex: 2h, hoje 18:00)"/></div>
             <button class="btn btn-gold" style="margin-top:12px;width:100%;" onclick="guardarMsgManutencao()">💾 Guardar Mensagem</button>
           </div>
         </div>
@@ -622,211 +421,104 @@
       </div>
     </div>
 
-    <!-- ══ TAB: LOGS ══ -->
+    <!-- LOGS -->
     <div id="tab-logs" style="display:none;">
       <div id="logs-content">
         <div class="card">
-          <div class="section-hd">
-            <div><h2 class="card-title" style="margin-bottom:0;">Registo de Atividade</h2><div class="card-sub" style="margin-bottom:0;">Histórico completo de todas as ações.</div></div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-ghost btn-sm" onclick="carregarLogs()">↺ Atualizar</button>
-              <button class="btn btn-danger btn-sm" onclick="confirmarLimparLogs()">🗑 Limpar</button>
-            </div>
-          </div>
-          <hr class="card-divider" />
+          <div class="section-hd"><div><h2 class="card-title" style="margin-bottom:0;">Registo de Atividade</h2><div class="card-sub" style="margin-bottom:0;">Histórico completo de todas as ações.</div></div><div style="display:flex;gap:8px;"><button class="btn btn-ghost btn-sm" onclick="carregarLogs()">↺ Atualizar</button><button class="btn btn-danger btn-sm" onclick="confirmarLimparLogs()">🗑 Limpar</button></div></div>
+          <hr class="card-divider"/>
           <div class="log-list" id="listaLogs"><div class="empty-state"><div class="spinner"></div></div></div>
         </div>
       </div>
     </div>
 
-    <!-- ══ TAB: UTILIZADORES ══ -->
+    <!-- UTILIZADORES — admin only -->
     <div id="tab-utilizadores" style="display:none;">
       <div id="users-content">
-
-        <!-- Add user card -->
         <div class="card" style="background:linear-gradient(135deg,var(--dark3) 0%,rgba(59,130,246,0.04) 100%);border-color:rgba(59,130,246,0.2);">
           <div class="card-title">👤 Adicionar Utilizador</div>
           <div class="card-sub">Cria um novo utilizador e define as suas permissões iniciais.</div>
-
-          <div class="invite-notice">
-            <span class="invite-notice-icon">ℹ️</span>
-            <span>O novo utilizador receberá um e-mail de convite do Firebase para definir a sua palavra-passe. O acesso às secções do painel depende das permissões que atribuir abaixo.</span>
-          </div>
-
+          <div class="admin-only-banner">👑 Apenas administradores podem adicionar e gerir utilizadores.</div>
+          <div class="invite-notice"><span class="invite-notice-icon">ℹ️</span><span>O Firebase cria a conta imediatamente. O utilizador pode fazer login com o email e palavra-passe definidos abaixo.</span></div>
           <div class="form-row" style="margin-bottom:12px;">
-            <input class="form-input" id="newUserName" placeholder="Nome completo" style="min-width:180px;" />
-            <input class="form-input" id="newUserEmail" placeholder="Email (ex: staff@massaka.co.mz)" type="email" />
+            <input class="form-input" id="newUserName" placeholder="Nome completo" style="min-width:180px;"/>
+            <input class="form-input" id="newUserEmail" placeholder="Email (ex: staff@massaka.co.mz)" type="email"/>
           </div>
-          <input class="form-input" id="newUserPassword" placeholder="Palavra-passe inicial (mín. 8 caracteres)" type="password" style="width:100%;margin-bottom:14px;" />
-
+          <input class="form-input" id="newUserPassword" placeholder="Palavra-passe inicial (mín. 8 caracteres)" type="password" style="width:100%;margin-bottom:14px;"/>
           <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Perfil</div>
           <div class="role-selector" id="roleSelectorAdd">
             <button class="role-btn" onclick="selectRole('add','admin')" data-role="admin">👑 Admin</button>
             <button class="role-btn selected" onclick="selectRole('add','staff')" data-role="staff">🔧 Staff</button>
             <button class="role-btn" onclick="selectRole('add','viewer')" data-role="viewer">👁️ Viewer</button>
           </div>
-
           <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:14px 0 8px;">Permissões Granulares</div>
           <div class="perms-grid" id="permsGridAdd">
-            <label class="perm-checkbox-item selected" onclick="togglePermItem(this)">
-              <input type="checkbox" name="perm" value="lojas" checked>
-              <div class="perm-check-box">✓</div>
-              <div class="perm-check-label"><strong>🏪 Lojas</strong><span>Ver e editar lojas</span></div>
-            </label>
-            <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-              <input type="checkbox" name="perm" value="manutencao">
-              <div class="perm-check-box"></div>
-              <div class="perm-check-label"><strong>⚙️ Manutenção</strong><span>Controlo do site</span></div>
-            </label>
-            <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-              <input type="checkbox" name="perm" value="logs">
-              <div class="perm-check-box"></div>
-              <div class="perm-check-label"><strong>📋 Registos</strong><span>Ver histórico de ações</span></div>
-            </label>
-            <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-              <input type="checkbox" name="perm" value="utilizadores">
-              <div class="perm-check-box"></div>
-              <div class="perm-check-label"><strong>👥 Utilizadores</strong><span>Gerir contas e permissões</span></div>
-            </label>
+            <label class="perm-checkbox-item selected" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="lojas" checked><div class="perm-check-box">✓</div><div class="perm-check-label"><strong>🏪 Lojas</strong><span>Ver e editar lojas</span></div></label>
+            <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="manutencao"><div class="perm-check-box"></div><div class="perm-check-label"><strong>⚙️ Manutenção</strong><span>Controlo do site</span></div></label>
+            <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="logs"><div class="perm-check-box"></div><div class="perm-check-label"><strong>📋 Registos</strong><span>Ver histórico de ações</span></div></label>
+            <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="utilizadores"><div class="perm-check-box"></div><div class="perm-check-label"><strong>👥 Utilizadores</strong><span>Gerir contas e permissões</span></div></label>
           </div>
-
-          <button class="btn btn-gold" style="margin-top:6px;" onclick="criarUtilizador()">
-            ➕ Criar Utilizador
-          </button>
+          <button class="btn btn-gold" style="margin-top:6px;" onclick="criarUtilizador()">➕ Criar Utilizador</button>
         </div>
-
-        <!-- User list -->
         <div class="card">
-          <div class="section-hd">
-            <div><h2 class="card-title" style="margin-bottom:0;">Utilizadores Registados</h2><div class="card-sub" style="margin-bottom:0;">Gerir contas, perfis e permissões.</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="carregarUtilizadores()">↺ Atualizar</button>
-          </div>
-          <hr class="card-divider" />
-          <div class="user-list" id="listaUtilizadores">
-            <div class="empty-state"><div class="spinner"></div><p>A carregar utilizadores...</p></div>
-          </div>
+          <div class="section-hd"><div><h2 class="card-title" style="margin-bottom:0;">Utilizadores Registados</h2><div class="card-sub" style="margin-bottom:0;">Gerir contas, perfis e permissões.</div></div><button class="btn btn-ghost btn-sm" onclick="carregarUtilizadores()">↺ Atualizar</button></div>
+          <hr class="card-divider"/>
+          <div class="user-list" id="listaUtilizadores"><div class="empty-state"><div class="spinner"></div><p>A carregar utilizadores...</p></div></div>
         </div>
-
       </div>
     </div>
 
-    <!-- ══ TAB: IPs ══ -->
+    <!-- IPs -->
     <div id="tab-ips" style="display:none;">
       <div id="ips-content">
-
-        <!-- Stats row -->
         <div class="ip-stats-row" id="ipStatsRow">
-          <div class="ip-stat-mini">
-            <div class="ip-stat-mini-dot" style="background:var(--red);"></div>
-            <div>
-              <div class="ip-stat-mini-val" id="statIpsBlocked">–</div>
-              <div class="ip-stat-mini-label">IPs Bloqueados</div>
-            </div>
-          </div>
-          <div class="ip-stat-mini">
-            <div class="ip-stat-mini-dot" style="background:var(--green);"></div>
-            <div>
-              <div class="ip-stat-mini-val" id="statIpsAllowed">–</div>
-              <div class="ip-stat-mini-label">IPs Permitidos</div>
-            </div>
-          </div>
-          <div class="ip-stat-mini">
-            <div class="ip-stat-mini-dot" style="background:var(--amber);"></div>
-            <div>
-              <div class="ip-stat-mini-val" id="statIpMode">–</div>
-              <div class="ip-stat-mini-label">Modo de Firewall</div>
-            </div>
-          </div>
+          <div class="ip-stat-mini"><div class="ip-stat-mini-dot" style="background:var(--red);"></div><div><div class="ip-stat-mini-val" id="statIpsBlocked">–</div><div class="ip-stat-mini-label">IPs Bloqueados</div></div></div>
+          <div class="ip-stat-mini"><div class="ip-stat-mini-dot" style="background:var(--green);"></div><div><div class="ip-stat-mini-val" id="statIpsAllowed">–</div><div class="ip-stat-mini-label">IPs Permitidos</div></div></div>
+          <div class="ip-stat-mini"><div class="ip-stat-mini-dot" style="background:var(--amber);"></div><div><div class="ip-stat-mini-val" id="statIpMode">–</div><div class="ip-stat-mini-label">Modo de Firewall</div></div></div>
         </div>
-
-        <!-- Add IP card -->
         <div class="card" style="background:linear-gradient(135deg,var(--dark3) 0%,rgba(239,68,68,0.04) 100%);border-color:rgba(239,68,68,0.18);">
           <div class="card-title">🛡️ Adicionar IP à Lista</div>
           <div class="card-sub">Bloqueie ou permita explicitamente um endereço IP no site público.</div>
-
-          <div class="ip-warning-box">
-            <span>⚠️</span>
-            <span>Para bloquear um IP, adicione-o abaixo. O ficheiro <code class="code-tag">ip-check.js</code> incluído no <code class="code-tag">index.html</code> verifica esta lista no Firestore em tempo real antes de mostrar qualquer conteúdo. IPs bloqueados vêem a página de manutenção.</span>
-          </div>
-
+          <div class="ip-warning-box"><span>⚠️</span><span>IPs bloqueados são impedidos de aceder ao site público. Use CIDR para bloquear sub-redes (ex: 192.168.1.0/24).</span></div>
           <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Tipo</div>
           <div class="ip-type-selector">
             <button class="ip-type-btn sel-block" id="ipTypeBlock" onclick="selectIpType('block')">🚫 Bloquear IP</button>
             <button class="ip-type-btn" id="ipTypeAllow" onclick="selectIpType('allow')">✅ Permitir IP</button>
           </div>
-
           <div class="form-row" style="margin-bottom:12px;">
-            <input class="form-input" id="ipAddr" placeholder="Endereço IP (ex: 192.168.1.1 ou 192.168.1.0/24)" style="font-family:monospace;font-size:0.92rem;" />
-            <input class="form-input" id="ipNote" placeholder="Nota (opcional, ex: bot suspeito)" style="max-width:280px;" />
+            <input class="form-input" id="ipAddr" placeholder="Endereço IP (ex: 192.168.1.1 ou 192.168.1.0/24)" style="font-family:monospace;font-size:0.92rem;"/>
+            <input class="form-input" id="ipNote" placeholder="Nota (opcional)" style="max-width:280px;"/>
           </div>
-
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div class="toggle-row" style="border:none;padding:0;gap:12px;">
-              <div class="toggle-info"><strong style="font-size:0.85rem;">Activo imediatamente</strong><span>Aplica o bloqueio/permissão assim que guardar</span></div>
-              <label class="switch"><input type="checkbox" id="ipActive" checked><span class="slider"></span></label>
-            </div>
+          <div class="toggle-row" style="border:none;padding:0;gap:12px;margin-bottom:12px;">
+            <div class="toggle-info"><strong style="font-size:0.85rem;">Activo imediatamente</strong><span>Aplica o bloqueio assim que guardar</span></div>
+            <label class="switch"><input type="checkbox" id="ipActive" checked><span class="slider"></span></label>
           </div>
-
-          <button class="btn btn-danger" id="addIpBtn" onclick="adicionarIP()">
-            🚫 Adicionar à Lista
-          </button>
+          <button class="btn btn-danger" id="addIpBtn" onclick="adicionarIP()">🚫 Adicionar à Lista</button>
         </div>
-
-        <!-- IP list -->
         <div class="card">
-          <div class="section-hd">
-            <div>
-              <h2 class="card-title" style="margin-bottom:0;">Lista de IPs</h2>
-              <div class="card-sub" style="margin-bottom:0;">IPs na blacklist são bloqueados no site. IPs na whitelist têm acesso garantido.</div>
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-ghost btn-sm" onclick="carregarIPs()">↺ Atualizar</button>
-              <button class="btn btn-danger btn-sm" onclick="confirmarLimparIPs()">🗑 Limpar Tudo</button>
-            </div>
-          </div>
-          <hr class="card-divider" />
-          <!-- Filter tabs -->
+          <div class="section-hd"><div><h2 class="card-title" style="margin-bottom:0;">Lista de IPs</h2><div class="card-sub" style="margin-bottom:0;">Blacklist e whitelist de endereços IP.</div></div><div style="display:flex;gap:8px;"><button class="btn btn-ghost btn-sm" onclick="carregarIPs()">↺ Atualizar</button><button class="btn btn-danger btn-sm" onclick="confirmarLimparIPs()">🗑 Limpar Tudo</button></div></div>
+          <hr class="card-divider"/>
           <div style="display:flex;gap:8px;margin-bottom:1rem;">
             <button class="btn btn-sm" id="filterAll" onclick="setIpFilter('all')" style="background:var(--gold);color:#0B0B0B;border:none;">Todos</button>
             <button class="btn btn-ghost btn-sm" id="filterBlock" onclick="setIpFilter('block')">🚫 Bloqueados</button>
             <button class="btn btn-ghost btn-sm" id="filterAllow" onclick="setIpFilter('allow')">✅ Permitidos</button>
           </div>
-          <div class="ip-list" id="listaIPs">
-            <div class="empty-state"><div class="spinner"></div><p>A carregar IPs...</p></div>
-          </div>
+          <div class="ip-list" id="listaIPs"><div class="empty-state"><div class="spinner"></div><p>A carregar IPs...</p></div></div>
         </div>
-
-        <!-- Firewall mode card -->
         <div class="card">
           <div class="card-title">⚙️ Modo de Firewall</div>
           <div class="card-sub">Configure o comportamento padrão para IPs não listados.</div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <strong>Modo Whitelist (Exclusivo)</strong>
-              <span>Apenas IPs na lista de permitidos conseguem entrar. Todos os outros são bloqueados.</span>
-            </div>
-            <label class="switch"><input type="checkbox" id="toggleWhitelistMode" onchange="toggleFirewallMode(this.checked)"><span class="slider"></span></label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <strong>Firewall Activa</strong>
-              <span>Desactivar ignora completamente as listas de IPs (acesso livre a todos)</span>
-            </div>
-            <label class="switch"><input type="checkbox" id="toggleFirewallActive" checked onchange="toggleFirewallAtivo(this.checked)"><span class="slider"></span></label>
-          </div>
-          <div style="margin-top:14px;padding:12px 16px;background:var(--dark4);border:1px solid var(--border);border-radius:var(--radius);font-size:0.78rem;color:var(--muted);line-height:1.7;">
-            💡 <strong style="color:var(--text);">Como integrar:</strong> Adicione <code class="code-tag">&lt;script src="ip-check.js"&gt;&lt;/script&gt;</code> no <code class="code-tag">&lt;head&gt;</code> do <code class="code-tag">index.html</code>. O script lê o Firestore e bloqueia automaticamente antes de mostrar o conteúdo.
-          </div>
+          <div class="toggle-row"><div class="toggle-info"><strong>Modo Whitelist (Exclusivo)</strong><span>Apenas IPs na lista de permitidos conseguem entrar.</span></div><label class="switch"><input type="checkbox" id="toggleWhitelistMode" onchange="toggleFirewallMode(this.checked)"><span class="slider"></span></label></div>
+          <div class="toggle-row"><div class="toggle-info"><strong>Firewall Activa</strong><span>Desactivar ignora completamente as listas de IPs.</span></div><label class="switch"><input type="checkbox" id="toggleFirewallActive" checked onchange="toggleFirewallAtivo(this.checked)"><span class="slider"></span></label></div>
         </div>
-
       </div>
     </div>
 
   </main>
 </div>
-</div><!-- /adminPanel -->
+</div>
 
-<!-- ══ MODAL: IMPORT PREVIEW ══ -->
+<!-- MODALS -->
 <div class="modal-overlay" id="modalImport">
   <div class="modal modal-lg">
     <div class="modal-title">📥 Pré-visualização da Importação</div>
@@ -844,52 +536,27 @@
   </div>
 </div>
 
-<!-- ══ MODAL: EDIT USER PERMISSIONS ══ -->
 <div class="modal-overlay" id="modalEditUser">
   <div class="modal modal-lg">
     <div class="modal-title">✏️ Editar Utilizador</div>
     <div class="modal-sub" id="modalEditUserSub">Alterar perfil e permissões.</div>
-
     <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Nome</div>
-    <input class="form-input" id="editUserName" placeholder="Nome completo" style="width:100%;margin-bottom:14px;" />
-
+    <input class="form-input" id="editUserName" placeholder="Nome completo" style="width:100%;margin-bottom:14px;"/>
     <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">Perfil</div>
     <div class="role-selector" id="roleSelectorEdit">
       <button class="role-btn" onclick="selectRole('edit','admin')" data-role="admin">👑 Admin</button>
       <button class="role-btn" onclick="selectRole('edit','staff')" data-role="staff">🔧 Staff</button>
       <button class="role-btn" onclick="selectRole('edit','viewer')" data-role="viewer">👁️ Viewer</button>
     </div>
-
     <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:14px 0 8px;">Permissões</div>
     <div class="perms-grid" id="permsGridEdit">
-      <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-        <input type="checkbox" name="perm" value="lojas">
-        <div class="perm-check-box"></div>
-        <div class="perm-check-label"><strong>🏪 Lojas</strong><span>Ver e editar lojas</span></div>
-      </label>
-      <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-        <input type="checkbox" name="perm" value="manutencao">
-        <div class="perm-check-box"></div>
-        <div class="perm-check-label"><strong>⚙️ Manutenção</strong><span>Controlo do site</span></div>
-      </label>
-      <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-        <input type="checkbox" name="perm" value="logs">
-        <div class="perm-check-box"></div>
-        <div class="perm-check-label"><strong>📋 Registos</strong><span>Ver histórico</span></div>
-      </label>
-      <label class="perm-checkbox-item" onclick="togglePermItem(this)">
-        <input type="checkbox" name="perm" value="utilizadores">
-        <div class="perm-check-box"></div>
-        <div class="perm-check-label"><strong>👥 Utilizadores</strong><span>Gerir contas</span></div>
-      </label>
+      <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="lojas"><div class="perm-check-box"></div><div class="perm-check-label"><strong>🏪 Lojas</strong><span>Ver e editar lojas</span></div></label>
+      <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="manutencao"><div class="perm-check-box"></div><div class="perm-check-label"><strong>⚙️ Manutenção</strong><span>Controlo do site</span></div></label>
+      <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="logs"><div class="perm-check-box"></div><div class="perm-check-label"><strong>📋 Registos</strong><span>Ver histórico</span></div></label>
+      <label class="perm-checkbox-item" onclick="togglePermItem(this)"><input type="checkbox" name="perm" value="utilizadores"><div class="perm-check-box"></div><div class="perm-check-label"><strong>👥 Utilizadores</strong><span>Gerir contas</span></div></label>
     </div>
-
     <div style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:14px 0 8px;">Estado da Conta</div>
-    <div class="toggle-row" style="padding:10px 0;">
-      <div class="toggle-info"><strong>Conta Activa</strong><span>Desactivar impede o login deste utilizador</span></div>
-      <label class="switch"><input type="checkbox" id="editUserActive"><span class="slider"></span></label>
-    </div>
-
+    <div class="toggle-row" style="padding:10px 0;"><div class="toggle-info"><strong>Conta Activa</strong><span>Desactivar impede o login deste utilizador</span></div><label class="switch"><input type="checkbox" id="editUserActive"><span class="slider"></span></label></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modalEditUser')">Cancelar</button>
       <button class="btn btn-gold" onclick="guardarEdicaoUser()">💾 Guardar Alterações</button>
@@ -897,7 +564,6 @@
   </div>
 </div>
 
-<!-- ══ MODAL: CONFIRM DELETE ══ -->
 <div class="modal-overlay" id="modalDelete">
   <div class="modal">
     <div class="modal-title">⚠️ Confirmar Eliminação</div>
@@ -909,983 +575,470 @@
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ══════════════════════════════════════
-     FIREBASE + LOGIC
-══════════════════════════════════════ -->
+<!-- FIREBASE + LOGIC -->
 <script type="module">
-  import { initializeApp }   from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, sendPasswordResetEmail }
-    from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-  import {
-    getFirestore, collection, getDocs, doc, deleteDoc,
-    addDoc, updateDoc, getDoc, setDoc, query, orderBy, limit
-  } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword }
+  from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc, updateDoc, getDoc, setDoc, query, orderBy, limit }
+  from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
-  /* ── CONFIG ── */
-  const firebaseConfig = {
-    apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
-    authDomain: "massaka-admin.firebaseapp.com",
-    projectId: "massaka-admin",
-    storageBucket: "massaka-admin.firebasestorage.app",
-    messagingSenderId: "485883674077",
-    appId: "1:485883674077:web:0113a94271b200d09bca34"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBEP8U8TqQIyYCo8csr_krFV-LdRy-l3sM",
+  authDomain: "massaka-admin.firebaseapp.com",
+  projectId: "massaka-admin",
+  storageBucket: "massaka-admin.firebasestorage.app",
+  messagingSenderId: "485883674077",
+  appId: "1:485883674077:web:0113a94271b200d09bca34"
+};
 
-  const app  = initializeApp(firebaseConfig);
-  const db   = getFirestore(app);
-  const auth = getAuth(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
-  /* ── CURRENT USER STATE ── */
-  let currentUserPerms = null;  // { role, perms: [], active }
-  let currentUserUid   = null;
-  let isRootAdmin      = false; // true only for designated admin emails
+let currentUserPerms = null;
+let currentUserUid   = null;
+let isAdmin          = false;
 
-  /* Root admin emails — these always get full access regardless of Firestore */
-  const ROOT_ADMINS = [
-    /* Add your main admin email(s) here */
-    /* 'admin@massaka.co.mz', */
-  ];
+/* ── AUTH GUARD ── */
+onAuthStateChanged(auth, async user => {
+  if (!user) { mostrarAcessoNegado('Sessão Não Iniciada', 'Precisa de iniciar sessão para aceder ao painel.', true); return; }
 
-  /* ── AUTH GUARD ── */
-  onAuthStateChanged(auth, async user => {
-    if (!user) {
-      mostrarAcessoNegado('Sessão Não Iniciada', 'Precisa de iniciar sessão para aceder ao painel de administração.', true);
-      return;
-    }
+  currentUserUid = user.uid;
+  try {
+    const snap = await getDoc(doc(db, 'utilizadores', user.uid));
+    if (!snap.exists()) { mostrarAcessoNegado('Sem Perfil', 'A sua conta não tem perfil de administrador.', true); return; }
+    const data = snap.data();
+    if (data.active === false) { mostrarAcessoNegado('Conta Desactivada', 'A sua conta foi desactivada. Contacte o administrador.', false); return; }
+    currentUserPerms = data;
+    isAdmin = data.role === 'admin';
+  } catch(e) {
+    mostrarAcessoNegado('Erro de Autenticação', 'Não foi possível verificar as suas permissões.', true); return;
+  }
 
-    currentUserUid = user.uid;
-    isRootAdmin = ROOT_ADMINS.includes(user.email);
+  /* Reveal panel */
+  document.getElementById('authGuard').style.display  = 'none';
+  document.getElementById('adminPanel').style.display = 'flex';
 
-    /* Load this user's Firestore profile */
-    try {
-      const snap = await getDoc(doc(db, 'utilizadores', user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        currentUserPerms = data;
+  const displayName = currentUserPerms?.name || user.email.split('@')[0];
+  document.getElementById('userEmail').textContent     = displayName;
+  document.getElementById('userAvatarInitial').textContent = displayName.charAt(0).toUpperCase();
+  document.getElementById('userRoleLabel').textContent = roleLabel(currentUserPerms?.role || 'staff');
 
-        /* Check if account is active (root admins bypass this) */
-        if (!isRootAdmin && data.active === false) {
-          mostrarAcessoNegado('Conta Desactivada', 'A sua conta foi desactivada por um administrador. Contacte o suporte.', false);
-          return;
-        }
-      } else {
-        /* No profile in Firestore — could be the very first admin or an unmapped user */
-        /* Auto-create a root admin profile if email is in ROOT_ADMINS */
-        if (isRootAdmin) {
-          await setDoc(doc(db, 'utilizadores', user.uid), {
-            uid: user.uid,
-            email: user.email,
-            name: user.email.split('@')[0],
-            role: 'admin',
-            perms: ['lojas','manutencao','logs','utilizadores'],
-            active: true,
-            criadoEm: new Date().toISOString()
-          });
-          currentUserPerms = { role:'admin', perms:['lojas','manutencao','logs','utilizadores'], active:true };
-        } else {
-          /* Unknown user — deny */
-          mostrarAcessoNegado('Acesso Negado', `A conta "${user.email}" não tem um perfil de administrador. Contacte o administrador principal.`, false);
-          return;
-        }
+  /* Show "Utilizadores" nav only for admins */
+  if (isAdmin) {
+    document.getElementById('nav-utilizadores').classList.remove('hidden');
+  }
+
+  applyNavRestrictions();
+  initPage();
+});
+
+function roleLabel(r) { return r==='admin'?'Administrador':r==='viewer'?'Visualizador':'Staff'; }
+
+function canAccess(section) {
+  if (!currentUserPerms) return false;
+  if (isAdmin) return true;
+  return (currentUserPerms.perms || []).includes(section);
+}
+
+function applyNavRestrictions() {
+  const navMap = { 'nav-lojas':'lojas', 'nav-manutencao':'manutencao', 'nav-logs':'logs', 'nav-ips':'ips' };
+  Object.entries(navMap).forEach(([navId, sec]) => {
+    const el = document.getElementById(navId);
+    if (el && !canAccess(sec)) {
+      el.classList.add('nav-locked');
+      if (!el.querySelector('.nav-lock-badge')) {
+        const b = document.createElement('span');
+        b.className = 'nav-lock-badge'; b.textContent = '🔒';
+        el.appendChild(b);
       }
-    } catch(e) {
-      console.error('Erro ao carregar perfil', e);
-      mostrarAcessoNegado('Erro de Autenticação', 'Não foi possível verificar as suas permissões. Tente novamente.', false);
-      return;
     }
-
-    /* All good — reveal panel */
-    document.getElementById('authGuard').style.display  = 'none';
-    document.getElementById('adminPanel').style.display = 'flex';
-
-    const displayName = currentUserPerms?.name || user.email.split('@')[0];
-    document.getElementById('userEmail').textContent = displayName;
-    document.getElementById('userAvatarInitial').textContent = displayName.charAt(0).toUpperCase();
-    document.getElementById('userRoleLabel').textContent = roleLabel(currentUserPerms?.role || 'staff');
-
-    /* Apply nav restrictions */
-    applyNavRestrictions();
-
-    initPage();
   });
+}
 
-  function roleLabel(role) {
-    return role === 'admin' ? 'Administrador' : role === 'staff' ? 'Staff' : 'Visualizador';
+function showAccessDeniedTab(containerId) {
+  const el = document.getElementById(containerId);
+  if (el) el.innerHTML = `<div class="access-denied-overlay"><div class="access-denied-icon">🔒</div><div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:rgba(255,255,255,0.6);">Acesso Restrito</div><div style="font-size:0.85rem;color:var(--muted);max-width:320px;line-height:1.7;">Não tem permissão para aceder a esta secção. Contacte o administrador.</div></div>`;
+}
+
+function mostrarAcessoNegado(titulo, msg, redirecionar) {
+  document.getElementById('authLoading').style.display = 'none';
+  const denied = document.getElementById('authDenied');
+  denied.style.display = 'flex';
+  document.getElementById('deniedTitle').textContent = titulo;
+  document.getElementById('deniedMsg').textContent   = msg;
+  document.getElementById('authGuard').style.display  = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  if (redirecionar) {
+    let s = 3; const c = document.getElementById('deniedCounter'); c.style.display='block';
+    c.textContent = `A redirecionar em ${s}s...`;
+    const iv = setInterval(()=>{ s--; c.textContent=`A redirecionar em ${s}s...`; if(s<=0){clearInterval(iv);window.location.href='admin-login.html';}},1000);
   }
+}
 
-  function canAccess(section) {
-    if (isRootAdmin) return true;
-    if (!currentUserPerms) return false;
-    if (currentUserPerms.role === 'admin') return true;
-    return (currentUserPerms.perms || []).includes(section);
-  }
+async function initPage() {
+  await carregarConfig();
+  if (canAccess('lojas'))        await carregarLojas();
+  if (canAccess('logs'))         await carregarLogs();
+  if (isAdmin)                   await carregarUtilizadores();
+  await atualizarStats();
+}
 
-  function applyNavRestrictions() {
-    const navMap = {
-      'nav-lojas':        'lojas',
-      'nav-manutencao':   'manutencao',
-      'nav-logs':         'logs',
-      'nav-utilizadores': 'utilizadores',
-    };
-    Object.entries(navMap).forEach(([navId, section]) => {
-      const el = document.getElementById(navId);
-      if (!el) return;
-      if (!canAccess(section)) {
-        el.classList.add('nav-locked');
-        el.innerHTML = el.innerHTML + '<span class="nav-lock-badge">🔒</span>';
-      }
-    });
-  }
+/* ── CONFIG ── */
+async function carregarConfig() {
+  try {
+    const snap = await getDoc(doc(db,'config','site'));
+    const data = snap.exists()?snap.data():{};
+    const em = data.emManutencao||false;
+    document.getElementById('toggleManut').checked = em;
+    updateManutUI(em);
+    if(data.manutMsg) document.getElementById('manutMsg').value = data.manutMsg;
+    if(data.manutEta) document.getElementById('manutEta').value = data.manutEta;
+  } catch(e){}
+}
 
-  function showAccessDeniedTab(containerId) {
-    document.getElementById(containerId).innerHTML = `
-      <div class="access-denied-overlay">
-        <div class="access-denied-icon">🔒</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:rgba(255,255,255,0.6);">Acesso Restrito</div>
-        <div style="font-size:0.85rem;color:var(--muted);max-width:320px;line-height:1.7;">Não tem permissão para aceder a esta secção. Contacte o administrador para solicitar acesso.</div>
-      </div>`;
-  }
+function updateManutUI(active) {
+  const badge=document.getElementById('siteStatusBadge'),banner=document.getElementById('manutBanner'),sv=document.getElementById('statSite'),ss=document.getElementById('statSiteSub');
+  if(active){badge.className='topbar-badge badge-manut';badge.innerHTML='<span class="badge-dot"></span> Manutenção';banner.classList.remove('hidden');if(sv){sv.textContent='⚠️ Manutenção';ss.textContent='Site em manutenção';}}
+  else{badge.className='topbar-badge badge-online';badge.innerHTML='<span class="badge-dot"></span> Online';banner.classList.add('hidden');if(sv){sv.textContent='✅ Online';ss.textContent='Site público activo';}}
+}
 
-  function mostrarAcessoNegado(titulo, msg, redirecionar) {
-    document.getElementById('authLoading').style.display = 'none';
-    const denied = document.getElementById('authDenied');
-    denied.style.display = 'flex';
-    document.getElementById('deniedTitle').textContent = titulo;
-    document.getElementById('deniedMsg').textContent   = msg;
-    document.getElementById('authGuard').style.display  = 'flex';
-    document.getElementById('adminPanel').style.display = 'none';
-    if (redirecionar) {
-      let secs = 3;
-      const counter = document.getElementById('deniedCounter');
-      counter.style.display = 'block';
-      counter.textContent = `A redirecionar em ${secs}s...`;
-      const iv = setInterval(() => { secs--; counter.textContent = `A redirecionar em ${secs}s...`; if (secs <= 0) { clearInterval(iv); window.location.href = 'admin-login.html'; } }, 1000);
-    }
-  }
+window.toggleManutencao = async (checked) => {
+  if(!canAccess('manutencao')){showToast('error','🔒 Sem permissão');return;}
+  try{const r=doc(db,'config','site');const s=await getDoc(r);s.exists()?await updateDoc(r,{emManutencao:checked}):await setDoc(r,{emManutencao:checked});updateManutUI(checked);await log('updated',checked?'Manutenção activada':'Manutenção desactivada','config');showToast(checked?'warning':'success',checked?'⚠️ Modo manutenção activado':'✅ Site voltou a Online');await atualizarStats();}catch(e){showToast('error','❌ Erro ao alterar manutenção');}
+};
 
-  /* ── INIT ── */
-  async function initPage() {
-    await carregarConfig();
-    if (canAccess('lojas'))        await carregarLojas();
-    if (canAccess('logs'))         await carregarLogs();
-    if (canAccess('utilizadores')) await carregarUtilizadores();
-    await atualizarStats();
-  }
+window.guardarMsgManutencao = async () => {
+  if(!canAccess('manutencao')){showToast('error','🔒 Sem permissão');return;}
+  const msg=document.getElementById('manutMsg').value,eta=document.getElementById('manutEta').value;
+  try{const r=doc(db,'config','site');const s=await getDoc(r);s.exists()?await updateDoc(r,{manutMsg:msg,manutEta:eta}):await setDoc(r,{manutMsg:msg,manutEta:eta,emManutencao:false});showToast('success','💾 Mensagem guardada');}catch(e){showToast('error','❌ Erro ao guardar');}
+};
 
-  /* ── CONFIG / MANUTENÇÃO ── */
-  async function carregarConfig() {
-    try {
-      const snap = await getDoc(doc(db, 'config', 'site'));
-      const data = snap.exists() ? snap.data() : {};
-      const emManut = data.emManutencao || false;
-      document.getElementById('toggleManut').checked = emManut;
-      updateManutUI(emManut);
-      if (data.manutMsg) document.getElementById('manutMsg').value = data.manutMsg;
-      if (data.manutEta) document.getElementById('manutEta').value = data.manutEta;
-    } catch(e) {}
-  }
+/* ── LOJAS ── */
+window.carregarLojas = async () => {
+  const c=document.getElementById('listaLojas');
+  c.innerHTML='<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
+  try{
+    const snap=await getDocs(collection(db,'lojas'));
+    if(snap.empty){c.innerHTML='<div class="empty-state"><div class="empty-state-icon">🏪</div><p>Nenhuma loja encontrada.</p></div>';return;}
+    const em={restauracao:'🍽️',beleza:'💇',desporto:'🏋️',casa:'🏠',moda:'👗',tecnologia:'💻'};
+    let html='';
+    snap.forEach(d=>{const l=d.data(),isOpen=l.status!=='closed';html+=`<div class="store-item"><div class="store-item-emoji">${em[l.categoria]||'🏪'}</div><div style="flex:1;min-width:0;"><div class="store-item-name">${l.name||l.nome||'Sem nome'}</div><div class="store-item-cat">${l.categoria||'—'} ${l.piso?'· '+l.piso:''}</div></div><div class="store-status-toggle"><span class="chip ${isOpen?'chip-open':'chip-closed'}"><span class="chip-dot"></span>${isOpen?'Aberto':'Fechado'}</span><label class="switch" style="margin-left:8px;"><input type="checkbox" ${isOpen?'checked':''} onchange="toggleLojaStatus('${d.id}','${(l.name||'').replace(/'/g,"\\'")}',this.checked)"><span class="slider"></span></label></div><div class="store-actions"><button class="btn btn-danger btn-sm btn-icon" onclick="pedirApagarLoja('${d.id}','${(l.name||'').replace(/'/g,"\\'")}')">🗑</button></div></div>`;});
+    c.innerHTML=html;
+  }catch(e){c.innerHTML='<div class="empty-state"><p>❌ Erro ao carregar.</p></div>';}
+};
 
-  function updateManutUI(active) {
-    const badge  = document.getElementById('siteStatusBadge');
-    const banner = document.getElementById('manutBanner');
-    const statV  = document.getElementById('statSite');
-    const statS  = document.getElementById('statSiteSub');
-    if (active) {
-      badge.className = 'topbar-badge badge-manut';
-      badge.innerHTML = '<span class="badge-dot"></span> Manutenção';
-      banner.classList.remove('hidden');
-      if (statV) { statV.textContent = '⚠️ Manutenção'; statS.textContent = 'Site em manutenção'; }
-    } else {
-      badge.className = 'topbar-badge badge-online';
-      badge.innerHTML = '<span class="badge-dot"></span> Online';
-      banner.classList.add('hidden');
-      if (statV) { statV.textContent = '✅ Online'; statS.textContent = 'Site público activo'; }
-    }
-  }
+window.adicionarLoja = async () => {
+  if(!canAccess('lojas')){showToast('error','🔒 Sem permissão');return;}
+  const nome=document.getElementById('nomeLoja').value.trim(),cat=document.getElementById('catLoja').value,piso=document.getElementById('pisoLoja').value.trim();
+  if(!nome){showToast('error','⚠️ Introduza o nome da loja');return;}
+  try{await addDoc(collection(db,'lojas'),{name:nome,categoria:cat||null,piso:piso||null,status:'open',criadoEm:new Date().toISOString()});await log('created',nome,'loja');showToast('success',`✅ Loja "${nome}" adicionada`);document.getElementById('nomeLoja').value='';document.getElementById('catLoja').value='';document.getElementById('pisoLoja').value='';await carregarLojas();await atualizarStats();}catch(e){showToast('error','❌ Erro ao adicionar');}
+};
 
-  window.toggleManutencao = async (checked) => {
-    if (!canAccess('manutencao')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      const docRef = doc(db,'config','site');
-      const snap = await getDoc(docRef);
-      snap.exists() ? await updateDoc(docRef,{emManutencao:checked}) : await setDoc(docRef,{emManutencao:checked});
-      updateManutUI(checked);
-      await log('updated', checked ? 'Manutenção activada' : 'Manutenção desactivada', 'config');
-      showToast(checked ? 'warning' : 'success', checked ? '⚠️ Modo manutenção activado' : '✅ Site voltou a Online');
-      await atualizarStats();
-    } catch(e) { showToast('error','❌ Erro ao alterar manutenção'); }
-  };
+window.toggleLojaStatus = async (id,nome,isOpen) => {
+  if(!canAccess('lojas')){showToast('error','🔒 Sem permissão');return;}
+  try{await updateDoc(doc(db,'lojas',id),{status:isOpen?'open':'closed'});await log('updated',`${nome} → ${isOpen?'Aberta':'Fechada'}`,'loja');showToast('success',`${isOpen?'🟢':'🔴'} ${nome} ${isOpen?'aberta':'fechada'}`);await carregarLojas();await atualizarStats();}catch(e){showToast('error','❌ Erro ao atualizar estado');}
+};
 
-  window.guardarMsgManutencao = async () => {
-    if (!canAccess('manutencao')) { showToast('error','🔒 Sem permissão'); return; }
-    const msg = document.getElementById('manutMsg').value;
-    const eta = document.getElementById('manutEta').value;
-    try {
-      const docRef = doc(db,'config','site');
-      const snap = await getDoc(docRef);
-      snap.exists() ? await updateDoc(docRef,{manutMsg:msg,manutEta:eta}) : await setDoc(docRef,{manutMsg:msg,manutEta:eta,emManutencao:false});
-      showToast('success','💾 Mensagem guardada');
-    } catch(e) { showToast('error','❌ Erro ao guardar'); }
-  };
+let pendingDeleteId=null,pendingDeleteNome=null;
+window.pedirApagarLoja = (id,nome) => {
+  if(!canAccess('lojas')){showToast('error','🔒 Sem permissão');return;}
+  pendingDeleteId=id;pendingDeleteNome=nome;
+  document.getElementById('modalDeleteMsg').textContent=`Eliminar "${nome}"? Esta ação não pode ser revertida.`;
+  document.getElementById('modalDeleteConfirm').textContent='Eliminar';
+  document.getElementById('modalDeleteConfirm').onclick=confirmarApagarLoja;
+  openModal('modalDelete');
+};
 
-  /* ── LOJAS ── */
-  window.carregarLojas = async () => {
-    const container = document.getElementById('listaLojas');
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
-    try {
-      const snap = await getDocs(collection(db,'lojas'));
-      if (snap.empty) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏪</div><p>Nenhuma loja encontrada.</p></div>'; return; }
-      const catEmoji = { restauracao:'🍽️', beleza:'💇', desporto:'🏋️', casa:'🏠', moda:'👗', tecnologia:'💻' };
-      let html = '';
-      snap.forEach(d => {
-        const l = d.data();
-        const isOpen = l.status !== 'closed';
-        html += `<div class="store-item" id="item-${d.id}">
-          <div class="store-item-emoji">${catEmoji[l.categoria]||'🏪'}</div>
-          <div style="flex:1;min-width:0;">
-            <div class="store-item-name">${l.name||l.nome||'Sem nome'}</div>
-            <div class="store-item-cat">${l.categoria||'—'} ${l.piso?'· '+l.piso:''}</div>
-          </div>
-          <div class="store-status-toggle">
-            <span class="chip ${isOpen?'chip-open':'chip-closed'}"><span class="chip-dot"></span>${isOpen?'Aberto':'Fechado'}</span>
-            <label class="switch" style="margin-left:8px;">
-              <input type="checkbox" ${isOpen?'checked':''} onchange="toggleLojaStatus('${d.id}','${l.name}',this.checked)">
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="store-actions">
-            <button class="btn btn-danger btn-sm btn-icon" onclick="pedirApagarLoja('${d.id}','${(l.name||'').replace(/'/g,"\\'")}')">🗑</button>
-          </div>
-        </div>`;
-      });
-      container.innerHTML = html;
-    } catch(e) { container.innerHTML = '<div class="empty-state"><p>❌ Erro ao carregar.</p></div>'; }
-  };
+async function confirmarApagarLoja(){
+  closeModal('modalDelete');
+  try{await deleteDoc(doc(db,'lojas',pendingDeleteId));await log('deleted',pendingDeleteNome,'loja');showToast('success',`🗑 "${pendingDeleteNome}" eliminada`);await carregarLojas();await atualizarStats();}catch(e){showToast('error','❌ Erro ao eliminar');}
+}
 
-  window.adicionarLoja = async () => {
-    if (!canAccess('lojas')) { showToast('error','🔒 Sem permissão'); return; }
-    const nome = document.getElementById('nomeLoja').value.trim();
-    const cat  = document.getElementById('catLoja').value;
-    const piso = document.getElementById('pisoLoja').value.trim();
-    if (!nome) { showToast('error','⚠️ Introduza o nome da loja'); return; }
-    try {
-      await addDoc(collection(db,'lojas'), { name:nome, categoria:cat||null, piso:piso||null, status:'open', criadoEm:new Date().toISOString() });
-      await log('created', nome, 'loja');
-      showToast('success', `✅ Loja "${nome}" adicionada`);
-      document.getElementById('nomeLoja').value = '';
-      document.getElementById('catLoja').value  = '';
-      document.getElementById('pisoLoja').value = '';
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error','❌ Erro ao adicionar'); }
-  };
+/* ── LOGS ── */
+async function log(tipo,alvo,colecao='desconhecido'){
+  if(!document.getElementById('toggleLog')?.checked) return;
+  try{await addDoc(collection(db,'logs'),{tipo,alvo,colecao,data:new Date().toISOString(),por:currentUserUid});}catch(e){}
+}
 
-  window.toggleLojaStatus = async (id, nome, isOpen) => {
-    if (!canAccess('lojas')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      await updateDoc(doc(db,'lojas',id), { status: isOpen?'open':'closed' });
-      await log('updated', `${nome} → ${isOpen?'Aberta':'Fechada'}`, 'loja');
-      showToast('success', `${isOpen?'🟢':'🔴'} ${nome} marcada como ${isOpen?'aberta':'fechada'}`);
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error','❌ Erro ao atualizar estado'); }
-  };
+window.carregarLogs = async () => {
+  const c=document.getElementById('listaLogs');if(!c)return;
+  c.innerHTML='<div class="empty-state"><div class="spinner"></div></div>';
+  try{
+    const snap=await getDocs(collection(db,'logs'));const logs=[];
+    snap.forEach(d=>logs.push({id:d.id,...d.data()}));
+    logs.sort((a,b)=>new Date(b.data)-new Date(a.data));
+    if(!logs.length){c.innerHTML='<div class="empty-state"><div class="empty-state-icon">📋</div><p>Sem registos.</p></div>';return;}
+    c.innerHTML=logs.map(l=>logHtml(l)).join('');
+    const dash=document.getElementById('dashLogs');
+    if(dash) dash.innerHTML=logs.slice(0,5).map(l=>logHtml(l)).join('')||'<div class="empty-state"><p>Sem atividade.</p></div>';
+  }catch(e){c.innerHTML='<div class="empty-state"><p>❌ Erro.</p></div>';}
+};
 
-  let pendingDeleteId = null, pendingDeleteNome = null;
-  window.pedirApagarLoja = (id, nome) => {
-    if (!canAccess('lojas')) { showToast('error','🔒 Sem permissão'); return; }
-    pendingDeleteId = id; pendingDeleteNome = nome;
-    document.getElementById('modalDeleteMsg').textContent = `Eliminar "${nome}"? Esta ação não pode ser revertida.`;
-    document.getElementById('modalDeleteConfirm').textContent = 'Eliminar';
-    document.getElementById('modalDeleteConfirm').onclick = confirmarApagarLoja;
-    openModal('modalDelete');
-  };
+function logHtml(l){
+  const dot=l.tipo==='created'?'log-created':l.tipo==='deleted'?'log-deleted':'log-updated';
+  const label=l.tipo==='created'?'Criado':l.tipo==='deleted'?'Eliminado':'Actualizado';
+  const date=l.data?new Date(l.data).toLocaleString('pt-MZ',{dateStyle:'short',timeStyle:'short'}):'–';
+  return `<div class="log-item"><div class="log-dot ${dot}"></div><div class="log-text">${label}: <span class="log-alvo">${l.alvo}</span></div><div class="log-time">${date}</div></div>`;
+}
 
-  async function confirmarApagarLoja() {
+window.confirmarLimparLogs = () => {
+  if(!canAccess('logs')){showToast('error','🔒 Sem permissão');return;}
+  document.getElementById('modalDeleteMsg').textContent='Limpar todo o histórico de atividade?';
+  document.getElementById('modalDeleteConfirm').textContent='Limpar Tudo';
+  document.getElementById('modalDeleteConfirm').onclick=async()=>{
     closeModal('modalDelete');
-    try {
-      await deleteDoc(doc(db,'lojas',pendingDeleteId));
-      await log('deleted', pendingDeleteNome, 'loja');
-      showToast('success', `🗑 "${pendingDeleteNome}" eliminada`);
-      await carregarLojas();
-      await atualizarStats();
-    } catch(e) { showToast('error','❌ Erro ao eliminar'); }
-  }
-
-  /* ── LOGS ── */
-  async function log(tipo, alvo, colecao='desconhecido') {
-    if (!document.getElementById('toggleLog')?.checked) return;
-    try { await addDoc(collection(db,'logs'), { tipo, alvo, colecao, data:new Date().toISOString() }); } catch(e) {}
-  }
-
-  window.carregarLogs = async () => {
-    const container = document.getElementById('listaLogs');
-    if (!container) return;
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
-    try {
-      const snap = await getDocs(collection(db,'logs'));
-      const logs = [];
-      snap.forEach(d => logs.push({ id:d.id, ...d.data() }));
-      logs.sort((a,b) => new Date(b.data)-new Date(a.data));
-      if (!logs.length) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>Sem registos.</p></div>'; return; }
-      container.innerHTML = logs.map(l => logHtml(l)).join('');
-      const dash = document.getElementById('dashLogs');
-      if (dash) dash.innerHTML = logs.slice(0,5).map(l => logHtml(l)).join('') || '<div class="empty-state"><p>Sem atividade.</p></div>';
-      document.getElementById('statLogs') && (document.getElementById('statLogs').textContent = logs.length);
-    } catch(e) { container.innerHTML = '<div class="empty-state"><p>❌ Erro.</p></div>'; }
+    try{const snap=await getDocs(collection(db,'logs'));await Promise.all(snap.docs.map(d=>deleteDoc(doc(db,'logs',d.id))));showToast('success','🗑 Registos limpos');await carregarLogs();}catch(e){showToast('error','❌ Erro ao limpar');}
   };
+  openModal('modalDelete');
+};
 
-  function logHtml(l) {
-    const dot   = l.tipo==='created'?'log-created':l.tipo==='deleted'?'log-deleted':'log-updated';
-    const label = l.tipo==='created'?'Criado':l.tipo==='deleted'?'Eliminado':'Actualizado';
-    const date  = l.data ? new Date(l.data).toLocaleString('pt-MZ',{dateStyle:'short',timeStyle:'short'}) : '–';
-    return `<div class="log-item"><div class="log-dot ${dot}"></div><div class="log-text">${label}: <span class="log-alvo">${l.alvo}</span></div><div class="log-time">${date}</div></div>`;
-  }
+/* ── UTILIZADORES (admin only) ── */
+window.criarUtilizador = async () => {
+  if(!isAdmin){showToast('error','🔒 Apenas administradores podem criar utilizadores');return;}
+  const name=document.getElementById('newUserName').value.trim();
+  const email=document.getElementById('newUserEmail').value.trim();
+  const password=document.getElementById('newUserPassword').value;
+  const role=document.querySelector('#roleSelectorAdd .role-btn.selected')?.dataset.role||'staff';
+  const perms=getSelectedPerms('permsGridAdd');
+  if(!name){showToast('error','⚠️ Introduza o nome');return;}
+  if(!email){showToast('error','⚠️ Introduza o email');return;}
+  if(!password||password.length<8){showToast('error','⚠️ Palavra-passe com mínimo 8 caracteres');return;}
+  const btn=document.querySelector('[onclick="criarUtilizador()"]');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A criar...';
+  try{
+    const cred=await createUserWithEmailAndPassword(auth,email,password);
+    await setDoc(doc(db,'utilizadores',cred.user.uid),{uid:cred.user.uid,email,name,role,perms:role==='admin'?['lojas','manutencao','logs','utilizadores']:perms,active:true,criadoEm:new Date().toISOString(),criadoPor:currentUserUid});
+    await log('created',`Utilizador: ${name} (${email})`,'utilizadores');
+    showToast('success',`✅ Utilizador "${name}" criado`);
+    document.getElementById('newUserName').value='';document.getElementById('newUserEmail').value='';document.getElementById('newUserPassword').value='';
+    await carregarUtilizadores();await atualizarStats();
+  }catch(e){
+    const msgs={'auth/email-already-in-use':'⚠️ Email já registado.','auth/invalid-email':'⚠️ Email inválido.','auth/weak-password':'⚠️ Palavra-passe fraca.'};
+    showToast('error',msgs[e.code]||`❌ ${e.message}`);
+  }finally{btn.disabled=false;btn.innerHTML='➕ Criar Utilizador';}
+};
 
-  window.confirmarLimparLogs = () => {
-    if (!canAccess('logs')) { showToast('error','🔒 Sem permissão'); return; }
-    document.getElementById('modalDeleteMsg').textContent = 'Limpar todo o histórico de atividade?';
-    document.getElementById('modalDeleteConfirm').textContent = 'Limpar Tudo';
-    document.getElementById('modalDeleteConfirm').onclick = async () => {
-      closeModal('modalDelete');
-      try {
-        const snap = await getDocs(collection(db,'logs'));
-        await Promise.all(snap.docs.map(d => deleteDoc(doc(db,'logs',d.id))));
-        showToast('success','🗑 Registos limpos');
-        await carregarLogs();
-      } catch(e) { showToast('error','❌ Erro ao limpar'); }
-    };
-    openModal('modalDelete');
-  };
-
-  /* ── UTILIZADORES ── */
-
-  window.criarUtilizador = async () => {
-    if (!canAccess('utilizadores')) { showToast('error','🔒 Sem permissão'); return; }
-
-    const name     = document.getElementById('newUserName').value.trim();
-    const email    = document.getElementById('newUserEmail').value.trim();
-    const password = document.getElementById('newUserPassword').value;
-    const role     = document.querySelector('#roleSelectorAdd .role-btn.selected')?.dataset.role || 'staff';
-    const perms    = getSelectedPerms('permsGridAdd');
-
-    if (!name)  { showToast('error','⚠️ Introduza o nome'); return; }
-    if (!email) { showToast('error','⚠️ Introduza o email'); return; }
-    if (!password || password.length < 8) { showToast('error','⚠️ Palavra-passe com mínimo 8 caracteres'); return; }
-
-    const btn = document.querySelector('[onclick="criarUtilizador()"]');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A criar...';
-
-    try {
-      /* Create Firebase Auth account */
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      const uid  = cred.user.uid;
-
-      /* Save profile + permissions to Firestore */
-      await setDoc(doc(db,'utilizadores',uid), {
-        uid, email, name, role,
-        perms: role === 'admin' ? ['lojas','manutencao','logs','utilizadores'] : perms,
-        active: true,
-        criadoEm: new Date().toISOString(),
-        criadoPor: currentUserUid
-      });
-
-      await log('created', `Utilizador: ${name} (${email})`, 'utilizadores');
-      showToast('success', `✅ Utilizador "${name}" criado com sucesso`);
-
-      /* Clear form */
-      document.getElementById('newUserName').value     = '';
-      document.getElementById('newUserEmail').value    = '';
-      document.getElementById('newUserPassword').value = '';
-
-      await carregarUtilizadores();
-      await atualizarStats();
-    } catch(e) {
-      const msgs = {
-        'auth/email-already-in-use': '⚠️ Este email já está registado.',
-        'auth/invalid-email':        '⚠️ Email inválido.',
-        'auth/weak-password':        '⚠️ Palavra-passe demasiado fraca.',
-      };
-      showToast('error', msgs[e.code] || `❌ Erro: ${e.message}`);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '➕ Criar Utilizador';
-    }
-  };
-
-  window.carregarUtilizadores = async () => {
-    const container = document.getElementById('listaUtilizadores');
-    if (!container) return;
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
-    try {
-      const snap = await getDocs(collection(db,'utilizadores'));
-      const users = [];
-      snap.forEach(d => users.push({ id:d.id, ...d.data() }));
-      users.sort((a,b) => new Date(a.criadoEm||0) - new Date(b.criadoEm||0));
-
-      document.getElementById('statUsers').textContent = users.length;
-
-      if (!users.length) {
-        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><p>Nenhum utilizador registado.</p></div>';
-        return;
-      }
-
-      const colors = ['#C8960C','#22C55E','#3B82F6','#A855F7','#EF4444','#F59E0B'];
-      let html = '';
-      users.forEach((u, i) => {
-        const color     = colors[i % colors.length];
-        const initial   = (u.name || u.email || '?').charAt(0).toUpperCase();
-        const roleChip  = u.role==='admin' ? 'chip-admin' : u.role==='viewer' ? 'chip-viewer' : 'chip-staff';
-        const roleText  = u.role==='admin' ? '👑 Admin' : u.role==='viewer' ? '👁️ Viewer' : '🔧 Staff';
-        const isMe      = u.uid === currentUserUid;
-
-        const activePerms = u.role==='admin'
-          ? ['lojas','manutencao','logs','utilizadores']
-          : (u.perms || []);
-
-        const permLabels = { lojas:'🏪 Lojas', manutencao:'⚙️ Manutenção', logs:'📋 Logs', utilizadores:'👥 Users' };
-        const permsHtml  = activePerms.length
-          ? activePerms.map(p => `<span class="perm-tag perm-${p}">${permLabels[p]||p}</span>`).join('')
-          : `<span class="perm-tag perm-none">Sem permissões</span>`;
-
-        html += `
-          <div class="user-item ${u.active===false?'inactive-user':''}">
-            <div class="user-avatar-lg" style="background:${color}22;border-color:${color}44;color:${color};">${initial}</div>
-            <div>
-              <div class="user-info-name">${u.name || '–'} ${isMe ? '<span style="font-size:0.68rem;color:var(--muted);font-weight:400;">(você)</span>' : ''}</div>
-              <div class="user-info-email">${u.email || '–'}</div>
-            </div>
-            <div class="user-perms">
-              <span class="chip ${roleChip}">${roleText}</span>
-              ${u.active===false ? '<span class="chip chip-inactive">Inactivo</span>' : ''}
-              ${permsHtml}
-            </div>
-            <div class="user-actions">
-              <button class="btn btn-blue btn-sm btn-icon" title="Editar" onclick="abrirEdicaoUser('${u.id}')">✏️</button>
-              ${!isMe ? `<button class="btn btn-danger btn-sm btn-icon" title="Eliminar" onclick="pedirApagarUser('${u.id}','${(u.name||u.email||'').replace(/'/g,"\\'")}')">🗑</button>` : ''}
-            </div>
-          </div>`;
-      });
-      container.innerHTML = html;
-    } catch(e) { container.innerHTML = '<div class="empty-state"><p>❌ Erro ao carregar.</p></div>'; }
-  };
-
-  let editingUserId = null;
-  window.abrirEdicaoUser = async (id) => {
-    if (!canAccess('utilizadores')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      const snap = await getDoc(doc(db,'utilizadores',id));
-      if (!snap.exists()) { showToast('error','❌ Utilizador não encontrado'); return; }
-      const u = snap.data();
-      editingUserId = id;
-
-      document.getElementById('editUserName').value = u.name || '';
-      document.getElementById('editUserActive').checked = u.active !== false;
-      document.getElementById('modalEditUserSub').textContent = u.email || '';
-
-      /* Set role */
-      selectRole('edit', u.role || 'staff');
-
-      /* Set perms */
-      const activePerms = u.role==='admin'
-        ? ['lojas','manutencao','logs','utilizadores']
-        : (u.perms || []);
-      setPermsGrid('permsGridEdit', activePerms);
-
-      openModal('modalEditUser');
-    } catch(e) { showToast('error','❌ Erro ao carregar utilizador'); }
-  };
-
-  window.guardarEdicaoUser = async () => {
-    if (!editingUserId) return;
-    const name   = document.getElementById('editUserName').value.trim();
-    const active = document.getElementById('editUserActive').checked;
-    const role   = document.querySelector('#roleSelectorEdit .role-btn.selected')?.dataset.role || 'staff';
-    const perms  = role==='admin' ? ['lojas','manutencao','logs','utilizadores'] : getSelectedPerms('permsGridEdit');
-
-    try {
-      await updateDoc(doc(db,'utilizadores',editingUserId), { name, role, perms, active });
-      await log('updated', `Permissões: ${name}`, 'utilizadores');
-      showToast('success', `✅ "${name}" actualizado`);
-      closeModal('modalEditUser');
-      await carregarUtilizadores();
-    } catch(e) { showToast('error','❌ Erro ao guardar'); }
-  };
-
-  window.pedirApagarUser = (id, nome) => {
-    if (!canAccess('utilizadores')) { showToast('error','🔒 Sem permissão'); return; }
-    document.getElementById('modalDeleteMsg').textContent = `Eliminar o utilizador "${nome}" do Firestore? (A conta Auth permanece — use a Firebase Console para remover completamente.)`;
-    document.getElementById('modalDeleteConfirm').textContent = 'Eliminar Perfil';
-    document.getElementById('modalDeleteConfirm').onclick = async () => {
-      closeModal('modalDelete');
-      try {
-        await deleteDoc(doc(db,'utilizadores',id));
-        await log('deleted', `Utilizador: ${nome}`, 'utilizadores');
-        showToast('success', `🗑 "${nome}" removido`);
-        await carregarUtilizadores();
-        await atualizarStats();
-      } catch(e) { showToast('error','❌ Erro ao eliminar'); }
-    };
-    openModal('modalDelete');
-  };
-
-  /* ── STATS ── */
-  async function atualizarStats() {
-    try {
-      const lojaSnap = await getDocs(collection(db,'lojas'));
-      let total=0, abertas=0;
-      lojaSnap.forEach(d => { total++; if((d.data().status||'open')!=='closed') abertas++; });
-      const el1 = document.getElementById('statLojas');
-      const el2 = document.getElementById('statAbertas');
-      if (el1) el1.textContent = total;
-      if (el2) el2.textContent = abertas;
-
-      const userSnap = await getDocs(collection(db,'utilizadores'));
-      const elU = document.getElementById('statUsers');
-      if (elU) elU.textContent = userSnap.size;
-
-      const cfgSnap = await getDoc(doc(db,'config','site'));
-      const emManut = cfgSnap.exists() ? cfgSnap.data().emManutencao : false;
-      const elS = document.getElementById('statSite');
-      const elSS = document.getElementById('statSiteSub');
-      if (elS)  elS.textContent  = emManut ? '⚠️ Manutenção' : '✅ Online';
-      if (elSS) elSS.textContent = emManut ? 'Site em manutenção' : 'Site público activo';
-    } catch(e) {}
-  }
-
-  /* ── IMPORT ── */
-  const LOJAS_INDEX = [
-    { id_local:4, name:'Massaca Lounge Bar', categoria:'restauracao', piso:'Piso 0', location:'Loja 01', status:'open', heroImg:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80', desc:'Gastronomia mediterrânea com os melhores sabores do mar e da terra.', phone:'+258 21 000 001', email:'lounge@massaka.co.mz' },
-    { id_local:5, name:'Bottle Store Massaca', categoria:'restauracao', piso:'Piso 0', location:'Loja 03', status:'open', heroImg:'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=700&q=80', desc:'Os melhores cafés, bolos artesanais e pequenos-almoços.', phone:'+258 21 000 002', email:'bottlestore@massaka.co.mz' },
-    { id_local:6, name:'Talho Massaca', categoria:'restauracao', piso:'Piso 0', location:'Loja 02', status:'open', heroImg:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80', desc:'Carnes frescas com cortes artesanais e receitas exclusivas.', phone:'+258 21 000 003', email:'talho@massaka.co.mz' },
-    { id_local:9, name:'Nefithys Salão Unissexo', categoria:'beleza', piso:'Piso 0', location:'Loja 07', status:'open', heroImg:'https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=700&q=80', desc:'Cosmética, perfumaria e tratamentos de beleza das melhores marcas.', phone:'+258 21 000 004', email:'nefithys@massaka.co.mz' },
-    { id_local:10, name:'CF Gym', categoria:'desporto', piso:'Piso 0', location:'Loja 40', status:'open', heroImg:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=700&q=80', desc:'Ginásio completo com equipamento de última geração.', phone:'+258 21 000 005', email:'cfgym@massaka.co.mz' },
-  ];
-
-  window.iniciarImportacao = async () => {
-    if (!canAccess('lojas')) { showToast('error','🔒 Sem permissão'); return; }
-    const btn = document.getElementById('importBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A analisar...';
-    try {
-      const snap = await getDocs(collection(db,'lojas'));
-      const existing = new Set();
-      snap.forEach(d => existing.add((d.data().name||'').trim().toLowerCase()));
-      const toImport = [], toSkip = [];
-      LOJAS_INDEX.forEach(l => (existing.has(l.name.trim().toLowerCase()) ? toSkip : toImport).push(l));
-      const catEmoji = { restauracao:'🍽️', beleza:'💇', desporto:'🏋️', casa:'🏠', moda:'👗', tecnologia:'💻' };
-      let html = '';
-      [...toImport,...toSkip].forEach(loja => {
-        const isNew = toImport.includes(loja);
-        html += `<div class="import-preview-item ${isNew?'will-import':'will-skip'}">
-          <span>${catEmoji[loja.categoria]||'🏪'}</span>
-          <span style="flex:1;font-weight:500;">${loja.name}</span>
-          <span style="font-size:0.75rem;color:var(--muted);">${loja.piso} · ${loja.location}</span>
-          <span class="import-preview-badge ${isNew?'badge-new':'badge-skip'}">${isNew?'Nova':'Existe'}</span>
-        </div>`;
-      });
-      document.getElementById('importPreviewList').innerHTML = html || '<div class="empty-state"><p>Nenhuma loja encontrada.</p></div>';
-      document.getElementById('previewCountNew').textContent  = toImport.length;
-      document.getElementById('previewCountSkip').textContent = toSkip.length;
-      const confirmBtn = document.getElementById('modalImportConfirm');
-      if (toImport.length === 0) { confirmBtn.disabled=true; confirmBtn.textContent='✅ Todas já importadas'; }
-      else { confirmBtn.disabled=false; confirmBtn.innerHTML=`⬆️ Importar ${toImport.length} Loja${toImport.length>1?'s':''}`; }
-      confirmBtn.onclick = () => executarImportacao(toImport);
-      openModal('modalImport');
-    } catch(e) { showToast('error','❌ Erro: '+e.message); }
-    finally { btn.disabled=false; btn.innerHTML='<span>⬆️</span> Importar Agora'; }
-  };
-
-  async function executarImportacao(lojas) {
-    closeModal('modalImport');
-    if (!lojas.length) { showToast('warning','⚠️ Nenhuma loja nova.'); return; }
-    document.getElementById('importProgress').classList.remove('hidden');
-    document.getElementById('importResults').classList.add('hidden');
-    const btn = document.getElementById('importBtn');
-    btn.disabled=true; btn.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A importar...';
-    let importadas=0, erros=0;
-    const setP = (done) => {
-      const pct = Math.round((done/lojas.length)*100);
-      document.getElementById('importFill').style.width = pct+'%';
-      document.getElementById('importProgressPct').textContent = pct+'%';
-      document.getElementById('importProgressLabel').textContent = done<lojas.length ? `A importar "${lojas[done]?.name||''}..."` : 'A finalizar...';
-    };
-    setP(0);
-    for (let i=0; i<lojas.length; i++) {
-      const loja = lojas[i]; setP(i);
-      try {
-        await addDoc(collection(db,'lojas'), { ...loja, importadoEm:new Date().toISOString(), fonte:'index.html' });
-        await log('created', loja.name, 'importação');
-        importadas++;
-      } catch(e) { erros++; }
-      await new Promise(r=>setTimeout(r,220));
-    }
-    setP(lojas.length);
-    document.getElementById('importProgressLabel').textContent='Importação concluída!';
-    document.getElementById('importResults').classList.remove('hidden');
-    document.getElementById('resImportadasVal').textContent = importadas;
-    document.getElementById('resIgnoradasVal').textContent  = 0;
-    document.getElementById('resErrosVal').textContent      = erros;
-    showToast(erros===0?'success':'warning', erros===0 ? `✅ ${importadas} importadas!` : `⚠️ ${importadas} importadas, ${erros} com erro.`);
-    btn.disabled=false; btn.innerHTML='✅ Importação Concluída';
-    setTimeout(()=>{ btn.innerHTML='<span>⬆️</span> Importar Novamente'; },4000);
-    await carregarLojas();
-    await atualizarStats();
-    await carregarLogs();
-  }
-
-  /* ── LOGOUT ── */
-  window.logout = async () => { await signOut(auth); window.location.href='admin-login.html'; };
-
-  /* expose */
-  window.carregarLojas = carregarLojas;
-  window.carregarLogs  = carregarLogs;
-  window.carregarUtilizadores = carregarUtilizadores;
-
-  /* ══════════════════════════════════════
-     BLOQUEIO DE IPs
-  ══════════════════════════════════════ */
-
-  let ipFilterAtual = 'all';
-  let selectedIpType = 'block'; // 'block' | 'allow'
-
-  window.selectIpType = (type) => {
-    selectedIpType = type;
-    const btnBlock = document.getElementById('ipTypeBlock');
-    const btnAllow = document.getElementById('ipTypeAllow');
-    const addBtn   = document.getElementById('addIpBtn');
-    if (type === 'block') {
-      btnBlock.className = 'ip-type-btn sel-block';
-      btnAllow.className = 'ip-type-btn';
-      addBtn.className   = 'btn btn-danger';
-      addBtn.innerHTML   = '🚫 Adicionar à Blacklist';
-    } else {
-      btnBlock.className = 'ip-type-btn';
-      btnAllow.className = 'ip-type-btn sel-allow';
-      addBtn.className   = 'btn btn-gold';
-      addBtn.innerHTML   = '✅ Adicionar à Whitelist';
-    }
-  };
-
-  window.setIpFilter = (filter) => {
-    ipFilterAtual = filter;
-    ['filterAll','filterBlock','filterAllow'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.className = 'btn btn-ghost btn-sm';
+window.carregarUtilizadores = async () => {
+  const c=document.getElementById('listaUtilizadores');if(!c)return;
+  c.innerHTML='<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
+  if(!isAdmin){showAccessDeniedTab('users-content');return;}
+  try{
+    const snap=await getDocs(collection(db,'utilizadores'));const users=[];
+    snap.forEach(d=>users.push({id:d.id,...d.data()}));
+    users.sort((a,b)=>new Date(a.criadoEm||0)-new Date(b.criadoEm||0));
+    document.getElementById('statUsers').textContent=users.length;
+    if(!users.length){c.innerHTML='<div class="empty-state"><div class="empty-state-icon">👥</div><p>Nenhum utilizador.</p></div>';return;}
+    const colors=['#C8960C','#22C55E','#3B82F6','#A855F7','#EF4444','#F59E0B'];
+    const permLabels={lojas:'🏪 Lojas',manutencao:'⚙️ Manutenção',logs:'📋 Logs',utilizadores:'👥 Users'};
+    let html='';
+    users.forEach((u,i)=>{
+      const color=colors[i%colors.length];
+      const initial=(u.name||u.email||'?').charAt(0).toUpperCase();
+      const roleChip=u.role==='admin'?'chip-admin':u.role==='viewer'?'chip-viewer':'chip-staff';
+      const roleText=u.role==='admin'?'👑 Admin':u.role==='viewer'?'👁️ Viewer':'🔧 Staff';
+      const isMe=u.uid===currentUserUid;
+      const activePerms=u.role==='admin'?['lojas','manutencao','logs','utilizadores']:(u.perms||[]);
+      const permsHtml=activePerms.length?activePerms.map(p=>`<span class="perm-tag perm-${p}">${permLabels[p]||p}</span>`).join(''):`<span class="perm-tag perm-none">Sem permissões</span>`;
+      html+=`<div class="user-item ${u.active===false?'inactive-user':''}">
+        <div class="user-avatar-lg" style="background:${color}22;border-color:${color}44;color:${color};">${initial}</div>
+        <div><div class="user-info-name">${u.name||'–'} ${isMe?'<span style="font-size:0.68rem;color:var(--muted);font-weight:400;">(você)</span>':''}</div><div class="user-info-email">${u.email||'–'}</div></div>
+        <div class="user-perms"><span class="chip ${roleChip}">${roleText}</span>${u.active===false?'<span class="chip chip-inactive">Inactivo</span>':''}${permsHtml}</div>
+        <div style="display:flex;gap:7px;align-items:center;">
+          <button class="btn btn-blue btn-sm btn-icon" title="Editar" onclick="abrirEdicaoUser('${u.id}')">✏️</button>
+          ${!isMe?`<button class="btn btn-danger btn-sm btn-icon" title="Eliminar" onclick="pedirApagarUser('${u.id}','${(u.name||u.email||'').replace(/'/g,"\\'")}')">🗑</button>`:''}
+        </div>
+      </div>`;
     });
-    const active = document.getElementById(filter === 'all' ? 'filterAll' : filter === 'block' ? 'filterBlock' : 'filterAllow');
-    if (active) active.style.cssText = 'background:var(--gold);color:#0B0B0B;border:none;';
-    carregarIPs();
+    c.innerHTML=html;
+  }catch(e){c.innerHTML='<div class="empty-state"><p>❌ Erro ao carregar.</p></div>';}
+};
+
+let editingUserId=null;
+window.abrirEdicaoUser = async (id) => {
+  if(!isAdmin){showToast('error','🔒 Apenas administradores');return;}
+  try{
+    const snap=await getDoc(doc(db,'utilizadores',id));
+    if(!snap.exists()){showToast('error','❌ Utilizador não encontrado');return;}
+    const u=snap.data(); editingUserId=id;
+    document.getElementById('editUserName').value=u.name||'';
+    document.getElementById('editUserActive').checked=u.active!==false;
+    document.getElementById('modalEditUserSub').textContent=u.email||'';
+    selectRole('edit',u.role||'staff');
+    const activePerms=u.role==='admin'?['lojas','manutencao','logs','utilizadores']:(u.perms||[]);
+    setPermsGrid('permsGridEdit',activePerms);
+    openModal('modalEditUser');
+  }catch(e){showToast('error','❌ Erro ao carregar utilizador');}
+};
+
+window.guardarEdicaoUser = async () => {
+  if(!editingUserId)return;
+  const name=document.getElementById('editUserName').value.trim();
+  const active=document.getElementById('editUserActive').checked;
+  const role=document.querySelector('#roleSelectorEdit .role-btn.selected')?.dataset.role||'staff';
+  const perms=role==='admin'?['lojas','manutencao','logs','utilizadores']:getSelectedPerms('permsGridEdit');
+  try{await updateDoc(doc(db,'utilizadores',editingUserId),{name,role,perms,active});await log('updated',`Permissões: ${name}`,'utilizadores');showToast('success',`✅ "${name}" actualizado`);closeModal('modalEditUser');await carregarUtilizadores();}catch(e){showToast('error','❌ Erro ao guardar');}
+};
+
+window.pedirApagarUser = (id,nome) => {
+  if(!isAdmin){showToast('error','🔒 Apenas administradores');return;}
+  document.getElementById('modalDeleteMsg').textContent=`Eliminar o utilizador "${nome}" do Firestore?`;
+  document.getElementById('modalDeleteConfirm').textContent='Eliminar Perfil';
+  document.getElementById('modalDeleteConfirm').onclick=async()=>{
+    closeModal('modalDelete');
+    try{await deleteDoc(doc(db,'utilizadores',id));await log('deleted',`Utilizador: ${nome}`,'utilizadores');showToast('success',`🗑 "${nome}" removido`);await carregarUtilizadores();await atualizarStats();}catch(e){showToast('error','❌ Erro ao eliminar');}
   };
+  openModal('modalDelete');
+};
 
-  window.adicionarIP = async () => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    const addr   = document.getElementById('ipAddr').value.trim();
-    const note   = document.getElementById('ipNote').value.trim();
-    const active = document.getElementById('ipActive').checked;
-    const type   = selectedIpType; // 'block' | 'allow'
+/* ── STATS ── */
+async function atualizarStats(){
+  try{
+    const ls=await getDocs(collection(db,'lojas'));let total=0,abertas=0;
+    ls.forEach(d=>{total++;if((d.data().status||'open')!=='closed')abertas++;});
+    const e1=document.getElementById('statLojas'),e2=document.getElementById('statAbertas');
+    if(e1)e1.textContent=total;if(e2)e2.textContent=abertas;
+    if(isAdmin){const us=await getDocs(collection(db,'utilizadores'));const eu=document.getElementById('statUsers');if(eu)eu.textContent=us.size;}
+    const cs=await getDoc(doc(db,'config','site'));const em=cs.exists()?cs.data().emManutencao:false;
+    const es=document.getElementById('statSite'),ess=document.getElementById('statSiteSub');
+    if(es)es.textContent=em?'⚠️ Manutenção':'✅ Online';if(ess)ess.textContent=em?'Site em manutenção':'Site público activo';
+  }catch(e){}
+}
 
-    if (!addr) { showToast('error','⚠️ Introduza um endereço IP'); return; }
+/* ── IMPORT ── */
+const LOJAS_INDEX=[
+  {id_local:4,name:'Massaca Lounge Bar',categoria:'restauracao',piso:'Piso 0',location:'Loja 01',status:'open'},
+  {id_local:5,name:'Bottle Store Massaca',categoria:'restauracao',piso:'Piso 0',location:'Loja 03',status:'open'},
+  {id_local:6,name:'Talho Massaca',categoria:'restauracao',piso:'Piso 0',location:'Loja 02',status:'open'},
+  {id_local:9,name:'Nefithys Salão Unissexo',categoria:'beleza',piso:'Piso 0',location:'Loja 07',status:'open'},
+  {id_local:10,name:'CF Gym',categoria:'desporto',piso:'Piso 0',location:'Loja 40',status:'open'},
+];
 
-    /* Basic IP validation (IPv4, IPv4 CIDR, IPv6) */
-    const ipv4    = /^(\d{1,3}\.){3}\d{1,3}$/;
-    const ipv4c   = /^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/;
-    const ipv6    = /^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
-    if (!ipv4.test(addr) && !ipv4c.test(addr) && !ipv6.test(addr)) {
-      showToast('error','⚠️ Formato de IP inválido (ex: 192.168.1.1 ou 192.168.1.0/24)');
-      return;
-    }
+window.iniciarImportacao = async () => {
+  if(!canAccess('lojas')){showToast('error','🔒 Sem permissão');return;}
+  const btn=document.getElementById('importBtn');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A analisar...';
+  try{
+    const snap=await getDocs(collection(db,'lojas'));const existing=new Set();
+    snap.forEach(d=>existing.add((d.data().name||'').trim().toLowerCase()));
+    const toImport=[],toSkip=[];
+    LOJAS_INDEX.forEach(l=>(existing.has(l.name.trim().toLowerCase())?toSkip:toImport).push(l));
+    const em={restauracao:'🍽️',beleza:'💇',desporto:'🏋️',casa:'🏠',moda:'👗',tecnologia:'💻'};
+    let html='';
+    [...toImport,...toSkip].forEach(loja=>{const isNew=toImport.includes(loja);html+=`<div class="import-preview-item ${isNew?'will-import':'will-skip'}"><span>${em[loja.categoria]||'🏪'}</span><span style="flex:1;font-weight:500;">${loja.name}</span><span style="font-size:0.75rem;color:var(--muted);">${loja.piso} · ${loja.location}</span><span class="import-preview-badge ${isNew?'badge-new':'badge-skip'}">${isNew?'Nova':'Existe'}</span></div>`;});
+    document.getElementById('importPreviewList').innerHTML=html||'<div class="empty-state"><p>Nenhuma loja encontrada.</p></div>';
+    document.getElementById('previewCountNew').textContent=toImport.length;
+    document.getElementById('previewCountSkip').textContent=toSkip.length;
+    const cb=document.getElementById('modalImportConfirm');
+    if(toImport.length===0){cb.disabled=true;cb.textContent='✅ Todas já importadas';}
+    else{cb.disabled=false;cb.innerHTML=`⬆️ Importar ${toImport.length} Loja${toImport.length>1?'s':''}`;}
+    cb.onclick=()=>executarImportacao(toImport);
+    openModal('modalImport');
+  }catch(e){showToast('error','❌ Erro: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<span>⬆️</span> Importar Agora';}
+};
 
-    const btn = document.getElementById('addIpBtn');
-    btn.disabled = true;
+async function executarImportacao(lojas){
+  closeModal('modalImport');if(!lojas.length){showToast('warning','⚠️ Nenhuma loja nova.');return;}
+  document.getElementById('importProgress').classList.remove('hidden');document.getElementById('importResults').classList.add('hidden');
+  const btn=document.getElementById('importBtn');btn.disabled=true;btn.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div> A importar...';
+  let importadas=0,erros=0;
+  const setP=(done)=>{const pct=Math.round((done/lojas.length)*100);document.getElementById('importFill').style.width=pct+'%';document.getElementById('importProgressPct').textContent=pct+'%';document.getElementById('importProgressLabel').textContent=done<lojas.length?`A importar "${lojas[done]?.name||''}..."`: 'A finalizar...';};
+  setP(0);
+  for(let i=0;i<lojas.length;i++){const loja=lojas[i];setP(i);try{await addDoc(collection(db,'lojas'),{...loja,importadoEm:new Date().toISOString(),fonte:'index.html'});await log('created',loja.name,'importação');importadas++;}catch(e){erros++;}await new Promise(r=>setTimeout(r,220));}
+  setP(lojas.length);document.getElementById('importProgressLabel').textContent='Importação concluída!';
+  document.getElementById('importResults').classList.remove('hidden');
+  document.getElementById('resImportadasVal').textContent=importadas;document.getElementById('resIgnoradasVal').textContent=0;document.getElementById('resErrosVal').textContent=erros;
+  showToast(erros===0?'success':'warning',erros===0?`✅ ${importadas} importadas!`:`⚠️ ${importadas} importadas, ${erros} com erro.`);
+  btn.disabled=false;btn.innerHTML='✅ Importação Concluída';setTimeout(()=>{btn.innerHTML='<span>⬆️</span> Importar Novamente';},4000);
+  await carregarLojas();await atualizarStats();await carregarLogs();
+}
 
-    try {
-      /* Check for duplicate */
-      const snap = await getDocs(collection(db,'ip_list'));
-      let duplicate = false;
-      snap.forEach(d => { if ((d.data().ip||'').trim() === addr) duplicate = true; });
-      if (duplicate) { showToast('warning','⚠️ Este IP já está na lista'); btn.disabled=false; return; }
+/* ── LOGOUT ── */
+window.logout = async () => { await signOut(auth); window.location.href='admin-login.html'; };
 
-      await addDoc(collection(db,'ip_list'), {
-        ip:       addr,
-        type:     type,       // 'block' | 'allow'
-        note:     note || null,
-        active:   active,
-        criadoEm: new Date().toISOString(),
-        criadoPor: currentUserUid
-      });
+/* expose */
+window.carregarLojas=carregarLojas;window.carregarLogs=carregarLogs;window.carregarUtilizadores=carregarUtilizadores;
 
-      await log('created', `IP ${type === 'block' ? 'bloqueado' : 'permitido'}: ${addr}`, 'ip_list');
-      showToast(type==='block' ? 'warning' : 'success', `${type==='block'?'🚫':'✅'} IP ${addr} adicionado à ${type==='block'?'blacklist':'whitelist'}`);
+/* ── IPs ── */
+let ipFilterAtual='all',selectedIpType='block';
+window.selectIpType=(type)=>{selectedIpType=type;const bb=document.getElementById('ipTypeBlock'),ba=document.getElementById('ipTypeAllow'),ab=document.getElementById('addIpBtn');if(type==='block'){bb.className='ip-type-btn sel-block';ba.className='ip-type-btn';ab.className='btn btn-danger';ab.innerHTML='🚫 Adicionar à Blacklist';}else{bb.className='ip-type-btn';ba.className='ip-type-btn sel-allow';ab.className='btn btn-gold';ab.innerHTML='✅ Adicionar à Whitelist';}};
+window.setIpFilter=(filter)=>{ipFilterAtual=filter;['filterAll','filterBlock','filterAllow'].forEach(id=>{const el=document.getElementById(id);if(el){el.className='btn btn-ghost btn-sm';el.style.cssText='';}});const a=document.getElementById(filter==='all'?'filterAll':filter==='block'?'filterBlock':'filterAllow');if(a)a.style.cssText='background:var(--gold);color:#0B0B0B;border:none;';carregarIPs();};
+window.adicionarIP=async()=>{
+  if(!canAccess('ips')){showToast('error','🔒 Sem permissão');return;}
+  const addr=document.getElementById('ipAddr').value.trim(),note=document.getElementById('ipNote').value.trim(),active=document.getElementById('ipActive').checked,type=selectedIpType;
+  if(!addr){showToast('error','⚠️ Introduza um IP');return;}
+  const r4=/^(\d{1,3}\.){3}\d{1,3}$/,r4c=/^(\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/,r6=/^([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}$/;
+  if(!r4.test(addr)&&!r4c.test(addr)&&!r6.test(addr)){showToast('error','⚠️ Formato de IP inválido');return;}
+  const btn=document.getElementById('addIpBtn');btn.disabled=true;
+  try{
+    const snap=await getDocs(collection(db,'ip_list'));let dup=false;
+    snap.forEach(d=>{if((d.data().ip||'').trim()===addr)dup=true;});
+    if(dup){showToast('warning','⚠️ IP já na lista');btn.disabled=false;return;}
+    await addDoc(collection(db,'ip_list'),{ip:addr,type,note:note||null,active,criadoEm:new Date().toISOString(),criadoPor:currentUserUid});
+    await log('created',`IP ${type==='block'?'bloqueado':'permitido'}: ${addr}`,'ip_list');
+    showToast(type==='block'?'warning':'success',`${type==='block'?'🚫':'✅'} IP ${addr} adicionado`);
+    document.getElementById('ipAddr').value='';document.getElementById('ipNote').value='';
+    await carregarIPs();
+  }catch(e){showToast('error','❌ Erro: '+e.message);}finally{btn.disabled=false;}
+};
+window.carregarIPs=async()=>{
+  const c=document.getElementById('listaIPs');if(!c)return;
+  c.innerHTML='<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
+  try{
+    const snap=await getDocs(collection(db,'ip_list'));let ips=[];
+    snap.forEach(d=>ips.push({id:d.id,...d.data()}));ips.sort((a,b)=>new Date(b.criadoEm||0)-new Date(a.criadoEm||0));
+    const blocked=ips.filter(i=>i.type==='block').length,allowed=ips.filter(i=>i.type==='allow').length;
+    const eb=document.getElementById('statIpsBlocked'),ea=document.getElementById('statIpsAllowed');if(eb)eb.textContent=blocked;if(ea)ea.textContent=allowed;
+    if(ipFilterAtual!=='all')ips=ips.filter(i=>i.type===ipFilterAtual);
+    if(!ips.length){c.innerHTML=`<div class="empty-state"><div class="empty-state-icon">${ipFilterAtual==='block'?'🚫':'🛡️'}</div><p>Nenhum IP na lista.</p></div>`;return;}
+    c.innerHTML=ips.map(ip=>{const isB=ip.type==='block',date=ip.criadoEm?new Date(ip.criadoEm).toLocaleString('pt-MZ',{dateStyle:'short',timeStyle:'short'}):'–';return `<div class="ip-item ${isB?'ip-blocked':'ip-allowed'}"><div class="ip-icon ${isB?'ip-icon-block':'ip-icon-allow'}">${isB?'🚫':'✅'}</div><div style="flex:1;min-width:0;"><div class="ip-addr">${ip.ip}</div>${ip.note?`<div class="ip-note">${ip.note}</div>`:''}<div class="ip-meta">Adicionado ${date} ${ip.active===false?'· <span style="color:var(--amber);">Inactivo</span>':''}</div></div><span class="chip ${isB?'chip-block':'chip-allow'}" style="flex-shrink:0;"><span class="chip-dot"></span>${isB?'Bloqueado':'Permitido'}</span><div class="ip-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="toggleIPAtivo('${ip.id}',${!ip.active})">${ip.active===false?'▶':'⏸'}</button><button class="btn btn-danger btn-sm btn-icon" onclick="removerIP('${ip.id}','${ip.ip}')">🗑</button></div></div>`;}).join('');
+  }catch(e){c.innerHTML='<div class="empty-state"><p>❌ Erro.</p></div>';}
+};
+window.toggleIPAtivo=async(id,newActive)=>{if(!canAccess('ips')){showToast('error','🔒 Sem permissão');return;}try{await updateDoc(doc(db,'ip_list',id),{active:newActive});showToast('success',newActive?'▶ IP activado':'⏸ IP desactivado');await carregarIPs();}catch(e){showToast('error','❌ Erro');}};
+window.removerIP=(id,addr)=>{if(!canAccess('ips')){showToast('error','🔒 Sem permissão');return;}document.getElementById('modalDeleteMsg').textContent=`Remover o IP "${addr}" da lista?`;document.getElementById('modalDeleteConfirm').textContent='Remover';document.getElementById('modalDeleteConfirm').onclick=async()=>{closeModal('modalDelete');try{await deleteDoc(doc(db,'ip_list',id));await log('deleted',`IP removido: ${addr}`,'ip_list');showToast('success',`🗑 IP ${addr} removido`);await carregarIPs();}catch(e){showToast('error','❌ Erro ao remover');}};openModal('modalDelete');};
+window.confirmarLimparIPs=()=>{if(!canAccess('ips')){showToast('error','🔒 Sem permissão');return;}document.getElementById('modalDeleteMsg').textContent='Remover TODOS os IPs da lista?';document.getElementById('modalDeleteConfirm').textContent='Limpar Tudo';document.getElementById('modalDeleteConfirm').onclick=async()=>{closeModal('modalDelete');try{const snap=await getDocs(collection(db,'ip_list'));await Promise.all(snap.docs.map(d=>deleteDoc(doc(db,'ip_list',d.id))));showToast('success','🗑 Lista de IPs limpa');await carregarIPs();}catch(e){showToast('error','❌ Erro ao limpar');}};openModal('modalDelete');};
+window.toggleFirewallMode=async(checked)=>{try{const r=doc(db,'config','firewall');const s=await getDoc(r);s.exists()?await updateDoc(r,{whitelistMode:checked}):await setDoc(r,{whitelistMode:checked,firewallActive:true});showToast(checked?'warning':'success',checked?'⚠️ Modo Whitelist activado':'✅ Modo Blacklist');atualizarStatFirewall(checked,null);}catch(e){showToast('error','❌ Erro');}};
+window.toggleFirewallAtivo=async(checked)=>{try{const r=doc(db,'config','firewall');const s=await getDoc(r);s.exists()?await updateDoc(r,{firewallActive:checked}):await setDoc(r,{firewallActive:checked,whitelistMode:false});showToast(checked?'success':'warning',checked?'🛡️ Firewall activada':'⚠️ Firewall desactivada');}catch(e){showToast('error','❌ Erro');}};
+async function carregarConfigFirewall(){try{const snap=await getDoc(doc(db,'config','firewall'));const data=snap.exists()?snap.data():{};const e1=document.getElementById('toggleWhitelistMode'),e2=document.getElementById('toggleFirewallActive');if(e1)e1.checked=data.whitelistMode||false;if(e2)e2.checked=data.firewallActive!==false;atualizarStatFirewall(data.whitelistMode||false,data.firewallActive!==false);}catch(e){}}
+function atualizarStatFirewall(whitelist,active){const el=document.getElementById('statIpMode');if(!el)return;if(active===false){el.textContent='Desligada';return;}el.textContent=whitelist?'Whitelist':'Blacklist';}
 
-      document.getElementById('ipAddr').value = '';
-      document.getElementById('ipNote').value = '';
+/* TAB SYSTEM */
+const ALL_TABS=['dashboard','lojas','manutencao','logs','utilizadores','ips'];
+const TAB_NAMES={dashboard:'Dashboard',lojas:'Gestão de Lojas',manutencao:'Manutenção',logs:'Registos de Atividade',utilizadores:'Utilizadores',ips:'Bloqueio de IPs'};
+const SEC_MAP={lojas:'lojas',manutencao:'manutencao',logs:'logs',ips:'ips'};
+const CONT_MAP={lojas:'lojas-content',manutencao:'manut-content',logs:'logs-content',ips:'ips-content'};
 
-      await carregarIPs();
-      await atualizarStats();
-    } catch(e) {
-      showToast('error', '❌ Erro ao adicionar IP: ' + e.message);
-    } finally {
-      btn.disabled = false;
-    }
-  };
-
-  window.carregarIPs = async () => {
-    const container = document.getElementById('listaIPs');
-    if (!container) return;
-    container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>A carregar...</p></div>';
-    try {
-      const snap = await getDocs(collection(db,'ip_list'));
-      let ips = [];
-      snap.forEach(d => ips.push({ id:d.id, ...d.data() }));
-      ips.sort((a,b) => new Date(b.criadoEm||0) - new Date(a.criadoEm||0));
-
-      /* Update stats */
-      const blocked = ips.filter(i => i.type === 'block').length;
-      const allowed = ips.filter(i => i.type === 'allow').length;
-      const elB = document.getElementById('statIpsBlocked');
-      const elA = document.getElementById('statIpsAllowed');
-      if (elB) elB.textContent = blocked;
-      if (elA) elA.textContent = allowed;
-
-      /* Apply filter */
-      if (ipFilterAtual !== 'all') ips = ips.filter(i => i.type === ipFilterAtual);
-
-      if (!ips.length) {
-        container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">${ipFilterAtual==='block'?'🚫':ipFilterAtual==='allow'?'✅':'🛡️'}</div><p>Nenhum IP na lista${ipFilterAtual!=='all'?' com este filtro':''}.</p></div>`;
-        return;
-      }
-
-      container.innerHTML = ips.map(ip => {
-        const isBlock = ip.type === 'block';
-        const date    = ip.criadoEm ? new Date(ip.criadoEm).toLocaleString('pt-MZ',{dateStyle:'short',timeStyle:'short'}) : '–';
-        return `
-          <div class="ip-item ${isBlock?'ip-blocked':'ip-allowed'}">
-            <div class="ip-icon ${isBlock?'ip-icon-block':'ip-icon-allow'}">${isBlock?'🚫':'✅'}</div>
-            <div style="flex:1;min-width:0;">
-              <div class="ip-addr">${ip.ip}</div>
-              ${ip.note ? `<div class="ip-note">${ip.note}</div>` : ''}
-              <div class="ip-meta">Adicionado ${date} ${ip.active===false?'· <span style="color:var(--amber);">Inactivo</span>':''}</div>
-            </div>
-            <span class="chip ${isBlock?'chip-block':'chip-allow'}" style="flex-shrink:0;">
-              <span class="chip-dot"></span>${isBlock?'Bloqueado':'Permitido'}
-            </span>
-            <div class="ip-actions">
-              <button class="btn btn-ghost btn-sm btn-icon" title="${ip.active===false?'Activar':'Desactivar'}" onclick="toggleIPAtivo('${ip.id}', ${!ip.active})">${ip.active===false?'▶':'⏸'}</button>
-              <button class="btn btn-danger btn-sm btn-icon" title="Remover" onclick="removerIP('${ip.id}','${ip.ip}')">🗑</button>
-            </div>
-          </div>`;
-      }).join('');
-    } catch(e) {
-      container.innerHTML = '<div class="empty-state"><p>❌ Erro ao carregar IPs.</p></div>';
-    }
-  };
-
-  window.toggleIPAtivo = async (id, newActive) => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      await updateDoc(doc(db,'ip_list',id), { active: newActive });
-      await log('updated', `IP ${newActive?'activado':'desactivado'}`, 'ip_list');
-      showToast('success', newActive ? '▶ IP activado' : '⏸ IP desactivado');
-      await carregarIPs();
-    } catch(e) { showToast('error','❌ Erro'); }
-  };
-
-  window.removerIP = (id, addr) => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    document.getElementById('modalDeleteMsg').textContent = `Remover o IP "${addr}" da lista?`;
-    document.getElementById('modalDeleteConfirm').textContent = 'Remover';
-    document.getElementById('modalDeleteConfirm').onclick = async () => {
-      closeModal('modalDelete');
-      try {
-        await deleteDoc(doc(db,'ip_list',id));
-        await log('deleted', `IP removido: ${addr}`, 'ip_list');
-        showToast('success', `🗑 IP ${addr} removido`);
-        await carregarIPs();
-        await atualizarStats();
-      } catch(e) { showToast('error','❌ Erro ao remover'); }
-    };
-    openModal('modalDelete');
-  };
-
-  window.confirmarLimparIPs = () => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    document.getElementById('modalDeleteMsg').textContent = 'Remover TODOS os IPs da lista? O site ficará sem restrições de IP.';
-    document.getElementById('modalDeleteConfirm').textContent = 'Limpar Tudo';
-    document.getElementById('modalDeleteConfirm').onclick = async () => {
-      closeModal('modalDelete');
-      try {
-        const snap = await getDocs(collection(db,'ip_list'));
-        await Promise.all(snap.docs.map(d => deleteDoc(doc(db,'ip_list',d.id))));
-        showToast('success','🗑 Lista de IPs limpa');
-        await carregarIPs();
-        await atualizarStats();
-      } catch(e) { showToast('error','❌ Erro ao limpar'); }
-    };
-    openModal('modalDelete');
-  };
-
-  window.toggleFirewallMode = async (checked) => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      const docRef = doc(db,'config','firewall');
-      const snap   = await getDoc(docRef);
-      snap.exists() ? await updateDoc(docRef,{whitelistMode:checked}) : await setDoc(docRef,{whitelistMode:checked,firewallActive:true});
-      await log('updated', `Firewall modo whitelist: ${checked}`, 'config');
-      showToast(checked?'warning':'success', checked ? '⚠️ Modo Whitelist activado — apenas IPs permitidos entram' : '✅ Modo Blacklist — apenas IPs bloqueados são barrados');
-      atualizarStatFirewall(checked, null);
-    } catch(e) { showToast('error','❌ Erro ao alterar modo'); }
-  };
-
-  window.toggleFirewallAtivo = async (checked) => {
-    if (!canAccess('ips')) { showToast('error','🔒 Sem permissão'); return; }
-    try {
-      const docRef = doc(db,'config','firewall');
-      const snap   = await getDoc(docRef);
-      snap.exists() ? await updateDoc(docRef,{firewallActive:checked}) : await setDoc(docRef,{firewallActive:checked,whitelistMode:false});
-      await log('updated', `Firewall ${checked?'activada':'desactivada'}`, 'config');
-      showToast(checked?'success':'warning', checked ? '🛡️ Firewall activada' : '⚠️ Firewall desactivada — acesso livre a todos');
-    } catch(e) { showToast('error','❌ Erro ao alterar firewall'); }
-  };
-
-  async function carregarConfigFirewall() {
-    try {
-      const snap = await getDoc(doc(db,'config','firewall'));
-      const data = snap.exists() ? snap.data() : {};
-      const el1 = document.getElementById('toggleWhitelistMode');
-      const el2 = document.getElementById('toggleFirewallActive');
-      if (el1) el1.checked = data.whitelistMode || false;
-      if (el2) el2.checked = data.firewallActive !== false;
-      atualizarStatFirewall(data.whitelistMode||false, data.firewallActive!==false);
-    } catch(e) {}
+window._setTabInternal=(name)=>{
+  /* Utilizadores tab — admin only */
+  if(name==='utilizadores'&&!isAdmin){showToast('error','🔒 Apenas administradores');return;}
+  if(SEC_MAP[name]&&!canAccess(SEC_MAP[name])){
+    ALL_TABS.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');
+    document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')===`setTab('${name}')`));
+    document.getElementById('tabTitle').textContent=TAB_NAMES[name]||name;
+    if(CONT_MAP[name])showAccessDeniedTab(CONT_MAP[name]);return;
   }
-
-  function atualizarStatFirewall(whitelist, active) {
-    const el = document.getElementById('statIpMode');
-    if (!el) return;
-    if (active === false) { el.textContent = 'Desligada'; return; }
-    el.textContent = whitelist ? 'Whitelist' : 'Blacklist';
-  }
-
-  /* ── TAB: intercept to check perms ── */
-  const ALL_TABS  = ['dashboard','lojas','manutencao','logs','utilizadores','ips'];
-  const TAB_NAMES = { dashboard:'Dashboard', lojas:'Gestão de Lojas', manutencao:'Manutenção', logs:'Registos de Atividade', utilizadores:'Utilizadores', ips:'Bloqueio de IPs' };
-  const SEC_MAP   = { lojas:'lojas', manutencao:'manutencao', logs:'logs', utilizadores:'utilizadores', ips:'ips' };
-  const CONT_MAP  = { lojas:'lojas-content', manutencao:'manut-content', logs:'logs-content', utilizadores:'users-content', ips:'ips-content' };
-
-  window._setTabInternal = (name) => {
-    if (SEC_MAP[name] && !canAccess(SEC_MAP[name])) {
-      ALL_TABS.forEach(t => document.getElementById('tab-'+t).style.display = t===name?'':'none');
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.getAttribute('onclick')===`setTab('${name}')`));
-      document.getElementById('tabTitle').textContent = TAB_NAMES[name]||name;
-      if (CONT_MAP[name]) showAccessDeniedTab(CONT_MAP[name]);
-      return;
-    }
-    ALL_TABS.forEach(t => document.getElementById('tab-'+t).style.display = t===name?'':'none');
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.getAttribute('onclick')===`setTab('${name}')`));
-    document.getElementById('tabTitle').textContent = TAB_NAMES[name]||name;
-    /* Lazy load */
-    if (name === 'ips') { carregarIPs(); carregarConfigFirewall(); }
-  };
-
+  ALL_TABS.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')===`setTab('${name}')`));
+  document.getElementById('tabTitle').textContent=TAB_NAMES[name]||name;
+  if(name==='ips'){carregarIPs();carregarConfigFirewall();}
+};
 </script>
 
 <script>
-  /* ── TAB SWITCHING ── */
-  function setTab(name) {
-    if (window._setTabInternal) { window._setTabInternal(name); return; }
-    /* fallback before module loads */
-    const tabs = ['dashboard','lojas','manutencao','logs','utilizadores'];
-    tabs.forEach(t => document.getElementById('tab-'+t).style.display = t===name?'':'none');
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.getAttribute('onclick')===`setTab('${name}')`));
-    document.getElementById('tabTitle').textContent = ({dashboard:'Dashboard',lojas:'Gestão de Lojas',manutencao:'Manutenção',logs:'Registos de Atividade',utilizadores:'Utilizadores'})[name]||name;
-  }
-
-  /* ── ROLE SELECTOR ── */
-  function selectRole(ctx, role) {
-    const container = document.getElementById(`roleSelectorE${ctx==='edit'?'dit':'dd'.slice(0,2)}`.replace('Edd','Add'));
-    // handle both 'add' and 'edit'
-    const id = ctx==='edit' ? 'roleSelectorEdit' : 'roleSelectorAdd';
-    document.querySelectorAll(`#${id} .role-btn`).forEach(btn => {
-      btn.classList.toggle('selected', btn.dataset.role === role);
-    });
-
-    /* If admin: auto-check and lock all perms */
-    const gridId = ctx==='edit' ? 'permsGridEdit' : 'permsGridAdd';
-    const items  = document.querySelectorAll(`#${gridId} .perm-checkbox-item`);
-    if (role === 'admin') {
-      items.forEach(item => {
-        item.classList.add('selected');
-        const cb = item.querySelector('input[type="checkbox"]');
-        const box = item.querySelector('.perm-check-box');
-        if (cb) cb.checked = true;
-        if (box) box.textContent = '✓';
-        item.style.opacity = '0.7';
-        item.style.pointerEvents = 'none';
-      });
-    } else {
-      items.forEach(item => {
-        item.style.opacity = '';
-        item.style.pointerEvents = '';
-      });
-    }
-  }
-
-  /* ── PERM ITEM TOGGLE ── */
-  function togglePermItem(el) {
-    el.classList.toggle('selected');
-    const cb  = el.querySelector('input[type="checkbox"]');
-    const box = el.querySelector('.perm-check-box');
-    if (cb) cb.checked = !cb.checked;
-    if (box) box.textContent = el.classList.contains('selected') ? '✓' : '';
-  }
-
-  /* ── GET SELECTED PERMS ── */
-  function getSelectedPerms(gridId) {
-    const perms = [];
-    document.querySelectorAll(`#${gridId} input[type="checkbox"]`).forEach(cb => {
-      if (cb.checked) perms.push(cb.value);
-    });
-    return perms;
-  }
-
-  /* ── SET PERMS GRID ── */
-  function setPermsGrid(gridId, activePerms) {
-    document.querySelectorAll(`#${gridId} .perm-checkbox-item`).forEach(item => {
-      const cb  = item.querySelector('input[type="checkbox"]');
-      const box = item.querySelector('.perm-check-box');
-      const val = cb ? cb.value : '';
-      const active = activePerms.includes(val);
-      if (cb) cb.checked = active;
-      item.classList.toggle('selected', active);
-      if (box) box.textContent = active ? '✓' : '';
-    });
-  }
-
-  /* ── MODAL ── */
-  function openModal(id)  { document.getElementById(id).classList.add('open'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-  window.closeModal = closeModal;
-
-  /* ── TOAST ── */
-  function showToast(type, msg) {
-    const container = document.getElementById('toastContainer');
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.innerHTML = `<span>${msg}</span>`;
-    container.appendChild(el);
-    setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(16px)'; el.style.transition='0.3s'; setTimeout(()=>el.remove(),350); }, 3500);
-  }
-  window.showToast = showToast;
-
-  /* ── CLOCK ── */
-  function tick() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-MZ'); }
-  tick(); setInterval(tick, 1000);
+function setTab(name){if(window._setTabInternal){window._setTabInternal(name);return;}const tabs=['dashboard','lojas','manutencao','logs','utilizadores','ips'];tabs.forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'':'none');document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')===`setTab('${name}')`));document.getElementById('tabTitle').textContent=({dashboard:'Dashboard',lojas:'Gestão de Lojas',manutencao:'Manutenção',logs:'Registos de Atividade',utilizadores:'Utilizadores',ips:'Bloqueio de IPs'})[name]||name;}
+function selectRole(ctx,role){const id=ctx==='edit'?'roleSelectorEdit':'roleSelectorAdd';document.querySelectorAll(`#${id} .role-btn`).forEach(btn=>btn.classList.toggle('selected',btn.dataset.role===role));const gid=ctx==='edit'?'permsGridEdit':'permsGridAdd';const items=document.querySelectorAll(`#${gid} .perm-checkbox-item`);if(role==='admin'){items.forEach(item=>{item.classList.add('selected');const cb=item.querySelector('input[type="checkbox"]');const box=item.querySelector('.perm-check-box');if(cb)cb.checked=true;if(box)box.textContent='✓';item.style.opacity='0.7';item.style.pointerEvents='none';});}else{items.forEach(item=>{item.style.opacity='';item.style.pointerEvents='';});}}
+function togglePermItem(el){el.classList.toggle('selected');const cb=el.querySelector('input[type="checkbox"]');const box=el.querySelector('.perm-check-box');if(cb)cb.checked=!cb.checked;if(box)box.textContent=el.classList.contains('selected')?'✓':'';}
+function getSelectedPerms(gridId){const perms=[];document.querySelectorAll(`#${gridId} input[type="checkbox"]`).forEach(cb=>{if(cb.checked)perms.push(cb.value);});return perms;}
+function setPermsGrid(gridId,activePerms){document.querySelectorAll(`#${gridId} .perm-checkbox-item`).forEach(item=>{const cb=item.querySelector('input[type="checkbox"]');const box=item.querySelector('.perm-check-box');const val=cb?cb.value:'';const active=activePerms.includes(val);if(cb)cb.checked=active;item.classList.toggle('selected',active);if(box)box.textContent=active?'✓':'';});}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+window.closeModal=closeModal;
+function showToast(type,msg){const c=document.getElementById('toastContainer');const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${msg}</span>`;c.appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(16px)';el.style.transition='0.3s';setTimeout(()=>el.remove(),350);},3500);}
+window.showToast=showToast;
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-MZ');}tick();setInterval(tick,1000);
 </script>
 </body>
 </html>
